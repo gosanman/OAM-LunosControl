@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns="http://knx.org/xml/project/20" xmlns:op="http://github.com/OpenKNX/OpenKNXproducer">
+
+  <op:config href="Kwl.conf.xml" />
+
+  <!-- ===================================================================================
+       KNXFANDRV / OAM-KwlControl - ETS-Produktdefinition
+
+       EINGEFROREN mit der ersten knxprod (PLAN.md 0.6, Woche 1 Tag 1):
+       ApplicationNumber, OpenKnxId, die Praefixe ROOM/FAN, die KoOffsets 20/340/640 und
+       die Blockgroessen 40 (Raum) / 24 (Luefter). Eine spaetere Aenderung an einem dieser
+       Werte verschiebt die Gruppenadressen aller Anwender.
+
+       Die Blockgroessen stehen NICHT hier: der Producer bildet sie ausschliesslich aus der
+       hoechsten benutzten %Kn%-Nummer des jeweiligen Templates. Sie sind deshalb in
+       Room.templ.xml (%K39%) und Fan.templ.xml (%K23%) mit je einem Reserveobjekt
+       festgenagelt. Diese beiden Objekte duerfen verschwinden, sobald die echten KOs der
+       Bloecke geschrieben sind - aber nur, wenn dann wieder ein Objekt auf 39 bzw. 23 liegt.
+
+       KO-Belegung:
+         BASE/UCT   0 .. 19
+         ROOM      20 .. 339    8 Raeume    x 40
+         FAN      340 .. 627   12 Luefter   x 24
+         LOG      640 ..       30 Logiken
+       =================================================================================== -->
+
+  <op:ETS ProductName="KNX Lüftersteuerung 0–10 V"
+    OpenKnxId="0xA8"
+    ApplicationNumber="0x05"
+    ApplicationVersion="%ReleaseApplicationVersion%"
+    ReplacesVersions="%ReleaseReplacesVersions%"
+    ApplicationRevision="0"
+    ApplicationName="KwlControl"
+    BusCurrent="30"
+    BuildSuffix="-dev"
+    BuildSuffixText=" (Dev)"
+    MediumTypes="MT-0"
+    OrderNumber="KNXFANDRV"
+    IsRailMounted="true" />
+
+  <op:define prefix="BASE" ModuleType="10"
+    share="../lib/OGM-Common/src/Common.share.xml">
+    <op:verify File="../lib/OGM-Common/library.json" ModuleVersion="%BASE_VerifyVersion%" />
+  </op:define>
+
+  <op:define prefix="UCT" ModuleType="99"
+    share="../lib/OFM-ConfigTransfer/src/ConfigTransfer.share.xml"
+    noConfigTransfer="true">
+    <op:verify File="../lib/OFM-ConfigTransfer/library.json" ModuleVersion="0.5" />
+  </op:define>
+
+  <!-- Raum: Sensorik, Betriebsarten, Fuehrungen. Traegt keinen Antrieb.
+       8 Kanaele sind die Compile-Zeit-Obergrenze; sichtbar macht sie spaeter
+       ROOM_VisibleChannels (Room.share.xml, Woche 1 Tag 3). -->
+  <op:define prefix="ROOM" ModuleType="20"
+    share="../lib/OFM-KwlControl/src/Room.share.xml"
+    template="../lib/OFM-KwlControl/src/Room.templ.xml"
+    NumChannels="8"
+    KoOffset="20">
+    <op:verify File="../lib/OFM-KwlControl/library.json" ModuleVersion="%ReleaseApplicationVersion%" />
+  </op:define>
+
+  <!-- Luefter: Antrieb, Verbuende, DAC-Kanaele. Fuehrt ausserdem die geraeteweite
+       Hardwareauswahl FAN_Hardware, aus der die Zahl der sichtbaren Luefterseiten folgt
+       (Fan.share.xml, Woche 1 Tag 2). 12 Kanaele sind die Obergrenze der Platinenfamilie. -->
+  <op:define prefix="FAN" ModuleType="30"
+    share="../lib/OFM-KwlControl/src/Fan.share.xml"
+    template="../lib/OFM-KwlControl/src/Fan.templ.xml"
+    NumChannels="12"
+    KoOffset="340">
+    <op:verify File="../lib/OFM-KwlControl/library.json" ModuleVersion="%ReleaseApplicationVersion%" />
+  </op:define>
+
+  <!-- Logikmodul: fertiges OpenKNX-Modul, nur eingebunden.
+       ModuleType 10 ist kein Tippfehler: das Logikmodul legt seine Versionsinformation
+       unter dem Typ des BASE-Moduls ab, deshalb teilen sich beide den Wert.
+       KoOffset 640 laesst dem Luefterblock (340..627) Luft nach oben, ohne dass eine
+       spaetere Erweiterung des Luefterblocks sofort kollidiert. -->
+  <op:define prefix="LOG" ModuleType="10"
+    share="../lib/OFM-LogicModule/src/Logikmodul.share.xml"
+    template="../lib/OFM-LogicModule/src/Logikmodul.templ.xml"
+    NumChannels="30"
+    KoOffset="640">
+    <op:verify File="../lib/OFM-LogicModule/library.json" ModuleVersion="4.4" />
+  </op:define>
+
+  <generate />
+</KNX>

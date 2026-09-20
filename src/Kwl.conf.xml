@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns="http://knx.org/xml/project/20" xmlns:op="http://github.com/OpenKNX/OpenKNXproducer">
+
+  <!-- Versionsstaende der eingebundenen Module. Der Producer vergleicht sie gegen die
+       library.json des jeweiligen Repos und bricht bei Abweichung ab. -->
+  <op:config name="%BASE_VerifyVersion%" value="1.9" />
+
+  <!-- Applikationsversion des Geraets. ReplacesVersions listet bewusst NUR die eigene
+       Version: es gibt keine Vorgaengerapplikation, aus der die ETS migrieren koennte,
+       und das Attribut ist nicht weglassbar - der Producer erzwingt es. -->
+  <op:config name="%ReleaseApplicationVersion%" value="0.1" />
+  <op:config name="%ReleaseReplacesVersions%" value="0.1" />
+
+  <!-- Vorbelegung der Info-LED-Auswahl.
+       Bleibt bis Woche 1 Tag 2 auf der Vorgabe aus Common.share.xml: die Werte 110 ff.
+       (Luefter 1..12) entstehen erst mit dem PT-SLEDFunc-Enum in Fan.share.xml. Ein hier
+       vorweggenommener Wert waere eine Enumeration, die es noch nicht gibt.
+  <op:config name="%BASE_Info1LedFunc%" value="2" />
+  <op:config name="%BASE_Info2LedFunc%" value="110" />
+  <op:config name="%BASE_Info3LedFunc%" value="111" />
+  -->
+
+</KNX>
