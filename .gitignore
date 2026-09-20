@@ -1,0 +1,15 @@
+.pio
+.vscode
+**/*.knxprod
+**/*.debug.xml
+release/*
+src/*.baggages
+release-package/*
+release-collection/*
+*.code-workspace
+include/versions.h
+include/knxprod.h
+include/buildtime.h
+CLAUDE.md
+reference/
+docs/
