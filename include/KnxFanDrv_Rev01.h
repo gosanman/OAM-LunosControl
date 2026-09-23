@@ -55,14 +55,30 @@
 #define FANDRV_BELOW_5V_IS_SUPPLY 1
 
 // --- Busformat des 15-Bit-Werts ---------------------------------------------
-// Aus Phase 1, Messung P6, gemessen am __.__.2026 — eine der beiden Zeilen einkommentieren:
-// #define FANDRV_DAC_LEFT_ALIGNED 0   // 5,00 V = 0x4000 (Datenblatt)
-// #define FANDRV_DAC_LEFT_ALIGNED 1   // 5,00 V = 0x8000 (DFRobot-Bibliothek)
 //
-// Die Sperre ist Absicht und wird nicht umgangen, nicht "vorlaeufig" gesetzt und nicht mit
-// einem Default versehen. Die falsche Wahl macht aus dem sicheren Zustand 5,00 V die
-// Volllast 10,00 V — der Unterschied zwischen Stillstand und Vollgas haengt an genau
-// diesem Bit.
+//   ####################################################################
+//   #                                                                  #
+//   #   NICHT GEMESSEN. Dieser Wert ist eine ANNAHME, kein Messwert.   #
+//   #   Gesetzt am 2026-09-23, damit die Firmware ueberhaupt baut,     #
+//   #   solange keine Platine da ist.                                  #
+//   #                                                                  #
+//   #   VOR DEM ERSTEN FLASHEN: Messung P6 durchfuehren und diesen     #
+//   #   Wert bestaetigen oder korrigieren. Ist er falsch, wird aus     #
+//   #   dem sicheren Zustand 5,00 V die Volllast 10,00 V — der         #
+//   #   Unterschied zwischen Stillstand und Vollgas haengt an genau    #
+//   #   diesem Bit.                                                    #
+//   #                                                                  #
+//   ####################################################################
+//
+// P6 (Referenzdesign 7.1): Register 0x01 = 0x11, dann Kanal 1 nacheinander mit 0x4000 und
+// mit 0x8000 beschreiben und TP1 messen. Genau einer der beiden Werte ergibt 5,00 V ±25 mV.
+//   0 -> 5,00 V = 0x4000 (Datenblatt)
+//   1 -> 5,00 V = 0x8000 (DFRobot-Bibliothek, schiebt um ein Bit nach links)
+//
+// Nach der Messung: Zahl bestaetigen, Datum eintragen und diesen Kasten durch die
+// Herkunftszeile ersetzen — so wie FANDRV_BELOW_5V_IS_SUPPLY es oben vormacht.
+#define FANDRV_DAC_LEFT_ALIGNED 0   // ANNAHME 2026-09-23, P6 steht aus
+
 #ifndef FANDRV_DAC_LEFT_ALIGNED
     #error "FANDRV_DAC_LEFT_ALIGNED nicht gesetzt: erst Phase 1 / Messung P6 durchfuehren"
 #endif
