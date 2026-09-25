@@ -140,7 +140,7 @@ Aus 0 → 5000 mV (bipolar) bzw. 0 mV (unipolar), nicht parametrierbar.
 | `FAN_FilterHours` | uint16 | 500…8760 h | 2200 | FilterMode = 1 | Wechselintervall. |
 | `FAN_FilterVolume` | uint16 | 10…500 (× 1000 m³) | 60 | FilterMode = 2 | Wechselintervall als Luftmenge. 60 000 m³ ≈ 3 Monate Stufe 2 Dauerbetrieb beim e²60. |
 | `FAN_FilterRemindCycle` | time | 1…72 h | 24 h | FilterMode ≠ 0 | Wiederholung der Meldung nach kurzfristiger Quittung. |
-| `FAN_PowerOnStage` | enum | 0 Stillstand · 1 Stufe 1 · 2 Stufe 2 | 1 | | Wert, den die Ausgangsstufe nach Ausfall der 12-V-Versorgung ohne Bus einnimmt (EEPROM). Stufe 1 = Feuchteschutz. Wird nur per Konsole `kwl store` geschrieben. |
+| ~~`FAN_PowerOnStage`~~ | — | — | — | — | **Gestrichen 2026-09-25** (Messprotokoll Phase 1, Befund B1: kein EEPROM-Store). Offset 2, Bit 6–7 sind frei. Nach Wiederkehr der 12 V ohne Bus liegt an allen Kanälen 0 V = Volllast, bis die Firmware startet — steht in der Applikationsbeschreibung. |
 | `FAN_SendCycleStatus` | time | 0 aus · 1 min … 24 h | 0 | | Zyklisches Senden von Stufe, Richtung, Spannung. |
 | `FAN_SendCycleHours` | time | 0 aus · 1 h … 24 h | 1 h | | Zyklisches Senden der Betriebsstunden. |
 
