@@ -71,10 +71,10 @@ von P6 einsetzen.
 
 | Kanal | Klemme | Adresse | Ch | bei `0` (Soll 0,00 V) | bei `<voll>` (Soll 10,00 V) | Abweichung |
 |---|---|---|---|---|---|---|
-| S1 | J3 | 0x58 | 0 | ________ V | ________ V | ________ |
-| S2 | J4 | 0x58 | 1 | ________ V | ________ V | ________ |
-| S3 | J5 | 0x59 | 0 | ________ V | ________ V | ________ |
-| S4 | J6 | 0x59 | 1 | ________ V | ________ V | ________ |
+| S1 | J3 | 0x58 | 0 | 0,004 V | 10,025 V | ________ |
+| S2 | J4 | 0x58 | 1 | 0,006 V | 10,027 V | ________ |
+| S3 | J5 | 0x59 | 0 | 0,003 V | 10,006 V | ________ |
+| S4 | J6 | 0x59 | 1 | 0,002 V | 10,052 V | ________ |
 
 Toleranz ± 30 mV. Größere Abweichungen ergeben den Kalibrierfaktor je Kanal.
 
@@ -129,10 +129,10 @@ RP2040 bleibt dabei aus oder die Firmware wird nicht gestartet.
 
 | Kanal | Erwartung | Gemessen |
 |---|---|---|
-| S1 | 5,00 V | ________ V |
-| S2 | 5,00 V | ________ V |
+| S1 | 5,00 V | 5,013 V |
+| S2 | 5,00 V | 5,004 V |
 
-Datum: __________
+Datum: 25.09.2026
 
 ---
 
