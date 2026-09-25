@@ -4,3 +4,4 @@ eca6977 v1 lib/OFM-ConfigTransfer https://github.com/OpenKNX/OFM-ConfigTransfer
 178f186 v1 lib/OFM-FileTransferModule https://github.com/OpenKNX/OFM-FileTransferModule.git
 cd1b5cc v1 lib/OFM-LogicModule https://github.com/OpenKNX/OFM-LogicModule
 66bc4af v1 lib/OGM-Common https://github.com/OpenKNX/OGM-Common
+07e337f main lib/OFM-KwlControl https://github.com/gosanman/OFM-LunosControl

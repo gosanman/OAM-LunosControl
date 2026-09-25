@@ -319,6 +319,12 @@ Zeile Kanallogik einen Ausgang treiben.
    Pins zurück auf I2C-Funktion
    ```
    Zeiten: 1 µs vor / 2 µs nach Flanke, 5 µs Zyklus (≈ 125 kHz).
+
+   > **Stand 2026-09-25 — `Gp8413Store` entfällt aus der Firmware.** Befund B1
+   > (`Messprotokoll_Phase1.md`): Frame 1/2/4/5 gehen an alle Chips, Frame 3 ist
+   > ein roher Bitstrom ohne ACK, den jeder entsperrte Chip mitliest. Ein `store 58`
+   > hat U3 (0x59) dauerhaft um +10,5 % verstellt. Die Sequenz bleibt nur in
+   > `test_dac`, gesperrt hinter `FANDRV_TESTDAC_ALLOW_STORE`.
 5. **Messprotokoll** als `docs/Messprotokoll_Phase1.md` anlegen, Tabelle für P6, P7,
    P10, P11, P15 mit Spalten Soll / Gemessen / Datum.
 
@@ -336,10 +342,13 @@ Zeile Kanallogik einen Ausgang treiben.
 
 - [ ] `FANDRV_DAC_LEFT_ALIGNED` ist gemessen und steht im Board-Header mit Datum
 - [ ] Skalenfehler aller vier Kanäle notiert
-- [ ] P15 bestanden — oder die Architekturentscheidung (Optokoppler / ohne Trennung
-      / ohne EEPROM) ist getroffen
-- [ ] P11 bestanden — oder der Startup-Pfad schreibt Register 0x01 in den ersten
-      Millisekunden und das Risiko ist dokumentiert
+- [x] P15 bestanden — oder die Architekturentscheidung (Optokoppler / ohne Trennung
+      / ohne EEPROM) ist getroffen → **ohne EEPROM**, 2026-09-25, Befund B1. Der
+      Isolator trägt die Sequenz (U2 hat gespeichert); das Problem ist der Bus mit
+      zwei Chips, nicht der Isolator.
+- [x] P11 bestanden — oder der Startup-Pfad schreibt Register 0x01 in den ersten
+      Millisekunden und das Risiko ist dokumentiert → gegenstandslos ohne EEPROM;
+      der Startup-Pfad schreibt Register 0x01 ohnehin zuerst (Invariante 3).
 
 **Claude Code braucht:** Referenzdesign §2.3 (Registersatz, beide Formatvarianten),
 §2.4 (Store-Sequenz), §6.4 (Bitbang-Pseudocode), die DFRobot_GP8XXX-Konstanten aus
@@ -862,14 +871,29 @@ Alarm, LED rot; bei Rückkehr `begin()` und Zustand neu schreiben.
 **Ziel:** Das Gerät ist verteilerfest. Alles, was im Fehlerfall passiert, ist
 definiert und dokumentiert.
 
-1. **EEPROM-Einschaltwert per Konsole:**
-   `kwl store` → zeigt die Werte, die gespeichert würden (je Knoten Einschaltstufe aus
-   Parameter „Einschaltwert": AUS oder Stufe 1…4, Referenzdesign §3.2 empfiehlt
-   Stufe 1) → fragt `y/n` → schreibt Sollwerte, führt die Bitbang-Sequenz **je Chip
-   sequenziell** aus, zählt im Flash mit (`storeCount`), meldet Erfolg.
-   **Niemals** aus `loop()`, niemals aus einem KO. Nur Konsole.
-   In der Applikationsbeschreibung: Frontpanel (J110) vorher abziehen — die
-   Sequenz sendet an Adresse 0x08.
+1. **Kein EEPROM-Einschaltwert.** Entschieden 2026-09-25 (Messprotokoll Phase 1,
+   Befund B1): Die Store-Sequenz verstellt auf einem Bus mit zwei GP8413 den nicht
+   adressierten Chip dauerhaft, und der Schaden ist nicht rückgängig zu machen.
+   `kwl store`, `Gp8413Store`, der ETS-Parameter „Einschaltwert ohne Bus (EEPROM)"
+   und sein Hilfetext sind gestrichen. **Das Restrisiko gehört in die
+   Applikationsbeschreibung:** Nach Wiederkehr der 12 V ohne Bus laufen alle Lüfter
+   mit Volllast in einer Richtung, bis die Firmware startet; ohne Bus dauerhaft.
+   Abhilfe nur über Hardware — DAC-Versorgung erst mit dem RP2040 freigeben oder
+   getrennte I²C-Stränge — für Rev 0.2 vorgemerkt, Referenzdesign O19.
+
+   Aus dem Versuch für `Gp8413Drive` (alles im Messprotokoll belegt):
+   - Anwesenheit per **Schreibzugriff** (Register 0x01 ← 0x11) prüfen, nicht per
+     Lesezugriff: U3 quittierte nach Kaltstart Lesezugriffe zeitweise nicht, einen
+     Schreibzugriff sofort. Der RP2040 kann keinen Schreibzugriff ohne Nutzdaten
+     senden, deshalb der Bereichsschreibzugriff als Abfrage; er ist idempotent.
+   - Adressabfrage mit **Wiederholung** (3 × 10 ms), nicht Fehler nach dem ersten NACK.
+   - Registerfile 16 Bytes, Zeiger modulo 16, obere Nibble der Registeradresse
+     ignoriert: Mehrbyte-Frames dürfen nie über 0x05 hinauslaufen, sonst landen sie
+     in 0x00…0x04 (Bereich und Kanal 0).
+   - Nach Mehrbyte-Frames eine kurze Pause, bis geklärt ist, warum dicht gesendete
+     Frames verloren gingen (E3b, Durchgang 1/2 gegen 3).
+   - Ein verstellter Abgleich ist im Betrieb nicht erkennbar (O6). Der einzige
+     Schutz davor ist, die Ursache nie zu erzeugen.
 2. **Störungs-KO und Fehlercode** je Knoten wie in der Vorlage (DPT 1.005 Alarm,
    DPT 5.010 Code), Prioritätsliste erweitert um „DAC nicht erreichbar".
 3. **Betriebsstunden** je Knoten, persistent, wie Vorlage. Zusätzlich
@@ -904,7 +928,8 @@ definiert und dokumentiert.
 
 ### Fertig, wenn
 
-- [ ] `kwl store` einmal ausgeführt, Kaltstart, alle Lüfter auf Einschaltstufe
+- [ ] Kaltstart ohne Bus: Dauer des Vollgas-Moments bis `setup()` gemessen und in
+      der Applikationsbeschreibung beziffert
 - [ ] Jeder Fehlercode einmal provoziert und auf dem Bus gesehen
 - [ ] ETS-Neuprogrammierung mitten im Betrieb → kein Vollgas-Moment (Oszilloskop)
 
@@ -1005,8 +1030,9 @@ Vorher: Was ist der Stand, was fehlt für die Fertig-Definition?"
 - **Vor jedem Flashen** die Frage stellen lassen: „Welcher Ausgangszustand liegt an,
   wenn diese Firmware startet?" Wenn Claude Code das nicht aus dem Code beantworten
   kann, ist der Code nicht fertig.
-- **`store` niemals automatisiert.** Auch nicht „zum Testen". Die Konsole fragt,
-  der Mensch tippt `y`.
+- **Kein `store`.** Die Sequenz ist aus der Firmware gestrichen (Befund B1,
+  2026-09-25). In `test_dac` existiert sie nur hinter `FANDRV_TESTDAC_ALLOW_STORE`,
+  nur für Platine 1, nur nach Rückfrage.
 - **Die Vorlage ist Lesestoff, keine Kopiervorlage.** Konzepte übernehmen, Code
   neu schreiben, außer bei klar abgegrenzten Stücken (Taupunktformel, Totband-
   Sendebedingung), die dann mit Herkunft kommentiert werden.

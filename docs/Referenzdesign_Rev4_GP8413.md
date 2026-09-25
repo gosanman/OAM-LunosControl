@@ -262,6 +262,12 @@ Die Schreibzyklenzahl ist in keinem der beiden Datenblätter angegeben.
 **Der EEPROM ist ausschließlich Ablage des Einschaltwerts, gesetzt bei der
 Inbetriebnahme — niemals Ablage von Betriebssollwerten.**
 
+> **Gemessen 2026-09-25 — die Sequenz wird nicht verwendet (O19).** Konsequenz (c)
+> war zu optimistisch: Nicht nur Entsperren und Sperren gelten busweit, auch
+> Schritt 3 wird von jedem entsperrten Chip ohne ACK mitgelesen. Auf Platine 1 hat
+> ein `store` an 0x58 den Chip 0x59 dauerhaft um +10,5 % verstellt. Der Abschnitt
+> bleibt als Beschreibung stehen; die Firmware enthält keine Store-Sequenz mehr.
+
 ---
 
 ## 3. Sicherheits- und Genauigkeitskonzept
@@ -753,6 +759,9 @@ unterschiedlichen Werten, wie oben.
 
 ### 6.4 Store-Implementierung
 
+> **Nicht mehr umzusetzen — siehe O19 (2026-09-25).** Der Ablauf bleibt als
+> Dokumentation dessen stehen, was `test_dac` für Phase 1 enthielt.
+
 Ablauf, umzusetzen als eigene Funktion mit Bitbang auf GPIO2/GPIO3:
 
 ```
@@ -1051,7 +1060,8 @@ Kein Kühlkörper, kein Kupferfeld über das Nötige hinaus.
 | ~~O12~~ | ~~TLV70450: V(in,max)~~ | **geklärt: 2,5…24 V, Absolutmaximum 24 V.** Bei 12 V nominal ausreichend Luft. Nur falls das Netzteil im Leerlauf über 24 V gehen könnte, wäre ein 36-V-Typ nötig — beim 5/NT18 nicht zu erwarten. |
 | **O18** | KiCAD-Symbol für den TLV70450DBV | `Regulator_Linear:TLV70225_SOT23-5` passt **nicht** (hat EN). Ein Symbol mit GND 1 / IN 2 / OUT 3 / NC 4 / NC 5 suchen oder selbst anlegen. Ein dreipoliges Generikum passt nicht auf den SOT-23-5-Footprint. |
 | **O13** | **Überträgt der ADuM1250 die nichtstandardkonforme Store-Sequenz?** | Drei-Bit-Frames ohne ACK, Frames an eine reservierte Adresse. Der Isolator sollte als transparenter Open-Drain-Puffer alles durchlassen, bewiesen ist es nicht. Prüfschritt P15, **vor dem Layout**. Fällt er durch, ändert sich die Architektur. |
-| **O14** | Ist während der Store-Sequenz ein Ausgangssprung zu erwarten? | Der Chip verarbeitet gerade eine Brennsequenz; ob VOUT dabei stabil bleibt, sagt kein Datenblatt. Bei P10/P15 mitmessen. Falls es Sprünge gibt: Store nur bei stehenden Lüftern ausführen, in der Applikation entsprechend verriegeln. |
+| **O14** | Ist während der Store-Sequenz ein Ausgangssprung zu erwarten? | Der Chip verarbeitet gerade eine Brennsequenz; ob VOUT dabei stabil bleibt, sagt kein Datenblatt. Bei P10/P15 mitmessen. Falls es Sprünge gibt: Store nur bei stehenden Lüftern ausführen, in der Applikation entsprechend verriegeln. **Gegenstandslos seit O19.** |
+| **O19** | **Die Store-Sequenz verstellt auf einem Bus mit zwei GP8413 den nicht adressierten Chip.** | **Gemessen 2026-09-25 an Platine 1** (`Messprotokoll_Phase1.md`, Befund B1): `store 58` → U2 speichert 5,00 V korrekt, **U3 (0x59) läuft dauerhaft mit Verstärkung 1,105**, beide Kanäle, kein Nullpunktfehler, überlebt den Kaltstart. Ursache: Frame 1/2/4/5 gehen an alle Chips, Frame 3 wird ohne ACK von jedem entsperrten Chip mitgelesen (DFRobot `sendByte(x, 1)`, Datenblatt §3.3.6 zeichnet die ACK-Slots als 1). Vier weitere Stores mit anderen Registerwerten, Nutzdaten und Schattenspeicher änderten U3 nicht mehr — der Schaden ist nicht reproduzierbar und nicht rückgängig zu machen; wahrscheinlich hat der Logikanalysator an beiden Seiten des Isolators (P15) den Bitstrom gestört. **Folge:** kein Store in der Firmware, kein EEPROM-Einschaltwert. Einschaltwert ab Werk ist 0 V = Volllast, bis `setup()` schreibt. O13 (Isolator trägt die Sequenz: ja) und O14 damit gegenstandslos. **Für Rev 0.2:** DAC-Versorgung erst freigeben, wenn der RP2040 läuft (Enable auf `+12V` zu U2/U3 oder auf `CHn_12V`), oder getrennte I²C-Stränge je Chip. Weitere Befunde aus demselben Versuch: Anwesenheitsprüfung per Schreibzugriff (U3 quittiert Lesezugriffe nach Kaltstart zeitweise nicht), Registerfile 16 Bytes mit Zeiger modulo 16. |
 
 ### 9.3 Am Gerät zu messen (unverändert aus Rev 3)
 

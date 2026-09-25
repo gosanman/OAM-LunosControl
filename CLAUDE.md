@@ -43,11 +43,17 @@ Lesestoff, keine Kopiervorlage. Der Plan steht in `docs/PLAN.md`, die Hardware i
    (Register 0x02, vier Datenbytes, zwei verschiedene Werte). Niemals zwei getrennte
    Schreibvorgänge für Motor 1 und Motor 2.
 
-7. **EEPROM-Speichern nur per Konsole, nur nach `y`.** Die Store-Sequenz (`kwl store`)
-   ist kein normales I²C — sie bangt GPIO2/GPIO3 und sendet an die reservierte
-   Adresse 0x08. Sie wird nie aus `loop()`, nie aus einem KO, nie aus einem Test und
-   nie automatisiert ausgelöst. Sie zählt im Flash mit. Die Schreibzyklen des Chips
-   sind unbekannt.
+7. **Kein EEPROM-Store. Die Firmware enthält keine Store-Sequenz.** Entschieden am
+   2026-09-25 nach Befund B1 (`docs/Messprotokoll_Phase1.md`): Die Store-Sequenz
+   entsperrt **jeden** GP8413 am Bus, Frame 3 geht als roher Bitstrom ohne ACK an
+   alle, und auf Platine 1 hat ein `store 58` den nicht adressierten U3 dauerhaft um
+   +10,5 % verstellt. Auf einem Bus mit zwei Chips ist die Sequenz nicht sicher, und
+   der Schaden ist nicht rückgängig zu machen. Die hingenommene, dokumentierte Folge:
+   Nach jedem Einschalten liegen an allen Kanälen die Werkswerte 0 V = **Volllast**
+   an, bis `setup()` den sicheren Zustand schreibt; fehlt der KNX-Bus bei
+   anliegenden 12 V, bleibt es dabei. Kein `kwl store`, kein KO, kein ETS-Parameter
+   dafür. Die Sequenz existiert nur noch in `test_dac`, gesperrt hinter
+   `FANDRV_TESTDAC_ALLOW_STORE`, für Versuche an der Versuchsplatine 1.
 
 8. **Vor Neustart sicherer Zustand.** `processBeforeRestart()` schreibt 5,00 V auf
    alle bipolaren Kanäle. Eine ETS-Neuprogrammierung darf keinen Vollgas-Moment
