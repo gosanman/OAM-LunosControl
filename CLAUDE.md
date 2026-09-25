@@ -18,14 +18,13 @@ Lesestoff, keine Kopiervorlage. Der Plan steht in `docs/PLAN.md`, die Hardware i
    Zustand jedes bipolaren Kanals ist der Code für 5,00 V; der eines unipolaren
    Kanals (RA 15-60) ist 0.
 
-2. **Kein Ausgang ohne gemessenes Busformat.** `FANDRV_DAC_LEFT_ALIGNED` steht seit
-   dem 2026-09-23 als **Annahme 0** im Board-Header, damit die Firmware ohne Platine
-   baut. Die Zahl ist **kein Messwert**. Vor dem ersten Flashen wird sie durch das
-   Ergebnis von Messung P6 (Phase 1) ersetzt und mit Datum kommentiert; bis dahin gilt
-   sie nicht als bestätigt, und es wird nichts darauf aufgebaut, was von ihrer
-   Richtigkeit abhängt. Der Kasten im Board-Header sagt dasselbe und bleibt stehen,
-   bis gemessen ist. Ist der Wert falsch, wird aus dem sicheren Zustand 5,00 V die
-   Volllast 10,00 V.
+2. **Kein Ausgang ohne gemessenes Busformat.** `FANDRV_DAC_LEFT_ALIGNED` = **1**,
+   gemessen am 2026-09-25 (Phase 1, P6): `0x8000` ergibt 5,00 V, `0x4000` ergibt
+   2,50 V. Der Chip legt den Wert linksbündig in ein 16-Bit-Register; der logische
+   15-Bit-Code geht um ein Bit nach links. **Der sichere Zustand ist auf dem Bus
+   `0x8000`, nicht `0x4000`.** Die Messung steht mit Datum und Messwerten im
+   Board-Header und in `docs/Messprotokoll_Phase1.md`; sie wird nicht anhand eines
+   Datenblatts korrigiert.
 
 3. **Startup schreibt zuerst den Bereich, dann den sicheren Zustand.** Reihenfolge in
    `setup()`: Register 0x01 = 0x11 an beide Chips → 5,00 V auf alle bipolaren Kanäle →

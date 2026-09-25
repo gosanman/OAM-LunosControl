@@ -56,28 +56,18 @@
 
 // --- Busformat des 15-Bit-Werts ---------------------------------------------
 //
-//   ####################################################################
-//   #                                                                  #
-//   #   NICHT GEMESSEN. Dieser Wert ist eine ANNAHME, kein Messwert.   #
-//   #   Gesetzt am 2026-09-23, damit die Firmware ueberhaupt baut,     #
-//   #   solange keine Platine da ist.                                  #
-//   #                                                                  #
-//   #   VOR DEM ERSTEN FLASHEN: Messung P6 durchfuehren und diesen     #
-//   #   Wert bestaetigen oder korrigieren. Ist er falsch, wird aus     #
-//   #   dem sicheren Zustand 5,00 V die Volllast 10,00 V — der         #
-//   #   Unterschied zwischen Stillstand und Vollgas haengt an genau    #
-//   #   diesem Bit.                                                    #
-//   #                                                                  #
-//   ####################################################################
+// GEMESSEN am 2026-09-25 an S1, RIGOL DM858 (Phase 1, Messung P6):
+//   raw 58 0 4000  ->  2,504 V
+//   raw 58 0 8000  ->  5,012 V
 //
-// P6 (Referenzdesign 7.1): Register 0x01 = 0x11, dann Kanal 1 nacheinander mit 0x4000 und
-// mit 0x8000 beschreiben und TP1 messen. Genau einer der beiden Werte ergibt 5,00 V ±25 mV.
-//   0 -> 5,00 V = 0x4000 (Datenblatt)
-//   1 -> 5,00 V = 0x8000 (DFRobot-Bibliothek, schiebt um ein Bit nach links)
+// Der Chip legt den Wert linksbuendig in ein 16-Bit-Register: 0x8000 ist die halbe
+// Skala, 0x4000 die viertel. Der logische 15-Bit-Code geht also um ein Bit nach links,
+// wie es die DFRobot-Bibliothek macht. Beide Messpunkte liegen auf derselben Geraden -
+// die Messung bestaetigt sich selbst.
 //
-// Nach der Messung: Zahl bestaetigen, Datum eintragen und diesen Kasten durch die
-// Herkunftszeile ersetzen — so wie FANDRV_BELOW_5V_IS_SUPPLY es oben vormacht.
-#define FANDRV_DAC_LEFT_ALIGNED 0   // ANNAHME 2026-09-23, P6 steht aus
+// Der sichere Zustand 5,00 V ist damit auf dem Bus 0x8000, NICHT 0x4000.
+// Steigungsfehler rund +0,2 %, kein nennenswerter Nullpunktfehler (P7 bestaetigt das).
+#define FANDRV_DAC_LEFT_ALIGNED 1
 
 #ifndef FANDRV_DAC_LEFT_ALIGNED
     #error "FANDRV_DAC_LEFT_ALIGNED nicht gesetzt: erst Phase 1 / Messung P6 durchfuehren"

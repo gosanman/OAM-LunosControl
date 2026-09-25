@@ -44,13 +44,22 @@ oder klemmt am Anschlag.
 | `raw 58 0 4000` | 5,00 V **oder** 10,00 V | 2,504 V | |
 | `raw 58 0 8000` | der jeweils andere Wert | 5,012 V | |
 
-**Ergebnis:** `FANDRV_DAC_LEFT_ALIGNED` = ______  (0 wenn `0x4000` → 5,00 V, sonst 1)
+**Ergebnis:** `FANDRV_DAC_LEFT_ALIGNED` = **1**  (`0x8000` → 5,00 V)
 
 Datum: 25.09.2026  Messgerät: RIGOL DM858
 
-> Danach sofort in `include/KnxFanDrv_Rev01.h` eintragen, den Warnkasten durch
-> eine Herkunftszeile mit Datum ersetzen und CLAUDE.md Invariante 2 nachziehen.
-> Bis dahin steht dort die **Annahme 0** vom 2026-09-23.
+Beide Werte liegen auf derselben Geraden: `0x8000` ist die halbe Skala eines
+16-Bit-Registers, `0x4000` die viertel. Der logische 15-Bit-Code geht also um ein
+Bit nach links, wie es die DFRobot-Bibliothek macht. Die Messung bestätigt sich
+damit selbst — ein Ablesefehler hätte nur einen der beiden Punkte getroffen.
+
+Abweichung +12 mV bei 5 V und +4 mV bei 2,5 V, also rund **+0,2 % Steigungsfehler**
+und kein nennenswerter Nullpunktfehler. Bei Vollausschlag sind demnach etwa
+10,02 V zu erwarten; das ist in P7 zu bestätigen.
+
+> **Eingetragen am 2026-09-25** in `include/KnxFanDrv_Rev01.h`; der Warnkasten ist
+> durch die Herkunftszeile ersetzt, CLAUDE.md Invariante 2 ist nachgezogen.
+> **Für P7 gilt damit `<voll>` = `fffe`.**
 
 ---
 
