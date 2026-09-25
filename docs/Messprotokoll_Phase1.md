@@ -41,12 +41,12 @@ oder klemmt am Anschlag.
 
 | Eingabe | Erwartung | Gemessen an S1 | |
 |---|---|---|---|
-| `raw 58 0 4000` | 5,00 V **oder** 10,00 V | ________ V | |
-| `raw 58 0 8000` | der jeweils andere Wert | ________ V | |
+| `raw 58 0 4000` | 5,00 V **oder** 10,00 V | 2,504 V | |
+| `raw 58 0 8000` | der jeweils andere Wert | 5,012 V | |
 
 **Ergebnis:** `FANDRV_DAC_LEFT_ALIGNED` = ______  (0 wenn `0x4000` → 5,00 V, sonst 1)
 
-Datum: __________  Messgerät: __________________
+Datum: 25.09.2026  Messgerät: RIGOL DM858
 
 > Danach sofort in `include/KnxFanDrv_Rev01.h` eintragen, den Warnkasten durch
 > eine Herkunftszeile mit Datum ersetzen und CLAUDE.md Invariante 2 nachziehen.
