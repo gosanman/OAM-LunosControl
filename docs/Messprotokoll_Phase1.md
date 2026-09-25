@@ -249,6 +249,51 @@ schreibt. Fehlt der KNX-Bus bei anliegenden 12 V, bleibt es dabei.
 
 ---
 
+## P16 — Wie lange steht nach dem Einschalten 0 V an?
+
+Ergänzt 2026-09-26. Folge aus Befund B1: ohne EEPROM-Einschaltwert führen alle
+Kanäle nach dem Anlegen der 12 V den Werkswert **0 V — Volllast in einer
+Richtung**, bis `KwlOutput::begin()` den sicheren Zustand geschrieben hat.
+
+Die Entscheidung, dieses Fenster nicht zu verkürzen, steht (25.09.2026: alle
+Platinen werden nur intern genutzt, Rev 0.2 bekommt schaltbare 12 V). Die **Zahl**
+fehlt trotzdem — sie gehört in die Applikationsbeschreibung, wo bisher nur
+„unter einer Sekunde" steht.
+
+**Ablauf.** Oszilloskop an S1 gegen PGND, Zeitbasis 100 ms/div, Trigger auf
+steigende Flanke der 12 V. Lüfter abklemmen. Dann 12 V einschalten und messen:
+
+| Was | Erwartung | Gemessen |
+|---|---|---|
+| Dauer von 0 V bis 5,00 V | < 1 s | ________ ms |
+| Überschwinger beim Umschalten | keiner | ☐ |
+
+Datum: __________
+
+> Die Zeit hängt vom KNX-Stack ab: `KwlFanModule::setup()` läuft erst nach
+> `openknx.init()`. Ein aufgespieltes ETS-Projekt mit vielen Kanälen kann sie
+> verlängern — deshalb mit dem Projekt messen, das später laufen soll.
+
+---
+
+## Zustand Platine 1 nach Befund B1
+
+| Kanal | Chip | Abgleich | EEPROM-Einschaltwert | verwendbar? |
+|---|---|---|---|---|
+| S1 | U2 0x58 | unverändert (+0,25 %) | 5,00 V | ja |
+| S2 | U2 0x58 | unverändert (+0,27 %) | 5,00 V | ja |
+| S3 | U3 0x59 | **+10,5 % verstellt** | unbekannt, ab Werk 0 V | **nein** |
+| S4 | U3 0x59 | **+10,5 % verstellt** | unbekannt, ab Werk 0 V | **nein** |
+
+**An S3 und S4 dieser Platine dürfen keine Lüfter.** Der Kalibrierfaktor deckt
+±2 % ab; 10,5 % lassen sich damit nicht herausrechnen. Die Kanäle geben bei
+`0x8000` rund 5,53 V statt 5,00 V aus — das ist kein Stillstand, sondern eine
+laufende Drehzahl.
+
+Platine 1 bleibt damit eine Versuchsplatine mit zwei brauchbaren Kanälen.
+
+---
+
 ## Store-Zähler
 
 Jeder `store` ist ein Schreibzyklus des EEPROM. Die zulässige Zahl ist unbekannt.
