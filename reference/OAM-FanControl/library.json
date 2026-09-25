@@ -1,0 +1,5 @@
+{
+    "name": "OAM-FanControl",
+    "version": "0.1",
+    "description": "Fan module for the knx stack, can be embedded in an ETS application"
+}

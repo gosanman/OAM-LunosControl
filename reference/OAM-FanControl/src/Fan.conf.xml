@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-model href="../../Organization/knxprod-support/knx_project_20/knx-editor.xsd" type="application/xml" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<KNX xmlns="http://knx.org/xml/project/20" xmlns:op="http://github.com/OpenKNX/OpenKNXproducer">
+ 
+  <op:config name="%BASE_VerifyVersion%" value="1.9" />
+  <op:config name="%ReleaseApplicationVersion%" value="0.1" />
+  <!-- ReplacesVersions listet bewusst NUR die eigene Version: die Neuentwicklung bricht das
+       KO-Layout, ein ETS-Migrationspfad aus der Alt-Applikation wuerde Bestandsanlagen
+       beschaedigen. Leer bzw. weggelassen ist nicht moeglich - der Producer erzwingt das
+       Attribut. -->
+  <op:config name="%ReleaseReplacesVersions%" value="0.1" />
+
+  <!-- Vorbelegung der Info-LED-Auswahl. Spiegelt die Werksbelegung aus dem Hardware-Header
+       (OPENKNX_INFOLED2/3_DEFAULT), damit sich nichts aendert, wenn der Benutzer die
+       Standardbelegung abwaehlt und die Dropdowns wirksam werden.
+       2 = Geraetestatus (BASE), 110/111 = Luefter 1/2 (PT-SLEDFunc aus Fan.share.xml). -->
+  <op:config name="%BASE_Info1LedFunc%" value="2" />
+  <op:config name="%BASE_Info2LedFunc%" value="110" />
+  <op:config name="%BASE_Info3LedFunc%" value="111" />
+
+</KNX>

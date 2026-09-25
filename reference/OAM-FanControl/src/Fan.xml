@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-model href="../../Organization/knxprod-support/knx_project_20/knx-editor.xsd" type="application/xml" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<KNX xmlns="http://knx.org/xml/project/20" xmlns:op="http://github.com/OpenKNX/OpenKNXproducer">
+
+  <op:config href="Fan.conf.xml" />
+  <op:config name="%BASE_ManualSave%" value="3" />
+
+  <op:ETS ProductName="Ventilation Fan KNX Adapter"
+    OpenKnxId="0xAF"
+    ApplicationNumber="0x86"
+    ApplicationVersion="%ReleaseApplicationVersion%"
+    ReplacesVersions="%ReleaseReplacesVersions%"
+    ApplicationRevision="0"
+    ApplicationName="FanControl"
+    BusCurrent="30"
+    BuildSuffix="-dev"
+    BuildSuffixText=" (Dev)"
+    MediumTypes="MT-0"
+    OrderNumber="OpenKnxFanControl"
+    IsRailMounted="true" />
+  
+  <op:define prefix="BASE" ModuleType="10"
+    share="../lib/OGM-Common/src/Common.share.xml">
+    <op:verify File="../lib/OGM-Common/library.json" ModuleVersion="%BASE_VerifyVersion%" /> 
+  </op:define>
+
+  <op:define prefix="UCT" ModuleType="99"
+    share="../lib/OFM-ConfigTransfer/src/ConfigTransfer.share.xml"
+    noConfigTransfer="true">
+    <op:verify File="../lib/OFM-ConfigTransfer/library.json" ModuleVersion="0.5" />
+  </op:define>
+
+  <op:define prefix="FAN" ModuleType="20"
+    share="../lib/OFM-FanControl/src/Fan.share.xml"
+    template="../lib/OFM-FanControl/src/Fan.templ.xml"
+    NumChannels="8"
+    KoOffset="20"
+    >
+    <op:verify File="../lib/OFM-FanControl/library.json" ModuleVersion="%ReleaseApplicationVersion%" />
+  </op:define>
+
+  <!-- Logikmodul: fertiges OpenKNX-Modul, nur eingebunden.
+       ModuleType 10 ist kein Tippfehler: das Logikmodul legt seine Versionsinformation unter
+       dem Typ des BASE-Moduls ab, deshalb teilen sich beide den Wert. Der Producer prueft das
+       und meckert bei jedem anderen Wert.
+       KoOffset 512 laesst der Lueftersteuerung Platz: 8 Kanaele belegen KO 20..275,
+       ein spaeteres neuntes KO im Block waere bei 280 schon eine Kollision. -->
+  <op:define prefix="LOG" ModuleType="10"
+    share="../lib/OFM-LogicModule/src/Logikmodul.share.xml"
+    template="../lib/OFM-LogicModule/src/Logikmodul.templ.xml"
+    NumChannels="30"
+    KoOffset="512">
+    <op:verify File="../lib/OFM-LogicModule/library.json" ModuleVersion="4.4" />
+  </op:define>
+
+  <generate />
+</KNX>

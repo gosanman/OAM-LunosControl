@@ -1,0 +1,207 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="fanctl-io-master" name="Master">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="826" math="0" shadow="0">
+      <root>
+        <mxCell id="m_r0" />
+        <mxCell id="m_r1" parent="m_r0" />
+        <mxCell id="m_ttl" value="&lt;b&gt;OAM-FanControl — Kanal als MASTER&lt;/b&gt;&amp;nbsp;&amp;nbsp;·&amp;nbsp;&amp;nbsp;Eingänge → Verarbeitung → Ausgänge" style="rounded=0;html=1;whiteSpace=wrap;fillColor=#F57C00;strokeColor=#B34700;fontColor=#FFFFFF;fontSize=15;align=left;spacingLeft=12;" vertex="1" parent="m_r1">
+          <mxGeometry x="40" y="20" width="1080" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="m_h1" value="EINGÄNGE" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#555555;" vertex="1" parent="m_r1">
+          <mxGeometry x="40" y="62" width="290" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_h2" value="VERARBEITUNG IM KANAL" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#555555;" vertex="1" parent="m_r1">
+          <mxGeometry x="360" y="62" width="420" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_h3" value="AUSGÄNGE" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#555555;" vertex="1" parent="m_r1">
+          <mxGeometry x="810" y="62" width="310" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_box_container" value="" style="rounded=1;arcSize=7.5;html=1;whiteSpace=wrap;fillColor=#F5F5F5;strokeColor=#B3B3B3;" vertex="1" parent="m_r1">
+          <mxGeometry x="360" y="90" width="420" height="690" as="geometry" />
+        </mxCell>
+        <mxCell id="m_in_knx" value="&lt;b&gt;KNX-Empfangsobjekte&lt;/b&gt;&lt;br&gt;&lt;br&gt;KO&amp;nbsp; 0 · Freigabe &lt;i&gt;(1.003)&lt;/i&gt;&lt;br&gt;KO&amp;nbsp; 1 · Sollwertvorgabe &lt;i&gt;(5.001)&lt;/i&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;i&gt;nur bei Quelle „externes KO&quot;&lt;/i&gt;&lt;br&gt;KO&amp;nbsp; 8 · Istwert CO2 / Feuchte &lt;i&gt;(9.008 / 9.007)&lt;/i&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;i&gt;bei interner Regelung und Zweipunkt&lt;/i&gt;&lt;br&gt;KO&amp;nbsp; 5 · Stoßlüftung &lt;i&gt;(1.010)&lt;/i&gt;&lt;br&gt;KO&amp;nbsp; 2 · Richtungsart &lt;i&gt;(5.010)&lt;/i&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;i&gt;nur bei Richtungsart „über KO&quot;&lt;/i&gt;&lt;br&gt;KO&amp;nbsp; 6 · Quittierung &lt;i&gt;(1.016)&lt;/i&gt;&lt;br&gt;KO&amp;nbsp; 7 · Suspendieren &lt;i&gt;(1.003)&lt;/i&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;Taupunktwächter&lt;/b&gt; &lt;i&gt;(nur wenn aktiviert)&lt;/i&gt;&lt;br&gt;KO 20 · Temperatur innen &lt;i&gt;(9.001)&lt;/i&gt;&lt;br&gt;KO 21 · Feuchte innen &lt;i&gt;(9.007)&lt;/i&gt;&lt;br&gt;KO 22 · Temperatur außen &lt;i&gt;(9.001)&lt;/i&gt;&lt;br&gt;KO 23 · Feuchte außen &lt;i&gt;(9.007)&lt;/i&gt;" style="rounded=0;html=1;whiteSpace=wrap;fillColor=#DAE8FC;strokeColor=#6C8EBF;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="m_r1">
+          <mxGeometry x="40" y="90" width="290" height="310" as="geometry" />
+        </mxCell>
+        <mxCell id="m_in_par" value="&lt;b&gt;ETS-Parameter&lt;/b&gt; &lt;i&gt;(kein Bus, wirken dauerhaft)&lt;/i&gt;&lt;br&gt;&lt;br&gt;Kanalaktivität · Modus · &lt;b&gt;Ist Master = Ja&lt;/b&gt;&lt;br&gt;Sollwertquelle: fest / KO / Regelung / Zweipunkt&lt;br&gt;Anteilsfaktor&lt;br&gt;Mittelstellung · Min / Max je Richtung&lt;br&gt;Anlaufpuls (Stellgröße, Dauer) · Totzeit&lt;br&gt;Zykluszeit je Richtung · Richtungsart&lt;br&gt;Stoßlüftung: Laufzeit, Leistung&lt;br&gt;Taupunktwächter: Schwellen, Überwachungszeit, Verhalten&lt;br&gt;Überwachungszeit Freigabe · Lebenszeichen&lt;br&gt;Kennlinie A / B · Sendebedingungen&lt;br&gt;&lt;i&gt;geräteweit: PWM-Frequenz 500…20000 Hz&lt;/i&gt;" style="rounded=0;html=1;whiteSpace=wrap;fillColor=#E1D5E7;strokeColor=#9673A6;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="m_r1">
+          <mxGeometry x="40" y="420" width="290" height="225" as="geometry" />
+        </mxCell>
+        <mxCell id="m_in_hw" value="&lt;b&gt;Hardware-Eingang&lt;/b&gt;&lt;br&gt;&lt;br&gt;Tacho — 2 Pulse je Umdrehung, optogekoppelt&lt;br&gt;&lt;i&gt;nur Reg1 Fan-Addon-X2, Zählung auf Core 1&lt;/i&gt;&lt;br&gt;&lt;i&gt;MrSpieb-Board: kein Tacho&lt;/i&gt;" style="rounded=0;html=1;whiteSpace=wrap;fillColor=#F8CECC;strokeColor=#B85450;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="m_r1">
+          <mxGeometry x="40" y="665" width="290" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="m_note_ko" value="KO-Nummern sind &lt;b&gt;relativ zum Kanal&lt;/b&gt;:&lt;br&gt;Kanal 1 = KO 20…51, Kanal 2 = KO 52…83,&lt;br&gt;… Kanal 8 = KO 244…275." style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10;fontColor=#666666;" vertex="1" parent="m_r1">
+          <mxGeometry x="40" y="775" width="290" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="m_s1" value="&lt;b&gt;1 · Freigabe &amp;amp; Sperre&lt;/b&gt;&lt;br&gt;Freigabe = 0 &lt;i&gt;oder&lt;/i&gt; Überwachungszeit abgelaufen:&lt;br&gt;Leistung 0, sofort — Vorrang vor allem&lt;br&gt;Sperre selbsthaltend und persistent · Fehler 1" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#666666;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="m_r1">
+          <mxGeometry x="374" y="104" width="392" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="m_s2" value="&lt;b&gt;2 · Sollwertbildung&lt;/b&gt; &lt;i&gt;(nur Master)&lt;/i&gt;&lt;br&gt;fester Wert &amp;nbsp;|&amp;nbsp; externes KO &amp;nbsp;|&amp;nbsp; P-Regler &amp;nbsp;|&amp;nbsp; Zweipunkt&lt;br&gt;&lt;i&gt;Leistung = Grundlast + (Ist − Soll)/P-Band × (Max − Grundlast)&lt;/i&gt;&lt;br&gt;Stoßlüftung hebt die Vorgabe für ihre Laufzeit an&lt;br&gt;&lt;i&gt;Zweipunkt: ein/aus an zwei Schwellen, dazwischen halten&lt;/i&gt;&lt;br&gt;&lt;b&gt;Taupunktwächter&lt;/b&gt; kann alles davon auf 0 klemmen&lt;br&gt;→ &lt;b&gt;Gruppenvorgabe&lt;/b&gt; für alle Knoten" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#FFE6CC;strokeColor=#D79B00;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="m_r1">
+          <mxGeometry x="374" y="196" width="392" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="m_s3" value="&lt;b&gt;3 · Anteilsfaktor&lt;/b&gt;&lt;br&gt;Leistung = Gruppenvorgabe × Anteilsfaktor, auf 0…100 % begrenzt" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#666666;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="m_r1">
+          <mxGeometry x="374" y="336" width="392" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="m_s4" value="&lt;b&gt;4 · Takt &amp;amp; Richtung&lt;/b&gt; &lt;i&gt;(nur reversibel)&lt;/i&gt;&lt;br&gt;Zykluszeit abgelaufen → Taktzustand kippt und wird gesendet&lt;br&gt;Richtungsart: automatisch | nur A | nur B | über KO&lt;br&gt;&lt;b&gt;Der Master läuft immer in Phase&lt;/b&gt; — keine direkte Vorgabe" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#FFE6CC;strokeColor=#D79B00;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="m_r1">
+          <mxGeometry x="374" y="402" width="392" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="m_s5" value="&lt;b&gt;5 · Ablauf&lt;/b&gt;&lt;br&gt;Aus → Anlaufpuls → Lauf&lt;br&gt;Vor jedem Richtungswechsel: &lt;b&gt;Totzeit&lt;/b&gt; im Stillstand" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#666666;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="m_r1">
+          <mxGeometry x="374" y="498" width="392" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="m_s6" value="&lt;b&gt;6 · Stellgröße&lt;/b&gt; &lt;i&gt;(bipolar auf einem Ausgang)&lt;/i&gt;&lt;br&gt;Richtung A: &amp;nbsp;Mitte − Anteil × Mitte / 100&lt;br&gt;Richtung B: &amp;nbsp;Mitte + Anteil × (100 − Mitte) / 100&lt;br&gt;begrenzt durch Minimum / Maximum der Richtung&lt;br&gt;&lt;b&gt;Stillstand = Mittelstellung, nie 0 %&lt;/b&gt;" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#666666;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="m_r1">
+          <mxGeometry x="374" y="574" width="392" height="82" as="geometry" />
+        </mxCell>
+        <mxCell id="m_s7" value="&lt;b&gt;7 · Messung &amp;amp; Überwachung&lt;/b&gt;&lt;br&gt;Tacho → Drehzahl → Kennlinie → Volumenstrom&lt;br&gt;&lt;i&gt;Vorzeichen: + Zuluft / − Abluft&lt;/i&gt;&lt;br&gt;Blockiererkennung: 2 × 5 s ohne Puls → Fehler 5" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#666666;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="m_r1">
+          <mxGeometry x="374" y="676" width="392" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="m_out_ko" value="&lt;b&gt;KNX-Ausgänge — dieser Knoten&lt;/b&gt;&lt;br&gt;&lt;br&gt;KO 10 · Leistung Rückmeldung &lt;i&gt;(5.001)&lt;/i&gt;&lt;br&gt;KO 11 · Drehzahl &lt;i&gt;(7.001)&lt;/i&gt;&lt;br&gt;KO 12 · Volumenstrom &lt;i&gt;(13.002, signed)&lt;/i&gt;&lt;br&gt;KO 13 · Richtung &lt;i&gt;(1.002)&lt;/i&gt;&lt;br&gt;KO 14 · Läuft &lt;i&gt;(1.011)&lt;/i&gt;&lt;br&gt;KO 15 · Ist suspendiert &lt;i&gt;(1.011)&lt;/i&gt; *&lt;br&gt;KO 16 · Störung &lt;i&gt;(1.005)&lt;/i&gt;&lt;br&gt;KO 17 · Fehlercode &lt;i&gt;(5.010)&lt;/i&gt;&lt;br&gt;KO 18 · Betriebsstunden &lt;i&gt;(12.001)&lt;/i&gt; *&lt;br&gt;&lt;br&gt;&lt;i&gt;* nur beschrieben, nie gesendet — nur lesbar&lt;/i&gt;" style="rounded=0;html=1;whiteSpace=wrap;fillColor=#D5E8D4;strokeColor=#82B366;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="m_r1">
+          <mxGeometry x="810" y="90" width="310" height="215" as="geometry" />
+        </mxCell>
+        <mxCell id="m_out_grp" value="&lt;b&gt;KNX-Ausgänge — Gruppenführung&lt;/b&gt;&lt;br&gt;&lt;i&gt;nur Master, zyklisch gesendet&lt;/i&gt;&lt;br&gt;&lt;br&gt;KO 27 · Leistung Soll Gruppe &lt;i&gt;(5.001)&lt;/i&gt;&lt;br&gt;KO&amp;nbsp; 3 · Taktzustand &lt;i&gt;(1.002)&lt;/i&gt;&lt;br&gt;KO&amp;nbsp; 2 · Richtungsart &lt;i&gt;(5.010)&lt;/i&gt;&lt;br&gt;KO 30 · Master lebt &lt;i&gt;(1.011)&lt;/i&gt;&lt;br&gt;KO 31 · Zyklus Restzeit &lt;i&gt;(7.005)&lt;/i&gt; *&lt;br&gt;&lt;br&gt;&lt;i&gt;Liegen auf gemeinsamen Gruppenadressen —&lt;br&gt;die Slaves empfangen sie dort.&lt;/i&gt;" style="rounded=0;html=1;whiteSpace=wrap;fillColor=#D5E8D4;strokeColor=#82B366;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="m_r1">
+          <mxGeometry x="810" y="325" width="310" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="m_out_hw" value="&lt;b&gt;Hardware-Ausgang&lt;/b&gt;&lt;br&gt;&lt;br&gt;PWM-Stellgröße an den Lüfter&lt;br&gt;&lt;i&gt;Reg1: 1 Ausgang, invertiert&lt;/i&gt;&lt;br&gt;&lt;i&gt;MrSpieb: 2 gespiegelte Ausgänge, nicht invertiert&lt;/i&gt;&lt;br&gt;Lastschalter — bei Stillstand / Störung offen" style="rounded=0;html=1;whiteSpace=wrap;fillColor=#F8CECC;strokeColor=#B85450;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="m_r1">
+          <mxGeometry x="810" y="520" width="310" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="m_legend" value="&lt;b&gt;Fehlercode (KO 17)&lt;/b&gt;&lt;br&gt;1 Freigabe fehlt · 2 Master-Timeout · 3 Konfig/Kennlinie&lt;br&gt;4 ungültiger Wert · 5 keine Drehzahl · 6 suspendiert&lt;br&gt;7 Taupunkt sperrt &lt;i&gt;(kein Alarm)&lt;/i&gt; · 8 Taupunkt ohne Messwerte&lt;br&gt;&lt;i&gt;KO 6 Quittierung löscht Fehler — nicht die Sperre&lt;/i&gt;" style="rounded=0;html=1;whiteSpace=wrap;fillColor=#FFF2CC;strokeColor=#D6B656;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="m_r1">
+          <mxGeometry x="810" y="640" width="310" height="96" as="geometry" />
+        </mxCell>
+        <mxCell id="m_e_in" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#6C8EBF;exitX=1;exitY=0.23;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="m_r1" source="m_in_knx" target="m_s1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m_e_par" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1;dashed=1;strokeColor=#9673A6;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.508;entryDx=0;entryDy=0;" edge="1" parent="m_r1" source="m_in_par" target="m_box_container">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m_e_tacho" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#B85450;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.15;entryDx=0;entryDy=0;" edge="1" parent="m_r1" source="m_in_hw" target="m_s7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m_c12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#666666;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="m_r1" source="m_s1" target="m_s2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m_c23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#666666;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="m_r1" source="m_s2" target="m_s3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m_c34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#666666;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="m_r1" source="m_s3" target="m_s4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m_c45" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#666666;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="m_r1" source="m_s4" target="m_s5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m_c56" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#666666;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="m_r1" source="m_s5" target="m_s6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m_c67" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1;dashed=1;strokeColor=#999999;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="m_r1" source="m_s6" target="m_s7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m_e_out1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#82B366;exitX=1;exitY=0.167;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="m_r1" source="m_box_container" target="m_out_ko">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m_e_out2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#82B366;exitX=1;exitY=0.488;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="m_r1" source="m_box_container" target="m_out_grp">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m_e_out3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#B85450;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.64;entryDx=0;entryDy=0;" edge="1" parent="m_r1" source="m_s6" target="m_out_hw">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="fanctl-io-slave" name="Slave">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="826" math="0" shadow="0">
+      <root>
+        <mxCell id="s_r0" />
+        <mxCell id="s_r1" parent="s_r0" />
+        <mxCell id="s_ttl" value="&lt;b&gt;OAM-FanControl — Kanal als SLAVE&lt;/b&gt;&amp;nbsp;&amp;nbsp;·&amp;nbsp;&amp;nbsp;Eingänge → Verarbeitung → Ausgänge" style="rounded=0;html=1;whiteSpace=wrap;fillColor=#1E88E5;strokeColor=#0D47A1;fontColor=#FFFFFF;fontSize=15;align=left;spacingLeft=12;" vertex="1" parent="s_r1">
+          <mxGeometry x="40" y="20" width="1080" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="s_h1" value="EINGÄNGE" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#555555;" vertex="1" parent="s_r1">
+          <mxGeometry x="40" y="62" width="290" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="s_h2" value="VERARBEITUNG IM KANAL" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#555555;" vertex="1" parent="s_r1">
+          <mxGeometry x="360" y="62" width="420" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="s_h3" value="AUSGÄNGE" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontSize=12;fontStyle=1;fontColor=#555555;" vertex="1" parent="s_r1">
+          <mxGeometry x="810" y="62" width="310" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="s_box_container" value="" style="rounded=1;arcSize=7.5;html=1;whiteSpace=wrap;fillColor=#F5F5F5;strokeColor=#B3B3B3;" vertex="1" parent="s_r1">
+          <mxGeometry x="360" y="90" width="420" height="645" as="geometry" />
+        </mxCell>
+        <mxCell id="s_in_knx" value="&lt;b&gt;KNX-Empfangsobjekte&lt;/b&gt;&lt;br&gt;&lt;br&gt;KO&amp;nbsp; 0 · Freigabe &lt;i&gt;(1.003)&lt;/i&gt;&lt;br&gt;KO&amp;nbsp; 6 · Quittierung &lt;i&gt;(1.016)&lt;/i&gt;&lt;br&gt;KO&amp;nbsp; 7 · Suspendieren &lt;i&gt;(1.003)&lt;/i&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;vom Master, gemeinsame Gruppenadressen:&lt;/b&gt;&lt;br&gt;KO&amp;nbsp; 1 · Leistung Gruppenvorgabe &lt;i&gt;(5.001)&lt;/i&gt;&lt;br&gt;KO&amp;nbsp; 3 · Taktzustand &lt;i&gt;(1.002)&lt;/i&gt;&lt;br&gt;KO&amp;nbsp; 2 · Richtungsart &lt;i&gt;(5.010)&lt;/i&gt;&lt;br&gt;KO&amp;nbsp; 4 · Master lebt &lt;i&gt;(1.011)&lt;/i&gt;" style="rounded=0;html=1;whiteSpace=wrap;fillColor=#DAE8FC;strokeColor=#6C8EBF;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="s_r1">
+          <mxGeometry x="40" y="90" width="290" height="215" as="geometry" />
+        </mxCell>
+        <mxCell id="s_in_par" value="&lt;b&gt;ETS-Parameter&lt;/b&gt; &lt;i&gt;(kein Bus, wirken dauerhaft)&lt;/i&gt;&lt;br&gt;&lt;br&gt;Kanalaktivität · Modus · &lt;b&gt;Ist Master = Nein&lt;/b&gt;&lt;br&gt;&lt;b&gt;Zuordnung: Phase / Gegenphase&lt;/b&gt;&lt;br&gt;Anteilsfaktor&lt;br&gt;Mittelstellung · Min / Max je Richtung&lt;br&gt;Anlaufpuls (Stellgröße, Dauer) · Totzeit&lt;br&gt;Überwachungszeit Freigabe&lt;br&gt;&lt;b&gt;Überwachungszeit Master&lt;/b&gt;&lt;br&gt;Kennlinie A / B · Sendebedingungen&lt;br&gt;&lt;i&gt;geräteweit: PWM-Frequenz 500…20000 Hz&lt;/i&gt;" style="rounded=0;html=1;whiteSpace=wrap;fillColor=#E1D5E7;strokeColor=#9673A6;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="s_r1">
+          <mxGeometry x="40" y="325" width="290" height="185" as="geometry" />
+        </mxCell>
+        <mxCell id="s_in_hw" value="&lt;b&gt;Hardware-Eingang&lt;/b&gt;&lt;br&gt;&lt;br&gt;Tacho — 2 Pulse je Umdrehung, optogekoppelt&lt;br&gt;&lt;i&gt;nur Reg1 Fan-Addon-X2, Zählung auf Core 1&lt;/i&gt;&lt;br&gt;&lt;i&gt;MrSpieb-Board: kein Tacho&lt;/i&gt;" style="rounded=0;html=1;whiteSpace=wrap;fillColor=#F8CECC;strokeColor=#B85450;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="s_r1">
+          <mxGeometry x="40" y="530" width="290" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="s_note_ko" value="KO-Nummern sind &lt;b&gt;relativ zum Kanal&lt;/b&gt;:&lt;br&gt;Kanal 1 = KO 20…51, Kanal 2 = KO 52…83,&lt;br&gt;… Kanal 8 = KO 244…275." style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10;fontColor=#666666;" vertex="1" parent="s_r1">
+          <mxGeometry x="40" y="640" width="290" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="s_s1" value="&lt;b&gt;1 · Freigabe &amp;amp; Sperre&lt;/b&gt;&lt;br&gt;Freigabe = 0 &lt;i&gt;oder&lt;/i&gt; Überwachungszeit abgelaufen:&lt;br&gt;Leistung 0, sofort — Vorrang vor allem&lt;br&gt;Sperre selbsthaltend und persistent · Fehler 1" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#666666;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="s_r1">
+          <mxGeometry x="374" y="104" width="392" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="s_s2" value="&lt;b&gt;2 · Masterüberwachung&lt;/b&gt; &lt;i&gt;(nur Slave)&lt;/i&gt;&lt;br&gt;Lebenszeichen bleibt aus →&lt;br&gt;&amp;nbsp;&amp;nbsp;bis Ablauf der Überwachungszeit: letzten Zustand halten&lt;br&gt;&amp;nbsp;&amp;nbsp;danach: Leistung 0, Störung, Fehler 2, KO 19 = 0&lt;br&gt;&lt;i&gt;Startwerte kommen aus dem zyklischen Senden des Masters&lt;/i&gt;" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#CCE5FF;strokeColor=#1E88E5;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="s_r1">
+          <mxGeometry x="374" y="196" width="392" height="86" as="geometry" />
+        </mxCell>
+        <mxCell id="s_s3" value="&lt;b&gt;3 · Anteilsfaktor&lt;/b&gt;&lt;br&gt;Leistung = empfangene Vorgabe × Anteilsfaktor, auf 0…100 %" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#666666;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="s_r1">
+          <mxGeometry x="374" y="302" width="392" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="s_s4" value="&lt;b&gt;4 · Richtung ableiten&lt;/b&gt; &lt;i&gt;(nur reversibel)&lt;/i&gt;&lt;br&gt;&lt;b&gt;Richtung = empfangener Takt + eigene Zuordnung&lt;/b&gt;&lt;br&gt;Phase läuft mit dem Master, Gegenphase gegenläufig&lt;br&gt;&lt;i&gt;Bei „nur A&quot; / „nur B&quot; ist der Takt wirkungslos&lt;/i&gt;" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#CCE5FF;strokeColor=#1E88E5;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="s_r1">
+          <mxGeometry x="374" y="368" width="392" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="s_s5" value="&lt;b&gt;5 · Ablauf&lt;/b&gt;&lt;br&gt;Aus → Anlaufpuls → Lauf&lt;br&gt;Vor jedem Richtungswechsel: &lt;b&gt;Totzeit&lt;/b&gt; im Stillstand" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#666666;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="s_r1">
+          <mxGeometry x="374" y="464" width="392" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="s_s6" value="&lt;b&gt;6 · Stellgröße&lt;/b&gt; &lt;i&gt;(bipolar auf einem Ausgang)&lt;/i&gt;&lt;br&gt;Richtung A: &amp;nbsp;Mitte − Anteil × Mitte / 100&lt;br&gt;Richtung B: &amp;nbsp;Mitte + Anteil × (100 − Mitte) / 100&lt;br&gt;begrenzt durch Minimum / Maximum der Richtung&lt;br&gt;&lt;b&gt;Stillstand = Mittelstellung, nie 0 %&lt;/b&gt;" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#666666;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="s_r1">
+          <mxGeometry x="374" y="540" width="392" height="82" as="geometry" />
+        </mxCell>
+        <mxCell id="s_s7" value="&lt;b&gt;7 · Messung &amp;amp; Überwachung&lt;/b&gt;&lt;br&gt;Tacho → Drehzahl → Kennlinie → Volumenstrom&lt;br&gt;&lt;i&gt;Vorzeichen: + Zuluft / − Abluft&lt;/i&gt;&lt;br&gt;Blockiererkennung: 2 × 5 s ohne Puls → Fehler 5" style="rounded=1;html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#666666;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="s_r1">
+          <mxGeometry x="374" y="642" width="392" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="s_out_ko" value="&lt;b&gt;KNX-Ausgänge — dieser Knoten&lt;/b&gt;&lt;br&gt;&lt;br&gt;KO 10 · Leistung Rückmeldung &lt;i&gt;(5.001)&lt;/i&gt;&lt;br&gt;KO 11 · Drehzahl &lt;i&gt;(7.001)&lt;/i&gt;&lt;br&gt;KO 12 · Volumenstrom &lt;i&gt;(13.002, signed)&lt;/i&gt;&lt;br&gt;KO 13 · Richtung &lt;i&gt;(1.002)&lt;/i&gt;&lt;br&gt;KO 14 · Läuft &lt;i&gt;(1.011)&lt;/i&gt;&lt;br&gt;KO 15 · Ist suspendiert &lt;i&gt;(1.011)&lt;/i&gt; *&lt;br&gt;KO 16 · Störung &lt;i&gt;(1.005)&lt;/i&gt;&lt;br&gt;KO 17 · Fehlercode &lt;i&gt;(5.010)&lt;/i&gt;&lt;br&gt;KO 18 · Betriebsstunden &lt;i&gt;(12.001)&lt;/i&gt; *&lt;br&gt;&lt;b&gt;KO 19 · Master erreichbar &lt;i&gt;(1.011)&lt;/i&gt; *&lt;/b&gt;&lt;br&gt;&lt;i&gt;* nur beschrieben, nie gesendet — nur lesbar&lt;/i&gt;" style="rounded=0;html=1;whiteSpace=wrap;fillColor=#D5E8D4;strokeColor=#82B366;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="s_r1">
+          <mxGeometry x="810" y="90" width="310" height="215" as="geometry" />
+        </mxCell>
+        <mxCell id="s_out_note" value="&lt;b&gt;Kein Gruppenversand&lt;/b&gt;&lt;br&gt;&lt;br&gt;Der Slave sendet nur eigene Rückmeldungen.&lt;br&gt;Leistung (KO 1), Taktzustand (KO 3) und&lt;br&gt;Richtungsart (KO 2) sind hier &lt;b&gt;Empfangs&lt;/b&gt;objekte&lt;br&gt;auf denselben Gruppenadressen, auf die der&lt;br&gt;Master sendet.&lt;br&gt;&lt;br&gt;&lt;i&gt;Gleiche Firmware wie der Master — Unterschied&lt;br&gt;ist allein der Parameter „Ist Master&quot;.&lt;/i&gt;" style="rounded=0;html=1;whiteSpace=wrap;fillColor=#FFF2CC;strokeColor=#D6B656;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="s_r1">
+          <mxGeometry x="810" y="325" width="310" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="s_out_hw" value="&lt;b&gt;Hardware-Ausgang&lt;/b&gt;&lt;br&gt;&lt;br&gt;PWM-Stellgröße an den Lüfter&lt;br&gt;&lt;i&gt;Reg1: 1 Ausgang, invertiert&lt;/i&gt;&lt;br&gt;&lt;i&gt;MrSpieb: 2 gespiegelte Ausgänge, nicht invertiert&lt;/i&gt;&lt;br&gt;Lastschalter — bei Stillstand / Störung offen" style="rounded=0;html=1;whiteSpace=wrap;fillColor=#F8CECC;strokeColor=#B85450;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="s_r1">
+          <mxGeometry x="810" y="520" width="310" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="s_legend" value="&lt;b&gt;Fehlercode (KO 17)&lt;/b&gt;&lt;br&gt;1 Freigabe fehlt · 2 Master-Timeout · 3 Konfig/Kennlinie&lt;br&gt;4 ungültiger Wert · 5 keine Drehzahl · 6 suspendiert&lt;br&gt;&lt;i&gt;KO 6 Quittierung löscht Fehler — nicht die Sperre&lt;/i&gt;" style="rounded=0;html=1;whiteSpace=wrap;fillColor=#FFF2CC;strokeColor=#D6B656;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" vertex="1" parent="s_r1">
+          <mxGeometry x="810" y="640" width="310" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="s_e_in" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#6C8EBF;exitX=1;exitY=0.23;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="s_r1" source="s_in_knx" target="s_s1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s_e_par" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1;dashed=1;strokeColor=#9673A6;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.508;entryDx=0;entryDy=0;" edge="1" parent="s_r1" source="s_in_par" target="s_box_container">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s_e_tacho" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#B85450;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.15;entryDx=0;entryDy=0;" edge="1" parent="s_r1" source="s_in_hw" target="s_s7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s_c12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#666666;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="s_r1" source="s_s1" target="s_s2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s_c23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#666666;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="s_r1" source="s_s2" target="s_s3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s_c34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#666666;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="s_r1" source="s_s3" target="s_s4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s_c45" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#666666;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="s_r1" source="s_s4" target="s_s5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s_c56" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#666666;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="s_r1" source="s_s5" target="s_s6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s_c67" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1;dashed=1;strokeColor=#999999;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="s_r1" source="s_s6" target="s_s7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s_e_out1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#82B366;exitX=1;exitY=0.167;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="s_r1" source="s_box_container" target="s_out_ko">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s_e_out3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#B85450;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.64;entryDx=0;entryDy=0;" edge="1" parent="s_r1" source="s_s6" target="s_out_hw">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
