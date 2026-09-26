@@ -39,7 +39,8 @@ Konventionen in diesem Dokument:
 
 | Parameter | Typ | Werte | Vorgabe | Sichtbar | Hilfe |
 |---|---|---|---|---|---|
-| `FAN_Hardware` | enum | 2 = Entwicklungsaufbau (2 Kanäle) · 4 = KNXFANDRV Rev 0.1 · 6 · 8 · 10 · 12 = KNXFANDRV 6/8/10/12 | **4** | | Wählt die Platine. Die Anzahl der Lüfterkanäle folgt daraus. Die Firmware prüft beim Start, ob die gewählte Platine zur bestückten passt — bei Abweichung Störung an allen Lüftern. |
+| `FAN_Hardware` | enum | 0 = Entwicklungsaufbau (2 Kanäle) · 1 = KNXFANDRV Rev 0.1 (4) · 2 = KNXFANDRV 6 · 3 = 8 · 4 = 10 · 5 = 12 | **1** | | Wählt die Platine. Die Anzahl der Lüfterkanäle folgt daraus. Die Firmware prüft beim Start, ob die gewählte Platine zur bestückten passt (`FANDRV_BOARD_ID`) — bei Abweichung Störung an allen Lüftern. |
+| `FAN_HardwareChannels` | uint8, intern | 0…12 | 4 | nie | Kanalzahl der gewählten Platine, gesetzt per `Assign` aus `FAN_Hardware`. Nur für die Sichtbarkeit, kein Speicher. |
 | — | | | | | Es gibt **keine** Anzahl-Parameter für Räume und Verbünde. Nach dem OpenKNX-Kanalauswahl-Pattern (Beschluss 09.07.2026) entfällt der „Verfügbare Kanäle"-Schieber; ein Kanal erscheint im Baum, weil er aktiviert ist. Alle Zeilen stehen immer in der Tabelle. |
 
 Auf derselben Seite je eine Tabelle Raum / Lüfter / Verbund mit Kanalaktivität bzw. Rolle und Beschreibung.
@@ -51,8 +52,14 @@ Auf derselben Seite je eine Tabelle Raum / Lüfter / Verbund mit Kanalaktivität
 | `FAN_StartupDelay` | uint8 | 0…30 s | 3 | | Wartezeit nach Busspannungswiederkehr, bevor Sollwerte geschrieben werden. |
 | `ROOM_Altitude`, `ROOM_PercentHysteresis` | | | | | aus `Room.share.xml`, hier angezeigt — siehe Abschnitt 3. |
 
-Der **Enum-Wert ist die Kanalzahl** — Sichtbarkeit der Lüfterseiten dann einfach
-`%C% <= FAN_Hardware`.
+Der **Enum-Wert ist die Platinenkennung** `FANDRV_BOARD_ID`, nicht die Kanalzahl
+(seit 2026-09-26; vorher Kanalzahl, was zur Kennung in der Firmware nicht passte).
+Zwei Platinen mit gleicher Kanalzahl, aber anderer Belegung bleiben so
+unterscheidbar. Die Kanalzahl setzt eine `choose`/`Assign`-Tabelle unter „Allgemein"
+in `FAN_HardwareChannels`; die Sichtbarkeit der Lüfterseiten ist
+`%C% <= FAN_HardwareChannels`. Das Klemmenbild fragt die Kennung direkt ab.
+Eine neue Platine braucht: Enum-Wert, Zeile in der Assign-Tabelle,
+`FANDRV_BOARD_ID` im Board-Header. Kennungen werden nie wiederverwendet.
 
 ### Seite „Verbünde" — 8 Unterseiten „Verbund 1…8"
 
@@ -82,7 +89,7 @@ Sichtbar: Verbund n, wenn `FAN_GrpN_Active` = Aktiviert. Die Aktivität steht in
 
 ## 2. Modul FAN — je Lüfter (`Fan.templ.xml`)
 
-Kanal n sichtbar, wenn `n <= FAN_Hardware`.
+Kanal n sichtbar, wenn `n <= FAN_HardwareChannels`.
 
 ### Seite „Lüfter %C%" — Allgemein
 
@@ -321,7 +328,7 @@ Für jede Betriebsart X ∈ {Komfort, Standby, Nacht, Schutz, Stoßlüften, Abse
 ## 5. Prüfliste für die fertige knxprod
 
 - [ ] `OpenKNXproducer check` ohne Warnung
-- [ ] Testprojekt: `FAN_Hardware` = Rev 0.1 → genau 4 Lüfterseiten; = 12 → 12 Seiten
+- [ ] Testprojekt: `FAN_Hardware` = Rev 0.1 → genau 4 Lüfterseiten; = KNXFANDRV 12 → 12 Seiten; = Entwicklungsaufbau → 2 Seiten und Klemmenbild DevPico
 - [ ] Räume 1…3 aktiviert → drei Raumseiten, KO-Nummern 20…139; nicht aktivierte Räume fehlen im Baum
 - [ ] Lüfter 3 Typ ego → Kennlinienseite zeigt M1/M2 und Boost, Phase ausgeblendet
 - [ ] Lüfter 4 Typ RA → nur Richtung A, keine B-Werte

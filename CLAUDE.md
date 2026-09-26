@@ -110,8 +110,12 @@ Lesestoff, keine Kopiervorlage. Der Plan steht in `docs/PLAN.md`, die Hardware i
   8 Verbünde sind die Compile-Zeit-Obergrenzen. Die ETS blendet Räume über
   die Kanalaktivität und Lüfter zusätzlich über die Hardwareauswahl `FAN_Hardware` ein.
   Ausgeblendete Kanäle laufen nicht. Beim Start wird `FAN_Hardware` gegen
-  `FANDRV_BOARD_CHANNELS` geprüft; bei Abweichung Fehlercode 3 an allen Lüftern und
-  5,00 V — niemals stilles Weiterlaufen mit falscher Kanalzahl.
+  `FANDRV_BOARD_ID` geprüft; bei Abweichung Fehlercode 3 an allen Lüftern und
+  5,00 V — niemals stilles Weiterlaufen mit falscher Platine. Der Enum-Wert von
+  `FAN_Hardware` ist die **Platinenkennung**, nicht die Kanalzahl (zwei Platinen mit
+  gleicher Kanalzahl müssen unterscheidbar bleiben); die Kanalzahl für die
+  Sichtbarkeit setzt die ETS per `Assign` in den internen Parameter
+  `FAN_HardwareChannels`.
 - **Drei Ebenen, nicht eine.** Raum (Sensoren, Betriebsarten, Führungen) → Verbund
   (Stufenregel, Takt) → Lüfter (Antrieb). Ein Lüfter gehört zu genau einem Raum und
   einem Verbund. Raumlogik gehört in `KwlRoom`, Antrieb in `KwlFan`, die Regel

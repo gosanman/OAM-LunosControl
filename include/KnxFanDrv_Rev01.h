@@ -43,8 +43,16 @@
 #define FANDRV_DAC_ADDR_A       0x58  // U2: S1 (J3), S2 (J4)
 #define FANDRV_DAC_ADDR_B       0x59  // U3: S3 (J5), S4 (J6)
 
-#define FANDRV_BOARD_CHANNELS   4     // muss zur ETS-Auswahl FAN_Hardware passen
-#define FANDRV_BOARD_ID         1     // 0 = DevPico (2), 1 = Rev 0.1 (4), 2 = 6, 3 = 8, 4 = 10, 5 = 12
+#define FANDRV_BOARD_CHANNELS   4     // Kanalzahl dieser Platine
+
+// Platinenkennung. MUSS dem Enum-Wert der ETS-Auswahl FAN_Hardware entsprechen
+// (OFM Fan.share.xml, PT-FanHardware) - die Firmware prueft genau das beim Start.
+// Die Kennung ist nicht die Kanalzahl: zwei Platinen mit gleicher Kanalzahl und
+// anderer Belegung bekommen verschiedene Kennungen. Kennungen werden nie
+// wiederverwendet.
+//   0 = Entwicklungsaufbau Pico + DFR1073 (2)   1 = KNXFANDRV Rev 0.1 (4)
+//   2 = KNXFANDRV 6   3 = KNXFANDRV 8   4 = KNXFANDRV 10   5 = KNXFANDRV 12
+#define FANDRV_BOARD_ID         1
 
 // --- Polaritaet der Spannungshaelften ---------------------------------------
 // 1 = unter 5,00 V foerdert der Luefter Zuluft, ueber 5,00 V Abluft.

@@ -223,27 +223,40 @@ Deshalb drei Ebenen:
 | | Kompiliert (Maximum) | ETS-Parameter | Sichtbarkeit |
 |---|---|---|---|
 | Räume | 8 | `ROOM_Active` je Raum | Raumseite sichtbar, wenn der Raum aktiviert ist |
-| Lüfter | 12 | **`FAN_Hardware`** — Auswahlliste der Platinen | Lüfterseite n sichtbar, wenn n ≤ Kanalzahl der gewählten Platine |
+| Lüfter | 12 | **`FAN_Hardware`** — Auswahlliste der Platinen | Lüfterseite n sichtbar, wenn n ≤ `FAN_HardwareChannels` (Kanalzahl der gewählten Platine, per `Assign` gesetzt) |
 | Verbünde | 8 | `FAN_GrpN_Active` je Verbund | Verbundseite sichtbar, wenn der Verbund aktiviert ist |
 
 **Hardwareauswahl statt Lüfterzahl.** Der Anwender wählt in der ETS nicht „wie viele
 Lüfter", sondern **welche Platine**; die Kanalzahl folgt daraus:
 
-| Auswahl `FAN_Hardware` | Lüfterkanäle | DACs | I²C-Adressen |
-|---|---|---|---|
-| Entwicklungsaufbau Pico + DFR1073 | **2** | 1 × GP8413 (Breakout) | 0x58 |
-| KNXFANDRV Rev 0.1 | **4** | 2 × GP8413 | 0x58, 0x59 |
-| KNXFANDRV 6 (geplant) | 6 | 3 | 0x58…0x5A |
-| KNXFANDRV 8 (geplant) | 8 | 4 | 0x58…0x5B |
-| KNXFANDRV 10 (geplant) | 10 | 5 | 0x58…0x5C |
-| KNXFANDRV 12 (geplant, Maximum) | 12 | 6 | 0x58…0x5D |
+| Auswahl `FAN_Hardware` | Enum-Wert = `FANDRV_BOARD_ID` | Lüfterkanäle | DACs | I²C-Adressen |
+|---|---|---|---|---|
+| Entwicklungsaufbau Pico + DFR1073 | 0 | **2** | 1 × GP8413 (Breakout) | 0x58 |
+| KNXFANDRV Rev 0.1 | 1 | **4** | 2 × GP8413 | 0x58, 0x59 |
+| KNXFANDRV 6 (geplant) | 2 | 6 | 3 | 0x58…0x5A |
+| KNXFANDRV 8 (geplant) | 3 | 8 | 4 | 0x58…0x5B |
+| KNXFANDRV 10 (geplant) | 4 | 10 | 5 | 0x58…0x5C |
+| KNXFANDRV 12 (geplant, Maximum) | 5 | 12 | 6 | 0x58…0x5D |
 
 Die GP8413-Adressierung (A2A1A0 → 8 Adressen) trägt bis 16 Kanäle; 12 ist die Grenze
 der Platinenfamilie, nicht des Busses. Jede Variante bekommt ihren eigenen
-Board-Header mit `FANDRV_BOARD_CHANNELS` und der Zuordnung Kanal → (Adresse, VOUT).
+Board-Header mit `FANDRV_BOARD_ID`, `FANDRV_BOARD_CHANNELS` und der Zuordnung
+Kanal → (Adresse, VOUT).
+
+**Kennung, nicht Kanalzahl (2026-09-26).** Der Enum-Wert von `FAN_Hardware` ist die
+Platinenkennung `FANDRV_BOARD_ID`. Bis zu diesem Datum war er die Kanalzahl, während
+die Firmware mit der Kennung verglich — Rev 0.1 meldete deshalb „Hardwareauswahl 4
+passt nicht zur Platine (1, 4 Kanäle)" und blieb im sicheren Zustand. Die Kennung
+wurde beibehalten, weil zwei Platinen mit gleicher Kanalzahl, aber anderer Belegung
+(etwa eine Rev 0.2 mit 4 Kanälen und anderen Pins) unterscheidbar bleiben müssen.
+Die ETS braucht für die Sichtbarkeit trotzdem die Kanalzahl; die setzt eine
+`choose`/`Assign`-Tabelle auf der Seite „Allgemein" in den internen Parameter
+`FAN_HardwareChannels`. **Eine neue Platine braucht drei Einträge:** Enum-Wert in
+`PT-FanHardware`, Zeile in der Assign-Tabelle, `FANDRV_BOARD_ID` im Board-Header.
+Kennungen werden nie wiederverwendet.
 
 **Plausibilitätsprüfung beim Start:** Die Firmware vergleicht die ETS-Auswahl mit
-`FANDRV_BOARD_CHANNELS` aus dem Board-Header. Stimmen sie nicht überein — falsche
+`FANDRV_BOARD_ID` aus dem Board-Header. Stimmen sie nicht überein — falsche
 knxprod auf der Platine, oder Rev-0.1-Firmware mit 8-Kanal-Parametrierung —, gehen
 **alle** Lüfter auf Fehlercode 3 (Konfiguration), Alarm, LED rot, Ausgänge 5,00 V.
 Ein Lüfter, der laut ETS existiert, aber keinen DAC-Kanal hat, darf nicht stumm
@@ -393,8 +406,8 @@ ein KO eine Stufe auf einen Kanal schreibt. Noch keine Regelung, kein Takt.
    #define FANDRV_I2C_PORT       i2c1
    #define FANDRV_DAC_ADDR_A     0x58   // U2: S1 = VOUT0, S2 = VOUT1
    #define FANDRV_DAC_ADDR_B     0x59   // U3: S3 = VOUT0, S4 = VOUT1
-   #define FANDRV_BOARD_CHANNELS 4      // muss zur ETS-Auswahl FAN_Hardware passen
-   #define FANDRV_BOARD_ID       1      // 0 = DevPico (2), 1 = Rev 0.1 (4), 2 = 6, 3 = 8, 4 = 10, 5 = 12
+   #define FANDRV_BOARD_CHANNELS 4      // Kanalzahl dieser Platine
+   #define FANDRV_BOARD_ID       1      // = Enum-Wert von FAN_Hardware: 0 = DevPico (2), 1 = Rev 0.1 (4), 2 = 6, 3 = 8, 4 = 10, 5 = 12
    // Aus Phase 1, gemessen am __.__.2026:
    // #define FANDRV_DAC_LEFT_ALIGNED 0   // 5,00 V = 0x4000 (Datenblatt)
    // #define FANDRV_DAC_LEFT_ALIGNED 1   // 5,00 V = 0x8000 (DFRobot-Lib)
@@ -435,7 +448,8 @@ ein KO eine Stufe auf einen Kanal schreibt. Noch keine Regelung, kein Takt.
    - `Kwl.xml`: `op:define` für BASE (10), UCT (99), **ROOM (20, NumChannels 8,
      KoOffset 20)**, **FAN (30, NumChannels 12, KoOffset 340)**, optional LOG (10,
      KoOffset 640). Sichtbarkeit der Kanalseiten über die Kanalaktivität; bei den
-     Lüftern zusätzlich begrenzt durch die Kanalzahl aus `FAN_Hardware`, wie in 0.6.
+     Lüftern zusätzlich begrenzt durch `FAN_HardwareChannels` (Kanalzahl der in
+     `FAN_Hardware` gewählten Platine), wie in 0.6.
    - **Eigene ApplicationNumber** wählen, nicht 0x86 der Vorlage — sonst kollidiert es
      in der ETS mit einem installierten FanControl.
 8. **Startup-Sequenz** in `KwlModule::setup()`:
@@ -484,7 +498,7 @@ und Kabelkompensation. Noch kein Takt — Richtung wird per KO vorgegeben.
    diesen und den folgenden Kanal. `KwlFanModule` prüft beim Start: doppelt belegter
    Kanal, Kanal jenseits der Platine oder ein ego auf geradem Kanal (beide Motoren
    müssten auf demselben DAC liegen) → Fehlercode 3 am Lüfter. Zusätzlich die
-   Plausibilitätsprüfung aus 0.6: ETS-Hardwareauswahl ≠ `FANDRV_BOARD_CHANNELS` →
+   Plausibilitätsprüfung aus 0.6: ETS-Hardwareauswahl ≠ `FANDRV_BOARD_ID` →
    Fehlercode 3 an **allen** Lüftern, Ausgänge 5,00 V. Das ist die Verallgemeinerung
    von `FAN_BOARD_CHANNELS` aus der Vorlage.
 2. **ego-Doppelkanal:** `KwlNode` mit Typ EGO schreibt immer `setVoltPair`. Stufen
