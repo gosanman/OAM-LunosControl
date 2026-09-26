@@ -1,0 +1,197 @@
+{
+    // Siehe https://go.microsoft.com/fwlink/?LinkId=733558
+    //
+    // Reihenfolge nach Haeufigkeit im Alltag, nicht nach Technik:
+    // bauen, aufspielen, pruefen, danach das Seltene.
+    //
+    // Gebaut wird ueber lib/OGM-Common/scripts/build/OpenKNX-Build.ps1 statt
+    // direkt ueber pio: das Skript ruft scripts/OpenKNX-Pre-Build.ps1 und
+    // -Post-Build.ps1, falls es sie gibt. Bei uns gibt es sie noch nicht - wenn
+    // sie dazukommen, greifen sie ohne Aenderung an dieser Datei.
+    "version": "2.0.0",
+    "tasks": [
+        {
+            // Standard-Bauvorgang: Strg+Umschalt+B
+            "label": "Firmware bauen (develop)",
+            "type": "shell",
+            "command": "lib/OGM-Common/scripts/build/OpenKNX-Build.ps1",
+            "args": [
+                "-env",
+                "develop_KnxFanDrv"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            // $gcc statt [] : Compilerfehler werden anklickbar und landen im
+            // Problemfenster. Bei einer Wand aus Warnungen ist das der
+            // Unterschied zwischen Suchen und Sehen.
+            "problemMatcher": "$gcc",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+        {
+            "label": "Firmware aufspielen (develop)",
+            "type": "shell",
+            "command": "lib/OGM-Common/scripts/build/OpenKNX-Build.ps1",
+            "args": [
+                "-env",
+                "develop_KnxFanDrv",
+                "-target",
+                "upload"
+            ],
+            "group": "build",
+            "problemMatcher": "$gcc",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+        {
+            // Nach jeder Aenderung an Kwl.xml, Room.*.xml oder Fan.*.xml.
+            // Schreibt include/knxprod.h nur, wenn sich wirklich etwas geaendert
+            // hat - steht "Unchanged header file" da, ist kein Neubau noetig.
+            "label": "knxprod erzeugen",
+            "type": "shell",
+            "command": "~/bin/OpenKNXproducer.exe",
+            "args": [
+                "create",
+                "--Debug",
+                "-h",
+                "include/knxprod.h",
+                "src/Kwl"
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+        {
+            // Der uebliche Ablauf nach einer XML-Aenderung, in einem Schritt.
+            "label": "knxprod und Firmware",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "knxprod erzeugen",
+                "Firmware bauen (develop)"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            // Laeuft im OFM-Repository: die pruefbare Logik liegt dort, nicht hier.
+            "label": "Native Tests",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/../OFM-LunosControl"
+            },
+            "command": "~/.platformio/penv/Scripts/pio.exe",
+            "args": [
+                "test",
+                "-e",
+                "native"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": "$gcc",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+        {
+            "label": "Konsole oeffnen",
+            "type": "shell",
+            "command": "~/.platformio/penv/Scripts/pio.exe",
+            "args": [
+                "device",
+                "monitor",
+                "-e",
+                "develop_KnxFanDrv"
+            ],
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": false
+            }
+        },
+        {
+            // Phase 1: eigenstaendige Messfirmware, ohne KNX und ohne
+            // Kanallogik. Sie schreibt nichts von selbst.
+            "label": "Messfirmware bauen (test_dac)",
+            "type": "shell",
+            "command": "lib/OGM-Common/scripts/build/OpenKNX-Build.ps1",
+            "args": [
+                "-env",
+                "test_dac"
+            ],
+            "group": "build",
+            "problemMatcher": "$gcc",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+        {
+            "label": "Messfirmware aufspielen (test_dac)",
+            "type": "shell",
+            "command": "lib/OGM-Common/scripts/build/OpenKNX-Build.ps1",
+            "args": [
+                "-env",
+                "test_dac",
+                "-target",
+                "upload"
+            ],
+            "group": "build",
+            "problemMatcher": "$gcc",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+        {
+            // Klont die lib/-Repositories auf die Staende aus dependencies.txt.
+            // Nach einem frischen Klon oder wenn eine Abhaengigkeit fehlt.
+            "label": "Abhaengigkeiten wiederherstellen",
+            "type": "shell",
+            "command": "restore/Restore-Dependencies.ps1",
+            "args": [],
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+        {
+            "label": "Aufraeumen (.pio)",
+            "type": "shell",
+            "command": "~/.platformio/penv/Scripts/pio.exe",
+            "args": [
+                "run",
+                "-t",
+                "fullclean",
+                "-e",
+                "develop_KnxFanDrv"
+            ],
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        }
+    ]
+}
