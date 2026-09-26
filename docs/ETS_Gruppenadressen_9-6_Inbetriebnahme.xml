@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<GroupAddress-Export xmlns="http://knx.org/xml/ga-export/01">
+  <GroupRange Name="KWL-Test" RangeStart="18432" RangeEnd="20479">
+    <GroupRange Name="KNXFANDRV Inbetriebnahme" RangeStart="19968" RangeEnd="20223">
+      <GroupAddress Name="Diagnose" Address="9/6/0" DPTs="DPST-16-1" Description="KO 7, Ein/Aus, Konsolenbefehle als Text senden, Antwort auf derselben Adresse" />
+      <GroupAddress Name="R1 Betriebsart" Address="9/6/10" DPTs="DPST-20-102" Description="Raum 1, KO 20, Ein" />
+      <GroupAddress Name="R1 Zwangsbetriebsart" Address="9/6/11" DPTs="DPST-20-102" Description="Raum 1, KO 21, Ein" />
+      <GroupAddress Name="R1 Nacht" Address="9/6/12" DPTs="DPST-1-3" Description="Raum 1, KO 22, Ein" />
+      <GroupAddress Name="R1 Zwangsobjekt 1" Address="9/6/13" DPTs="DPST-1-3" Description="Raum 1, KO 23, Ein" />
+      <GroupAddress Name="R1 Zwangsobjekt 2" Address="9/6/14" DPTs="DPST-1-3" Description="Raum 1, KO 24, Ein" />
+      <GroupAddress Name="R1 Zwangsobjekt 3" Address="9/6/15" DPTs="DPST-1-3" Description="Raum 1, KO 25, Ein" />
+      <GroupAddress Name="R1 Stufe manuell" Address="9/6/16" DPTs="DPST-5-100" Description="Raum 1, KO 26, Ein" />
+      <GroupAddress Name="R1 Stufe manuell %" Address="9/6/17" DPTs="DPST-5-1" Description="Raum 1, KO 27, Ein" />
+      <GroupAddress Name="R1 Stufe höher/niedriger" Address="9/6/18" DPTs="DPST-1-7" Description="Raum 1, KO 28, Ein" />
+      <GroupAddress Name="R1 Handbetrieb aktiv" Address="9/6/19" DPTs="DPST-1-12" Description="Raum 1, KO 29, Ein/Aus" />
+      <GroupAddress Name="R1 Sommer" Address="9/6/20" DPTs="DPST-1-1" Description="Raum 1, KO 30, Ein" />
+      <GroupAddress Name="R1 Betriebsweise" Address="9/6/21" DPTs="DPST-5-10" Description="Raum 1, KO 31, Ein" />
+      <GroupAddress Name="R1 Abluftanforderung" Address="9/6/22" DPTs="DPST-1-3" Description="Raum 1, KO 32, Ein" />
+      <GroupAddress Name="R1 Sperre" Address="9/6/23" DPTs="DPST-1-3" Description="Raum 1, KO 33, Ein" />
+      <GroupAddress Name="R1 Relative Feuchte innen" Address="9/6/24" DPTs="DPST-9-7" Description="Raum 1, KO 34, Ein" />
+      <GroupAddress Name="R1 Temperatur innen" Address="9/6/25" DPTs="DPST-9-1" Description="Raum 1, KO 35, Ein" />
+      <GroupAddress Name="R1 Relative Feuchte außen" Address="9/6/26" DPTs="DPST-9-7" Description="Raum 1, KO 36, Ein" />
+      <GroupAddress Name="R1 Temperatur außen" Address="9/6/27" DPTs="DPST-9-1" Description="Raum 1, KO 37, Ein" />
+      <GroupAddress Name="R1 CO₂" Address="9/6/28" DPTs="DPST-9-8" Description="Raum 1, KO 38, Ein" />
+      <GroupAddress Name="R1 Luftgüte" Address="9/6/29" DPTs="DPST-9-8" Description="Raum 1, KO 39, Ein" />
+      <GroupAddress Name="R1 Solltemperatur" Address="9/6/30" DPTs="DPST-9-1" Description="Raum 1, KO 40, Ein" />
+      <GroupAddress Name="R1 Temperaturführung aktiv" Address="9/6/31" DPTs="DPST-1-3" Description="Raum 1, KO 41, Ein/Aus" />
+      <GroupAddress Name="R1 Feuchteführung aktiv" Address="9/6/32" DPTs="DPST-1-3" Description="Raum 1, KO 42, Ein" />
+      <GroupAddress Name="R1 CO₂-Führung aktiv" Address="9/6/33" DPTs="DPST-1-3" Description="Raum 1, KO 43, Ein" />
+      <GroupAddress Name="R1 Luftgüteführung aktiv" Address="9/6/34" DPTs="DPST-1-3" Description="Raum 1, KO 44, Ein" />
+      <GroupAddress Name="R1 Raumanforderung Stufe" Address="9/6/35" DPTs="DPST-5-100" Description="Raum 1, KO 45, Aus" />
+      <GroupAddress Name="R1 Raumanforderung %" Address="9/6/36" DPTs="DPST-5-1" Description="Raum 1, KO 46, Aus" />
+      <GroupAddress Name="R1 Betriebsart Status" Address="9/6/37" DPTs="DPST-20-102" Description="Raum 1, KO 47, Aus" />
+      <GroupAddress Name="R1 Betriebsart Status erweitert" Address="9/6/38" DPTs="DPST-5-10" Description="Raum 1, KO 48, Aus" />
+      <GroupAddress Name="R1 Betriebsweise Status" Address="9/6/39" DPTs="DPST-5-10" Description="Raum 1, KO 49, Aus" />
+      <GroupAddress Name="R1 Schutzbetrieb aktiv" Address="9/6/40" DPTs="DPST-1-1" Description="Raum 1, KO 50, Aus" />
+      <GroupAddress Name="R1 Feuchtevergleich sperrt" Address="9/6/41" DPTs="DPST-1-1" Description="Raum 1, KO 51, Aus" />
+      <GroupAddress Name="R1 Absolute Feuchte innen" Address="9/6/42" DPTs="DPST-9-29" Description="Raum 1, KO 52, Aus" />
+      <GroupAddress Name="R1 Absolute Feuchte außen" Address="9/6/43" DPTs="DPST-9-29" Description="Raum 1, KO 53, Aus" />
+      <GroupAddress Name="R1 Zuluftanforderung" Address="9/6/44" DPTs="DPST-1-3" Description="Raum 1, KO 54, Aus" />
+      <GroupAddress Name="R1 Intervall aktiv" Address="9/6/45" DPTs="DPST-1-1" Description="Raum 1, KO 55, Aus" />
+      <GroupAddress Name="R1 Luftgüte" Address="9/6/46" DPTs="DPST-5-10" Description="Raum 1, KO 56, Ein" />
+      <GroupAddress Name="R2 Betriebsart" Address="9/6/60" DPTs="DPST-20-102" Description="Raum 2, KO 60, Ein" />
+      <GroupAddress Name="R2 Zwangsbetriebsart" Address="9/6/61" DPTs="DPST-20-102" Description="Raum 2, KO 61, Ein" />
+      <GroupAddress Name="R2 Nacht" Address="9/6/62" DPTs="DPST-1-3" Description="Raum 2, KO 62, Ein" />
+      <GroupAddress Name="R2 Zwangsobjekt 1" Address="9/6/63" DPTs="DPST-1-3" Description="Raum 2, KO 63, Ein" />
+      <GroupAddress Name="R2 Zwangsobjekt 2" Address="9/6/64" DPTs="DPST-1-3" Description="Raum 2, KO 64, Ein" />
+      <GroupAddress Name="R2 Zwangsobjekt 3" Address="9/6/65" DPTs="DPST-1-3" Description="Raum 2, KO 65, Ein" />
+      <GroupAddress Name="R2 Stufe manuell" Address="9/6/66" DPTs="DPST-5-100" Description="Raum 2, KO 66, Ein" />
+      <GroupAddress Name="R2 Stufe manuell %" Address="9/6/67" DPTs="DPST-5-1" Description="Raum 2, KO 67, Ein" />
+      <GroupAddress Name="R2 Stufe höher/niedriger" Address="9/6/68" DPTs="DPST-1-7" Description="Raum 2, KO 68, Ein" />
+      <GroupAddress Name="R2 Handbetrieb aktiv" Address="9/6/69" DPTs="DPST-1-12" Description="Raum 2, KO 69, Ein/Aus" />
+      <GroupAddress Name="R2 Sommer" Address="9/6/70" DPTs="DPST-1-1" Description="Raum 2, KO 70, Ein" />
+      <GroupAddress Name="R2 Betriebsweise" Address="9/6/71" DPTs="DPST-5-10" Description="Raum 2, KO 71, Ein" />
+      <GroupAddress Name="R2 Abluftanforderung" Address="9/6/72" DPTs="DPST-1-3" Description="Raum 2, KO 72, Ein" />
+      <GroupAddress Name="R2 Sperre" Address="9/6/73" DPTs="DPST-1-3" Description="Raum 2, KO 73, Ein" />
+      <GroupAddress Name="R2 Relative Feuchte innen" Address="9/6/74" DPTs="DPST-9-7" Description="Raum 2, KO 74, Ein" />
+      <GroupAddress Name="R2 Temperatur innen" Address="9/6/75" DPTs="DPST-9-1" Description="Raum 2, KO 75, Ein" />
+      <GroupAddress Name="R2 Relative Feuchte außen" Address="9/6/76" DPTs="DPST-9-7" Description="Raum 2, KO 76, Ein" />
+      <GroupAddress Name="R2 Temperatur außen" Address="9/6/77" DPTs="DPST-9-1" Description="Raum 2, KO 77, Ein" />
+      <GroupAddress Name="R2 CO₂" Address="9/6/78" DPTs="DPST-9-8" Description="Raum 2, KO 78, Ein" />
+      <GroupAddress Name="R2 Luftgüte" Address="9/6/79" DPTs="DPST-9-8" Description="Raum 2, KO 79, Ein" />
+      <GroupAddress Name="R2 Solltemperatur" Address="9/6/80" DPTs="DPST-9-1" Description="Raum 2, KO 80, Ein" />
+      <GroupAddress Name="R2 Temperaturführung aktiv" Address="9/6/81" DPTs="DPST-1-3" Description="Raum 2, KO 81, Ein/Aus" />
+      <GroupAddress Name="R2 Feuchteführung aktiv" Address="9/6/82" DPTs="DPST-1-3" Description="Raum 2, KO 82, Ein" />
+      <GroupAddress Name="R2 CO₂-Führung aktiv" Address="9/6/83" DPTs="DPST-1-3" Description="Raum 2, KO 83, Ein" />
+      <GroupAddress Name="R2 Luftgüteführung aktiv" Address="9/6/84" DPTs="DPST-1-3" Description="Raum 2, KO 84, Ein" />
+      <GroupAddress Name="R2 Raumanforderung Stufe" Address="9/6/85" DPTs="DPST-5-100" Description="Raum 2, KO 85, Aus" />
+      <GroupAddress Name="R2 Raumanforderung %" Address="9/6/86" DPTs="DPST-5-1" Description="Raum 2, KO 86, Aus" />
+      <GroupAddress Name="R2 Betriebsart Status" Address="9/6/87" DPTs="DPST-20-102" Description="Raum 2, KO 87, Aus" />
+      <GroupAddress Name="R2 Betriebsart Status erweitert" Address="9/6/88" DPTs="DPST-5-10" Description="Raum 2, KO 88, Aus" />
+      <GroupAddress Name="R2 Betriebsweise Status" Address="9/6/89" DPTs="DPST-5-10" Description="Raum 2, KO 89, Aus" />
+      <GroupAddress Name="R2 Schutzbetrieb aktiv" Address="9/6/90" DPTs="DPST-1-1" Description="Raum 2, KO 90, Aus" />
+      <GroupAddress Name="R2 Feuchtevergleich sperrt" Address="9/6/91" DPTs="DPST-1-1" Description="Raum 2, KO 91, Aus" />
+      <GroupAddress Name="R2 Absolute Feuchte innen" Address="9/6/92" DPTs="DPST-9-29" Description="Raum 2, KO 92, Aus" />
+      <GroupAddress Name="R2 Absolute Feuchte außen" Address="9/6/93" DPTs="DPST-9-29" Description="Raum 2, KO 93, Aus" />
+      <GroupAddress Name="R2 Zuluftanforderung" Address="9/6/94" DPTs="DPST-1-3" Description="Raum 2, KO 94, Aus" />
+      <GroupAddress Name="R2 Intervall aktiv" Address="9/6/95" DPTs="DPST-1-1" Description="Raum 2, KO 95, Aus" />
+      <GroupAddress Name="R2 Luftgüte" Address="9/6/96" DPTs="DPST-5-10" Description="Raum 2, KO 96, Ein" />
+      <GroupAddress Name="L1 Freigabe" Address="9/6/110" DPTs="DPST-1-3" Description="Lüfter 1, KO 340, Ein" />
+      <GroupAddress Name="L1 Suspendieren" Address="9/6/111" DPTs="DPST-1-1" Description="Lüfter 1, KO 341, Ein" />
+      <GroupAddress Name="L1 Verbund Stufe" Address="9/6/112" DPTs="DPST-5-100" Description="Lüfter 1, KO 342, Ein/Aus" />
+      <GroupAddress Name="L1 Verbund Takt" Address="9/6/113" DPTs="DPST-1-12" Description="Lüfter 1, KO 343, Ein/Aus" />
+      <GroupAddress Name="L1 Verbund Lebenszeichen" Address="9/6/114" DPTs="DPST-1-1" Description="Lüfter 1, KO 344, Ein/Aus" />
+      <GroupAddress Name="L1 Verbund Betriebsweise" Address="9/6/115" DPTs="DPST-5-10" Description="Lüfter 1, KO 345, Ein/Aus" />
+      <GroupAddress Name="L1 Stufe Status" Address="9/6/116" DPTs="DPST-5-100" Description="Lüfter 1, KO 346, Aus" />
+      <GroupAddress Name="L1 Stufe Status %" Address="9/6/117" DPTs="DPST-5-1" Description="Lüfter 1, KO 347, Aus" />
+      <GroupAddress Name="L1 Richtung Status" Address="9/6/118" DPTs="DPST-1-1" Description="Lüfter 1, KO 348, Aus" />
+      <GroupAddress Name="L1 Wärmerückgewinnung aktiv" Address="9/6/119" DPTs="DPST-1-1" Description="Lüfter 1, KO 349, Aus" />
+      <GroupAddress Name="L1 Ausgangsspannung" Address="9/6/120" DPTs="DPST-9-20" Description="Lüfter 1, KO 350, Aus" />
+      <GroupAddress Name="L1 Volumenstrom" Address="9/6/121" DPTs="DPST-9-9" Description="Lüfter 1, KO 351, Aus" />
+      <GroupAddress Name="L1 Betriebsstunden" Address="9/6/122" DPTs="DPST-7-7" Description="Lüfter 1, KO 352, Aus" />
+      <GroupAddress Name="L1 Filterwechsel fällig" Address="9/6/123" DPTs="DPST-1-5" Description="Lüfter 1, KO 353, Ein/Aus" />
+      <GroupAddress Name="L1 Filter Restlaufzeit" Address="9/6/124" DPTs="DPST-5-1" Description="Lüfter 1, KO 354, Aus" />
+      <GroupAddress Name="L1 Filterwechsel quittieren" Address="9/6/125" DPTs="DPST-1-16" Description="Lüfter 1, KO 355, Ein" />
+      <GroupAddress Name="L1 Störung" Address="9/6/126" DPTs="DPST-1-5" Description="Lüfter 1, KO 356, Aus" />
+      <GroupAddress Name="L1 Fehlercode" Address="9/6/127" DPTs="DPST-5-10" Description="Lüfter 1, KO 357, Aus" />
+      <GroupAddress Name="L2 Freigabe" Address="9/6/140" DPTs="DPST-1-3" Description="Lüfter 2, KO 364, Ein" />
+      <GroupAddress Name="L2 Suspendieren" Address="9/6/141" DPTs="DPST-1-1" Description="Lüfter 2, KO 365, Ein" />
+      <GroupAddress Name="L2 Verbund Stufe" Address="9/6/142" DPTs="DPST-5-100" Description="Lüfter 2, KO 366, Ein/Aus" />
+      <GroupAddress Name="L2 Verbund Takt" Address="9/6/143" DPTs="DPST-1-12" Description="Lüfter 2, KO 367, Ein/Aus" />
+      <GroupAddress Name="L2 Verbund Lebenszeichen" Address="9/6/144" DPTs="DPST-1-1" Description="Lüfter 2, KO 368, Ein/Aus" />
+      <GroupAddress Name="L2 Verbund Betriebsweise" Address="9/6/145" DPTs="DPST-5-10" Description="Lüfter 2, KO 369, Ein/Aus" />
+      <GroupAddress Name="L2 Stufe Status" Address="9/6/146" DPTs="DPST-5-100" Description="Lüfter 2, KO 370, Aus" />
+      <GroupAddress Name="L2 Stufe Status %" Address="9/6/147" DPTs="DPST-5-1" Description="Lüfter 2, KO 371, Aus" />
+      <GroupAddress Name="L2 Richtung Status" Address="9/6/148" DPTs="DPST-1-1" Description="Lüfter 2, KO 372, Aus" />
+      <GroupAddress Name="L2 Wärmerückgewinnung aktiv" Address="9/6/149" DPTs="DPST-1-1" Description="Lüfter 2, KO 373, Aus" />
+      <GroupAddress Name="L2 Ausgangsspannung" Address="9/6/150" DPTs="DPST-9-20" Description="Lüfter 2, KO 374, Aus" />
+      <GroupAddress Name="L2 Volumenstrom" Address="9/6/151" DPTs="DPST-9-9" Description="Lüfter 2, KO 375, Aus" />
+      <GroupAddress Name="L2 Betriebsstunden" Address="9/6/152" DPTs="DPST-7-7" Description="Lüfter 2, KO 376, Aus" />
+      <GroupAddress Name="L2 Filterwechsel fällig" Address="9/6/153" DPTs="DPST-1-5" Description="Lüfter 2, KO 377, Ein/Aus" />
+      <GroupAddress Name="L2 Filter Restlaufzeit" Address="9/6/154" DPTs="DPST-5-1" Description="Lüfter 2, KO 378, Aus" />
+      <GroupAddress Name="L2 Filterwechsel quittieren" Address="9/6/155" DPTs="DPST-1-16" Description="Lüfter 2, KO 379, Ein" />
+      <GroupAddress Name="L2 Störung" Address="9/6/156" DPTs="DPST-1-5" Description="Lüfter 2, KO 380, Aus" />
+      <GroupAddress Name="L2 Fehlercode" Address="9/6/157" DPTs="DPST-5-10" Description="Lüfter 2, KO 381, Aus" />
+    </GroupRange>
+  </GroupRange>
+</GroupAddress-Export>

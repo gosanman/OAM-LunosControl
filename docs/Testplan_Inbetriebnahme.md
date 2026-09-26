@@ -18,16 +18,53 @@ verwendbar. Lüfter bleiben abgeklemmt — gemessen wird die Spannung an der Kle
 | Allgemein | Platine **Rev 0.1 (4 Kanäle)**, Info-LED = **Lüftung** |
 | Kanalauswahl | Raum 1, Raum 2, Lüfter 1, Lüfter 2, Verbund 1 aktiv |
 | Lüfter 1 | Typ e²60, Stellkanal **1**, Raum 1, Verbund 1, **Phase 0**, Kalibrierfaktor **9975** |
-| Lüfter 2 | Typ e²60, Stellkanal **2**, Raum 2, Verbund 1, **Phase 1**, Kalibrierfaktor **9973** |
+| Lüfter 2 | Typ e²60, Stellkanal **2**, Raum 2, Verbund **je nach Aufbau** (siehe unten), **Phase 1**, Kalibrierfaktor **9973** |
 | Verbund 1 | intern, Stufenregel Maximum mit Deckel, Totzeit 2 s, Zykluszeiten **70 s** |
 | Raum 1, 2 | Standard-Betriebsart Standby, alles andere Vorgabe |
 
 Zykluszeiten für die Taktprüfung ruhig auf **40 s** senken — dann sieht man den
 Wechsel, ohne Kaffee holen zu müssen.
 
+### Zwei Aufbauten — was an S1 anliegt
+
+Ein Lüfter im Verbund fährt die **Verbundstufe**, nicht die Stufe seines Raums:
+
+> Verbundstufe = höchste Raumanforderung (KO 45, KO 85) — begrenzt durch den
+> **kleinsten Raumdeckel**. Deckel eines Raums = Maximalstufe seiner Betriebsart,
+> aber nie unter seiner eigenen Stufe (Entscheidung 2026-09-27, Variante a).
+
+Hängen beide Lüfter in Verbund 1, zeigt S1 also nicht Raum 1, sondern das Maximum
+beider Räume, gedeckelt vom strengeren. Erster Befund dazu (2026-09-27, T2 Schritt 2):
+Raum 1 Hand 0, Raum 2 Standby → S1/S2 pendeln auf **Stufe 1** (4,01 V / 6,01 V) — richtig,
+Raum 2 will Stufe 1. Deshalb zwei Aufbauten:
+
+| Aufbau | Lüfter 2 | S1 zeigt | für |
+|---|---|---|---|
+| **A — Raum** | Verbund **eigenständig** | genau Raum 1 (Lüfter 1 ist allein in Verbund 1) | T1–T3, T5–T9, T12–T17 |
+| **B — Verbund** | **Verbund 1** | Verbundstufe aus Raum 1 und Raum 2 | T4, T10, T11, T18 |
+
+Umstellen heißt: Parameter „Verbund“ auf der Seite von Lüfter 2, programmieren.
+Raumanforderung KO 45 zeigt in beiden Aufbauten die Stufe von Raum 1 — bei Zweifeln
+immer zuerst dort nachsehen.
+
+Vorgaben der Betriebsarten (Grundstufe / Maximalstufe): Komfort 1/4 · Standby 1/2 ·
+Nacht 1/1 · Schutz 0/1 · Stoßlüften 4/4 · Absenkung 1/2 · Ruhe 0/0.
+
 ### Objekte, die du brauchst
 
 Absolute Nummern. Formel: Raum *n* = 20 + (n−1)·40 + Index, Lüfter *n* = 340 + (n−1)·24 + Index.
+
+**Gruppenadressen zum Import:** [ETS_Gruppenadressen_9-6_Inbetriebnahme.xml](ETS_Gruppenadressen_9-6_Inbetriebnahme.xml)
+(ETS → Gruppenadressen → Importieren). Alle Objekte von Raum 1/2, Lüfter 1/2 und
+Diagnose, mit DPT. Die Unteradresse folgt dem Objektindex:
+
+| Bereich | Adresse | Beispiel |
+|---|---|---|
+| Diagnose | 9/6/0 | KO 7 |
+| Raum 1 | 9/6/**10** + Index | KO 26 (Stufe manuell) → 9/6/16 |
+| Raum 2 | 9/6/**60** + Index | KO 66 → 9/6/66 |
+| Lüfter 1 | 9/6/**110** + Index | KO 346 (Stufe Status) → 9/6/116 |
+| Lüfter 2 | 9/6/**140** + Index | KO 370 → 9/6/146 |
 
 | Objekt | Raum 1 | Raum 2 | DPT | Richtung |
 |---|---|---|---|---|
@@ -99,7 +136,7 @@ Tests vertauscht, ist die Annahme falsch, nicht der Test.
 
 ## T1 — Start und sicherer Zustand
 
-**Ziel:** Nach dem Einschalten steht alles auf 5,00 V, ohne dass jemand etwas gesendet hat.
+**Aufbau A.** **Ziel:** Nach dem Einschalten steht alles auf 5,00 V, ohne dass jemand etwas gesendet hat.
 
 1. 12 V und Bus einschalten, nichts senden.
 2. S1 und S2 messen.
@@ -124,12 +161,12 @@ Platine zurückstellen, programmieren, weiter.
 
 ## T2 — Handstufe und Vorfahrt
 
-**Ziel:** Rang 5 ersetzt die Automatik; die Maximalstufe deckelt sie *nicht*.
+**Aufbau A.** **Ziel:** Rang 5 ersetzt die Automatik; die Maximalstufe deckelt sie *nicht*.
 
 | Schritt | Senden | Erwartung | ☐ |
 |---|---|---|---|
-| 1 | KO 26 = **2** | S1 → 3,21 V (Zuluft, Stufe 2) oder 6,91 V; KO 346 = 2; `kwl r1`: Rang 5 | ☐ |
-| 2 | KO 26 = **0** | S1 → 5,00 V | ☐ |
+| 1 | KO 26 = **2** | KO 45 = 2; S1 → 3,21 V (Zuluft, Stufe 2) oder 6,91 V; KO 346 = 2; `kwl r1`: Rang 5 | ☐ |
+| 2 | KO 26 = **0** | KO 45 = 0; S1 → 5,00 V. (In Aufbau B stünde S1 auf Stufe 1 — Raum 2 hält den Verbund.) | ☐ |
 | 3 | KO 27 = **60 %** | Stufe 3 (Prozent → Stufe mit Hysterese: 60 % liegt über 54) | ☐ |
 | 4 | KO 28 = **1** | Stufe 4 (eine höher) | ☐ |
 | 5 | KO 28 = **0** | Stufe 3 | ☐ |
@@ -144,7 +181,7 @@ selbst ab — für den Test auf 1 min stellen und einmal abwarten.
 
 ## T3 — Betriebsarten und Rücksetzen
 
-**Ziel:** Die beiden Arcus-Beispiele, wörtlich aus dem Plan.
+**Aufbau A.** **Ziel:** Die beiden Arcus-Beispiele, wörtlich aus dem Plan.
 
 **Beispiel 1:** Auto → Nacht → Zwangsobjekt 1 → nach Ablauf wieder Nacht.
 
@@ -168,7 +205,7 @@ selbst ab — für den Test auf 1 min stellen und einmal abwarten.
 
 ## T4 — Verbund, Pendeltakt, Totzeit
 
-**Ziel:** Zwei Lüfter laufen immer gegenläufig und wechseln über 5,00 V.
+**Aufbau B.** **Ziel:** Zwei Lüfter laufen immer gegenläufig und wechseln über 5,00 V.
 
 Beide Räume auf Komfort (KO 20 = 1, KO 60 = 1), Handstufe 2 in Raum 1 (KO 26 = 2).
 
@@ -184,11 +221,36 @@ Beide Räume auf Komfort (KO 20 = 1, KO 60 = 1), Handstufe 2 in Raum 1 (KO 26 = 
 
 **Stufenregel Nachtdeckel:** Raum 1 Nacht (KO 22 = 1), Raum 2 Hand 3 (KO 66 = 3) → **beide** Lüfter Stufe 1. Raum 1 Standby → beide Stufe 2. Regel „Raum 2 führt" in der ETS → beide Stufe 3.
 
+> Braucht Firmware mit dem Verbunddeckel vom **2026-09-27**. Vorher ging an den
+> Verbund immer Deckel 4, und hier liefen beide Lüfter auf Stufe 3.
+
+| Deckel im Verbund | Senden | Erwartung | ☐ |
+|---|---|---|---|
+| eigene Hand hebt den eigenen Deckel | Raum 1 Nacht (KO 22 = 1) **und** Hand 3 (KO 26 = 3), Raum 2 Komfort (KO 60 = 1) | beide Stufe **3** — der Nachtraum deckelt nicht unter seine eigene Handstufe | ☐ |
+| Nachbar deckelt fremde Hand | Raum 1 Hand 4 (KO 26 = 4), Raum 2 Standby (KO 60 = 0) | beide Stufe **2** — Standby-Deckel von Raum 2 | ☐ |
+| Ruhe stoppt den Verbund | Raum 2 Ruhe (KO 60 = 7) | S1 = S2 = **5,00 V** — Ruhe hat Deckel 0 | ☐ |
+
+**Sperre im Verbund:** Raum 1 Sperre (KO 33 = 1), Raum 2 Komfort mit Hand 2 (KO 66 = 2).
+
+| Erwartung | ☐ |
+|---|---|
+| S1 = **5,00 V** — Lüfter 1 steht, sein Raum ist gesperrt (Fenster, Kamin) | ☐ |
+| S2 läuft weiter auf Stufe 2 | ☐ |
+
+> Braucht Firmware vom **2026-09-27** oder neuer. Vorher wirkten Sperre und Schutz
+> nur auf die Raumanforderung; im Verbund fuhr Lüfter 1 dann die Stufe des Nachbarn
+> weiter — gegen Invariante 9. Seitdem gilt für den Lüfter eines gesperrten oder
+> geschützten Raums die Raumstufe statt der Verbundstufe.
+>
+> Gegenprobe **Sperre mit Grundstufe** (ETS Raum 1 „Sperrverhalten“): S1 fährt die
+> Grundstufe von Raum 1, nicht Stufe 2 des Nachbarn. **Schutz:** Raum 1 Frostschutz
+> (KO 35 = 7) → S1 = 5,00 V, S2 läuft weiter.
+
 ---
 
 ## T5 — Sperre
 
-**Ziel:** Rang 1 gewinnt gegen alles; beide Sperrverhalten.
+**Aufbau A.** **Ziel:** Rang 1 gewinnt gegen alles; beide Sperrverhalten. (Sperre im Verbund: T4.)
 
 Handstufe 4 setzen (KO 26 = 4).
 
@@ -203,7 +265,7 @@ KO 33 = 0 → Handstufe 4 ist **noch da** (Rang 1–4 setzen nichts zurück). KO
 
 ## T6 — Grenzwert-Treppen
 
-**Ziel:** Fünf Grenzwerte, vier Stufen, Hysterese.
+**Aufbau A.** **Ziel:** Fünf Grenzwerte, vier Stufen, Hysterese.
 
 Raum 1 Komfort. rF-Treppe braucht den Feuchtevergleich (siehe T7) — deshalb zuerst CO₂, das ist unabhängig.
 
@@ -227,7 +289,7 @@ Raum 1 Komfort. rF-Treppe braucht den Feuchtevergleich (siehe T7) — deshalb zu
 
 ## T7 — Feuchtevergleich, der Kellerfall
 
-**Ziel:** Lüften nur, wenn es trocknet. Verglichen wird der Partialdruck.
+**Aufbau A.** **Ziel:** Lüften nur, wenn es trocknet. Verglichen wird der Partialdruck.
 
 Raum 1 Komfort, Entfeuchtung an (Vorgabe).
 
@@ -245,7 +307,7 @@ Absolute Feuchte: KO 52/53 (Raum 1: 32+20 = 52, 53) zeigen g/kg; bei 20 °C/50 %
 
 ## T8 — Temperaturführung und Schutz
 
-**Ziel:** Vier Fälle, und Frostschutz ohne Sollwert.
+**Aufbau A.** **Ziel:** Vier Fälle, und Frostschutz ohne Sollwert.
 
 Raum 1 Komfort, Temperaturführung an, Abstand 3 K, Sollwert KO 40 = 22.
 
@@ -266,7 +328,7 @@ Raum 1 Komfort, Temperaturführung an, Abstand 3 K, Sollwert KO 40 = 22.
 
 ## T9 — Fehlende Messwerte
 
-**Ziel:** Der Parameter tut in *beiden* Stellungen, was er sagt.
+**Aufbau A.** **Ziel:** Der Parameter tut in *beiden* Stellungen, was er sagt.
 
 Raum 1 Komfort, CO₂-Führung an, Überwachungszeit 1 min. CO₂ = 1300 senden (Stufe 3), dann **nichts mehr senden**.
 
@@ -283,7 +345,7 @@ Die zweite Zeile war vor dem Review Stufe 1 — „Stillstand" erreichte keinen 
 
 ## T10 — Abluftanforderung und Nachströmung
 
-**Ziel:** Vorlauf, Nachlauf, Zuluftanforderung, und dass der Partner nachströmt.
+**Aufbau B.** **Ziel:** Vorlauf, Nachlauf, Zuluftanforderung, und dass der Partner nachströmt.
 
 Raum 1: Stufe bei Abluftanforderung 4, Vorlauf 10 s, Nachlauf 1 min. Verbund 1: „folgt Zuluftanforderung von Raum **1**".
 
@@ -301,7 +363,7 @@ Raum 1: Stufe bei Abluftanforderung 4, Vorlauf 10 s, Nachlauf 1 min. Verbund 1: 
 
 ## T11 — Betriebsweise und Richtungskonflikt
 
-**Ziel:** Feste Richtung ohne Stufenänderung; Konflikt wird gemeldet, nicht versteckt.
+**Aufbau B.** **Ziel:** Feste Richtung ohne Stufenänderung; Konflikt wird gemeldet, nicht versteckt.
 
 | Schritt | Senden | Erwartung | ☐ |
 |---|---|---|---|
@@ -317,7 +379,7 @@ Raum 1: Stufe bei Abluftanforderung 4, Vorlauf 10 s, Nachlauf 1 min. Verbund 1: 
 
 ## T12 — Intervallbetrieb und Nachlauf
 
-**Ziel:** In der Pause steht alles, auch die Grundstufe.
+**Aufbau A.** **Ziel:** In der Pause steht alles, auch die Grundstufe.
 
 Standby: Intervallbetrieb an, Periode 5 min, Aktivzeit 2 min (Minimum in der ETS beachten — sonst 30/5).
 
@@ -332,6 +394,8 @@ Standby: Intervallbetrieb an, Periode 5 min, Aktivzeit 2 min (Minimum in der ETS
 ---
 
 ## T13 — Freigabe, Suspendierung, Fehlercodes
+
+**Aufbau A.**
 
 Lüfter 1: „Freigabe über Objekt" an, Suspendieren erlaubt.
 
@@ -349,6 +413,8 @@ Lüfter 1: „Freigabe über Objekt" an, Suspendieren erlaubt.
 
 ## T14 — Filter und Betriebsstunden
 
+**Aufbau A.**
+
 Lüfter 1: Filter „nach Luftmenge", Wechselintervall 1 (× 1000 m³). Bei 60 m³/h (Stufe 4) sind das ~17 Stunden — der Zähler ist also nur im Lauf zu prüfen, das Fälligwerden ist ein Langzeittest.
 
 | Erwartung | ☐ |
@@ -361,6 +427,8 @@ Lüfter 1: Filter „nach Luftmenge", Wechselintervall 1 (× 1000 m³). Bei 60 m
 ---
 
 ## T15 — Taste und LED
+
+**Aufbau A.**
 
 Info-LED = „Lüftung". Beide Räume Standby.
 
@@ -378,6 +446,8 @@ Info-LED = „Lüftung". Beide Räume Standby.
 
 ## T16 — Diagnose-KO
 
+**Aufbau A.**
+
 Auf KO 7 (DPT 16) senden, Antwort im Gruppenmonitor auf KO 7 lesen.
 
 | Senden | Erwartung (je Zeile ≤ 14 Zeichen) | ☐ |
@@ -394,7 +464,7 @@ Auf KO 7 (DPT 16) senden, Antwort im Gruppenmonitor auf KO 7 lesen.
 
 ## T17 — Neustart und Neuprogrammierung
 
-**Ziel:** Invariante 8 — kein Vollgas-Moment beim Programmieren.
+**Aufbau A.** **Ziel:** Invariante 8 — kein Vollgas-Moment beim Programmieren.
 
 Handstufe 4 (S1 auf 0,01 oder 10,00 V). Dann in der ETS **programmieren** (Applikation).
 
@@ -407,6 +477,8 @@ Handstufe 4 (S1 auf 0,01 oder 10,00 V). Dann in der ETS **programmieren** (Appli
 ---
 
 ## T18 — Master und Slave (ohne zweites Gerät)
+
+**Aufbau B.**
 
 Verbund 1 auf **Slave**, Überwachungszeit 30 s. Den Master spielst du mit der ETS auf den Verbund-Objekten von Lüfter 1.
 
