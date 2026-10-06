@@ -48,6 +48,7 @@ class Recorder:
         self.warns = collections.OrderedDict()      # key -> dict
         self.log_errors = collections.Counter()
         self.log_first = {}
+        self.log_times = collections.defaultdict(list)
         self.occ = collections.Counter()
         self.occ_list = []
         self.checks = []                             # offene Wirkungspruefungen
@@ -88,6 +89,7 @@ class Recorder:
                 text = f"{ev.get('src', '')}: {ev['text'].strip()}"
                 self.log_errors[text] += 1
                 self.log_first.setdefault(text, t)
+                self.log_times[text].append(t)
             elif k == 'info' and 'Volllast' in ev.get('text', ''):
                 self.fullload.append((t, ev['text']))
             elif k == 'boot':
@@ -161,7 +163,8 @@ class Recorder:
             # Plausibilitaet: Status gegen Spannung (bipolar, erster Motor)
             if f['bipolar'] and dac[f['ch'] - 1]['powered'] and not (f['type'] == 'ego' and f['stage'] == 4):
                 v = dac[f['ch'] - 1]['volt']
-                if f['stage'] == 0:
+                if f['stage'] == 0 or abs(v - 5.0) < 0.06:
+                    # Stufe 0, Totzeit oder Totzeit-Halt je Kanal: 5,00 V ist richtig.
                     good = abs(v - 5.0) < 0.06
                 else:
                     below = v < 5.0
@@ -216,6 +219,7 @@ def run(project, days, season, seed, disturb, out_dir):
     for minute in range(days * 1440):
         if minute in plan:
             name, steps = plan[minute]
+            t_start = sim.state['t']
             for op, arg in steps:
                 if op in ('v12', 'bus'):
                     sim.action({'action': 'power', 'which': op, 'on': bool(arg)})
@@ -223,7 +227,7 @@ def run(project, days, season, seed, disturb, out_dir):
                     sim.run(arg)
                 elif op == 'program':
                     sim.action({'action': 'program'})
-            rec.disturb.append(dict(t=sim.state['t'], name=name, check_at=sim.state['t'] + 3 * MIN))
+            rec.disturb.append(dict(t=t_start, name=name, check_at=sim.state['t'] + 3 * MIN))
         sim.run(MIN)
         rec.events()
         rec.sample()
@@ -267,12 +271,19 @@ def report(project, days, season, seed, disturb, rec, final, secs, out_dir):
             ' mit „Feuchtevergleich sperrt“, obwohl die Raumfeuchte unter 45 % lag. Weil der kleinste Code '
             'gewinnt, verdeckt die 7 in dieser Zeit die Codes 8 (Messwerte fehlen), 9 (Schutz), 10 (Filter) '
             'und 11 (Richtungskonflikt).')
-    if hours_total(rec) > 0:
-        tx = hours_total(rec)
-        findings.append(f'**Buslast** – im Mittel {tx:.0f} gesendete Telegramme je Stunde. Den größten Teil machen '
-                        'die Statusobjekte der Lüfter, die in jeder Totzeit zweimal senden (Stufe 0, dann die neue Stufe).')
+    # Buslast: Befund erst ab 250 gesendeten Telegrammen je Stunde und Lüfter.
+    fans = max(1, len(rec.fan_stage))
+    if hours_total(rec) > 250 * fans:
+        findings.append(f'**Buslast** – im Mittel {hours_total(rec):.0f} gesendete Telegramme je Stunde '
+                        f'bei {fans} Lüftern.')
+    # Fehlerzeilen in den ersten 2 min nach einer eingebauten Störung sind die
+    # erwartete Reaktion darauf (z. B. Code 4 bei 12 V aus) - kein Befund.
+    expected = lambda t: any(0 <= t - d['t'] <= 2 * MIN for d in rec.disturb)
     for text, n in rec.log_errors.items():
         if 'Ohne Parametrierung' in text:
+            continue
+        times = rec.log_times.get(text, [])
+        if times and all(expected(t) for t in times):
             continue
         findings.append(f'**Firmware-Fehlerzeile** ({n}×, zuerst {fmt_t(rec.log_first[text])}): {text}')
     p('## Befunde')

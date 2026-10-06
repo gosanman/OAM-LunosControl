@@ -34,6 +34,57 @@ def aufbau_b(meta):
     return img
 
 
+def project_image(meta, name):
+    import json, os
+    with open(os.path.join(os.path.dirname(__file__), 'projects', name + '.json'), encoding='utf-8') as f:
+        img = ParamImage(meta)
+        img.load_values(json.load(f)['values'])
+    return img
+
+
+def ego_summer(meta):
+    """Befund A: ego ohne WRG im Takt darf seinen Status nicht in jeder Schleife senden."""
+    print('9. ego im Sommerzyklus (Befund A, Telegrammsturm)')
+    sent = []
+    core = Core(on_event=lambda ev: sent.append(ev) if ev.get('ev') == 'ko' else None)
+    core.cmd('load ' + project_image(meta, 'Bad mit ego + e2 60-Paar').hex())
+    core.cmd('v12 1')
+    core.cmd('bus 1')
+    core.cmd('run 2000')
+    core.cmd('ko 30 1.1 1')          # Raum 1 (Bad): Sommer -> langer Zyklus, keine WRG
+    core.cmd('run 1000')
+    sent.clear()
+    core.cmd('run 600000')           # 10 min
+    ego = [e for e in sent if 340 <= e['nr'] < 364]
+    check('Lüfter 1 (ego) sendet in 10 min höchstens 20 Telegramme', len(ego) <= 20, f'{len(ego)} Telegramme')
+    core.close()
+
+
+def ego_boost(meta):
+    """Befund C: Abluftstoss des ego nur ueber die Totzeit bei 5,00 V."""
+    print('10. Abluftstoß des ego aus dem Pendeln (Befund C, Totzeit je Kanal)')
+    warns = []
+    core = Core(on_event=lambda ev: warns.append(ev) if ev.get('ev') == 'warn' else None)
+    core.cmd('load ' + project_image(meta, 'Bad mit ego + e2 60-Paar').hex())
+    core.cmd('v12 1')
+    core.cmd('bus 1')
+    core.cmd('run 5000')
+    core.cmd('ko 26 5.100 1')         # Bad: Handstufe 1, der ego pendelt
+    for _ in range(3):                 # ueber mehrere Pendelwechsel
+        core.cmd('run 40000')
+        core.cmd('ko 32 1.3 1')        # Abluftanforderung (10 s Vorlauf)
+        core.cmd('run 20000')
+        core.cmd('ko 32 1.3 0')
+        core.cmd('run 70000')          # Nachlauf 1 min, zurueck ins Pendeln
+    i5 = [w for w in warns if w['inv'] == 'Invariante 5']
+    check('kein Richtungswechsel ohne Totzeit am ego', not i5, [w['text'] for w in i5][:2])
+    core.cmd('ko 32 1.3 1')
+    core.cmd('run 15000')
+    fan = core.state()['sim']['fans'][0]
+    check('ego erreicht Stufe 4 (Abluftstoß)', fan['stage'] == 4, fan['stage'])
+    core.close()
+
+
 def dac(core):
     return [round(c['volt'], 2) for c in core.state()['sim']['dac']]
 
@@ -46,7 +97,14 @@ def main():
     meta = load_meta()
     core = Core()
     warns = []
-    core.on_event = lambda ev: warns.append(ev) if ev.get('ev') == 'warn' else None
+    sent = []
+
+    def collect(ev):
+        if ev.get('ev') == 'warn':
+            warns.append(ev)
+        elif ev.get('ev') == 'ko':
+            sent.append(ev)
+    core.on_event = collect
 
     print('1. Neues Board, KNX-Bus vor 12 V (Erstinbetriebnahme)')
     core.cmd('bus 1')
@@ -77,8 +135,15 @@ def main():
     rooms = core.state()['sim']['rooms']
     check('Betriebsart Komfort über Objekt 20 kommt an (T3)', rooms[0]['mode'] == 'Komfort',
           f"Raum 1: {rooms[0]['mode']} - Befund: die KNX-Bibliothek dekodiert DPT 20.102 nicht")
+    st47 = [e['val'] for e in sent if e['nr'] == 47]
+    st48 = [e['val'] for e in sent if e['nr'] == 48]
+    check('Objekt 47 (Betriebsart Status) meldet 1 = Komfort', bool(st47) and st47[-1] == 1, st47[-3:])
+    check('Objekt 48 (HVAC-Status) meldet Bit 0 = Komfort', bool(st48) and st48[-1] == 1, st48[-3:])
     fans = core.state()['sim']['fans']
     check('beide Lüfter Stufe 2', [f['stage'] for f in fans] == [2, 2], [f['stage'] for f in fans])
+    dir348 = [e['val'] for e in sent if e['nr'] == 348]
+    check('Objekt 348 Richtung Status: 1 = Zuluft (Befund I)',
+          bool(dir348) and dir348[-1] == (fans[0]['dir'] == 'Zuluft'), (fans[0]['dir'], dir348[-2:]))
 
     print('4. Pendeln über die Totzeit (70 s Zyklus)')
     side0 = v[0] > 5
@@ -95,6 +160,13 @@ def main():
     check('Totzeit dauert 2 s', 1900 <= dead <= 2100, f'{dead} ms')
     v = dac(core)
     check('danach getauscht', (v[0] > 5) != side0, v)
+    fans = core.state()['sim']['fans']
+    check('Status in der Totzeit = laufende Stufe (Befund F)', fans[0]['stage'] == 2, fans[0]['stage'])
+    sent.clear()
+    core.cmd('run 140000')            # zwei Pendelwechsel
+    status = [e for e in sent if 346 <= e['nr'] <= 351]
+    check('Lüfter 1: höchstens 3 Statustelegramme je Pendelwechsel (Befund F)', len(status) <= 6,
+          f'{len(status)} in 140 s')
 
     print('5. Sperre Raum 1 (T4 Sperre im Verbund)')
     core.cmd('ko 26 5.100 0')
@@ -116,6 +188,21 @@ def main():
           (fans[0]['stage'], fans[0]['dir']))
     check('Lüfter 2 Zuluft, Verbundstufe', fans[1]['dir'] == 'Zuluft', (fans[1]['stage'], fans[1]['dir']))
     core.cmd('ko 32 1.3 0')
+
+    print('6b. Feuchtevergleich: Code 7 nur mit Feuchteanforderung (Befund E)')
+    core.cmd('ko 35 9.1 18')          # innen 18 °C
+    core.cmd('ko 37 9.1 20')          # außen 20 °C, 80 % - feuchter als innen
+    core.cmd('ko 36 9.7 80')
+    core.cmd('ko 34 9.7 40')          # innen 40 %: keine Anforderung
+    core.cmd('run 3000')
+    r1 = core.state()['sim']['rooms'][0]
+    blk = [e['val'] for e in sent if e['nr'] == 51]
+    check('Objekt 51 meldet den Vergleich (sperrt)', bool(blk) and blk[-1] is True, blk[-2:])
+    check('ohne Anforderung kein Code 7', r1['err'] != 7, r1['err'])
+    core.cmd('ko 34 9.7 60')          # innen 60 %: über GW1 (50 %)
+    core.cmd('run 3000')
+    r1 = core.state()['sim']['rooms'][0]
+    check('mit Anforderung Code 7', r1['err'] == 7, r1['err'])
 
     print('7. 12-V-Ausfall im Betrieb und Wiederkehr')
     core.cmd('ko 26 5.100 3')
@@ -142,13 +229,16 @@ def main():
     v = dac(core)
     check('S1/S2 auf 5,00 V gehalten', abs(v[0] - 5) < 0.02 and abs(v[1] - 5) < 0.02, v)
 
+    core.close()
+    ego_summer(meta)
+    ego_boost(meta)
+
     print('Invariantenwächter:')
     for w in warns:
         print('  ', w['inv'], '-', w['text'])
     if not warns:
         print('   keine Meldung')
 
-    core.close()
     print()
     print('ALLES OK' if not FAILS else f'{len(FAILS)} FEHLER: ' + '; '.join(FAILS))
     return 1 if FAILS else 0
