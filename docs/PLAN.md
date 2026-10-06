@@ -1139,8 +1139,8 @@ Gruppenadressen der Anwender.
 | 24 | E | VOC-Führung aktiv | 1.003 | — |
 | 25 | A | Raumanforderung Stufe | 5.100 | — |
 | 26 | A | Raumanforderung % | 5.001 | — |
-| 27 | A | Betriebsart Status (20.102) | 20.102 | — |
-| 28 | A | Betriebsart Status erweitert (1…7) | 5.010 | — |
+| 27 | A | Betriebsart Status: 1…4 nach 20.102, erweitert 5 Stoßlüften / 6 Absenkung / 7 Ruhe | 20.102 | — |
+| 28 | A | HVAC-Status, Bitfeld nach MDT-Schema (bis 2026-10-06: Betriebsart Status erweitert 1…7) | 1 Byte | — |
 | 29 | A | Betriebsweise Status | 5.010 | — |
 | 30 | A | Schutz aktiv | 1.001 | — |
 | 31 | A | Feuchtevergleich sperrt | 1.001 | — |
@@ -1150,6 +1150,9 @@ Gruppenadressen der Anwender.
 | 35 | A | Intervall aktiv | 1.001 | — |
 | 36 | E | VOC / Luftgüte als Index 0…255 — Alternative zu 19 | 5.010 | — |
 | 37–39 | — | Reserve | | |
+
+Änderung 2026-10-06 (Befund B): Objekt 28 umgewidmet, keine neue Nummer, keine
+Verschiebung – KoOffsets und Blockgrößen bleiben eingefroren.
 
 **Lüfter-Block (24)**
 

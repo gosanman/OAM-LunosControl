@@ -103,7 +103,7 @@ Kanal n sichtbar, wenn `n <= FAN_HardwareChannels`.
 | `FAN_Group` | enum | 0 eigenständig · 1…8 Verbund | 0 | Active | Verbund, mit dem dieser Lüfter gemeinsam taktet. Eigenständig: eigener Takt. |
 | `FAN_Phase` | enum | 0 Phase A · 1 Phase B | 0 | Group ≠ 0 ∧ Typ ≠ ego | Lüfter eines Pendelpaars laufen gegenläufig: einer Phase A, einer Phase B. |
 | `FAN_Share` | uint8 | 25…100 % | 100 | Group ≠ 0 | Anteil an der Verbundstufe. 50 % lässt diesen Lüfter eine Stufe niedriger laufen als den Verbund. |
-| `FAN_Direction5V` | enum | 0 unter 5 V = Zuluft · 1 unter 5 V = Abluft | aus Board-Header | nur mit `OPENKNX_DEBUG` | Zuordnung der Spannungshälften. Wird durch Messung M1 festgelegt; im Normalfall nicht ändern. |
+| ~~`FAN_Direction5V`~~ | — | — | — | — | **Entfernt 2026-10-06 (Befund G).** Die Polarität gilt für alle Lüfter über `FANDRV_BELOW_5V_IS_SUPPLY` im Board-Header (Messung M1). |
 
 ### Seite „Kennlinie"
 

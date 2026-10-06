@@ -31,7 +31,7 @@
       <GroupAddress Name="R1 Raumanforderung Stufe" Address="9/6/35" DPTs="DPST-5-100" Description="Raum 1, KO 45, Aus" />
       <GroupAddress Name="R1 Raumanforderung %" Address="9/6/36" DPTs="DPST-5-1" Description="Raum 1, KO 46, Aus" />
       <GroupAddress Name="R1 Betriebsart Status" Address="9/6/37" DPTs="DPST-20-102" Description="Raum 1, KO 47, Aus" />
-      <GroupAddress Name="R1 Betriebsart Status erweitert" Address="9/6/38" DPTs="DPST-5-10" Description="Raum 1, KO 48, Aus" />
+      <GroupAddress Name="R1 HVAC-Status" Address="9/6/38" Description="Raum 1, KO 48, Aus, Bitfeld: 0 Komfort, 1 Standby, 2 Nacht, 3 Schutz, 7 Frostschutz" />
       <GroupAddress Name="R1 Betriebsweise Status" Address="9/6/39" DPTs="DPST-5-10" Description="Raum 1, KO 49, Aus" />
       <GroupAddress Name="R1 Schutzbetrieb aktiv" Address="9/6/40" DPTs="DPST-1-1" Description="Raum 1, KO 50, Aus" />
       <GroupAddress Name="R1 Feuchtevergleich sperrt" Address="9/6/41" DPTs="DPST-1-1" Description="Raum 1, KO 51, Aus" />
@@ -69,7 +69,7 @@
       <GroupAddress Name="R2 Raumanforderung Stufe" Address="9/6/85" DPTs="DPST-5-100" Description="Raum 2, KO 85, Aus" />
       <GroupAddress Name="R2 Raumanforderung %" Address="9/6/86" DPTs="DPST-5-1" Description="Raum 2, KO 86, Aus" />
       <GroupAddress Name="R2 Betriebsart Status" Address="9/6/87" DPTs="DPST-20-102" Description="Raum 2, KO 87, Aus" />
-      <GroupAddress Name="R2 Betriebsart Status erweitert" Address="9/6/88" DPTs="DPST-5-10" Description="Raum 2, KO 88, Aus" />
+      <GroupAddress Name="R2 HVAC-Status" Address="9/6/88" Description="Raum 2, KO 88, Aus, Bitfeld: 0 Komfort, 1 Standby, 2 Nacht, 3 Schutz, 7 Frostschutz" />
       <GroupAddress Name="R2 Betriebsweise Status" Address="9/6/89" DPTs="DPST-5-10" Description="Raum 2, KO 89, Aus" />
       <GroupAddress Name="R2 Schutzbetrieb aktiv" Address="9/6/90" DPTs="DPST-1-1" Description="Raum 2, KO 90, Aus" />
       <GroupAddress Name="R2 Feuchtevergleich sperrt" Address="9/6/91" DPTs="DPST-1-1" Description="Raum 2, KO 91, Aus" />

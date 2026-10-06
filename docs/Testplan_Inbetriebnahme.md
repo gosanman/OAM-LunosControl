@@ -7,7 +7,11 @@ so gewählt, dass jeder auf dem vorigen aufbaut.
 **Nur S1 und S2 benutzen.** S3 und S4 der Platine 1 sind seit Befund B1 nicht
 verwendbar. Lüfter bleiben abgeklemmt — gemessen wird die Spannung an der Klemme.
 
-**Stand der Firmware:** Die Erwartungen gelten ab dem Stand vom **2026-09-27 (Review)**:
+**Stand der Firmware:** Die Erwartungen gelten ab dem Stand vom **2026-10-06**
+(Befunde A–I aus `docs/Befunde_Simulation_2026-10-06.md`): Betriebsart als Byte
+mit erweitertem HVAC-Modus, HVAC-Status auf Objekt 28, Totzeit je Kanal auch nach
+Start und 12-V-Wiederkehr, Status nur bei Änderung, Richtung Status 1 = Zuluft,
+Code 7 nur mit Feuchteanforderung. Davor galt der Stand vom **2026-09-27 (Review)**:
 Zu-/Abluftanforderung je Lüfter, Anteil nach der Übersteuerung, eigenständige Lüfter,
 sicherer Zustand beim ETS-Download, bei Busausfall und nach einem 12-V-Ausfall. Wo ein
 älterer Stand etwas anderes zeigt, steht es beim jeweiligen Plan.
@@ -102,7 +106,8 @@ Diagnose, mit DPT. Die Unteradresse folgt dem Objektindex:
 | Feuchteführung aktiv | 42 | 82 | 1.003 | Ein |
 | CO₂-Führung aktiv | 43 | 83 | 1.003 | Ein |
 | **Raumanforderung Stufe** | **45** | **85** | 5.100 | Aus |
-| Betriebsart Status | 47 | 87 | 20.102 | Aus |
+| Betriebsart Status (1…4, erweitert 5…7) | 47 | 87 | 20.102 | Aus |
+| HVAC-Status (Bitfeld) | 48 | 88 | 1 Byte | Aus |
 | Schutzbetrieb aktiv | 50 | 90 | 1.001 | Aus |
 | Feuchtevergleich sperrt | 51 | 91 | 1.001 | Aus |
 | Zuluftanforderung | 54 | 94 | 1.003 | Aus |
@@ -200,8 +205,8 @@ selbst ab — für den Test auf 1 min stellen und einmal abwarten.
 
 | Schritt | Senden | Erwartung | ☐ |
 |---|---|---|---|
-| 1 | KO 22 = 1 | KO 47 = 3 (Nacht), Stufe 1 | ☐ |
-| 2 | KO 23 = 1 | KO 47 = 5 (Stoßlüften), Stufe **4**; `kwl r1`: Ebene 7 | ☐ |
+| 1 | KO 22 = 1 | KO 47 = 3 (Nacht), KO 48 = 0x04, Stufe 1 | ☐ |
+| 2 | KO 23 = 1 | KO 47 = 5 (Stoßlüften), KO 48 = 0x01 (Komfort-Bit), Stufe **4**; `kwl r1`: Ebene 7 | ☐ |
 | 3 | Laufzeit abwarten (Zwangsobjekt 1: 30 min, für den Test auf 1 min stellen) | zurück auf Nacht, Stufe 1 | ☐ |
 
 **Beispiel 2:** Auto → Zwangsobjekt 1 → Nacht → Nacht löscht das Zwangsobjekt → nach Rücknahme Auto.
@@ -212,7 +217,11 @@ selbst ab — für den Test auf 1 min stellen und einmal abwarten.
 | 2 | KO 22 = 1 | **Nacht**, Stufe 1 — das Zwangsobjekt ist gelöscht | ☐ |
 | 3 | KO 22 = 0 | Standby (Auto), Stufe 1 — nicht zurück auf Stoßlüften | ☐ |
 
-**Betriebsart-KO:** KO 20 = 1 (Komfort) → KO 47 = 1; KO 20 = 7 (Ruhe) → Stufe 0, S1 = 5,00 V; KO 20 = 0 → Standby.
+**Betriebsart-KO:** KO 20 = 1 (Komfort) → KO 47 = 1, KO 48 = 0x01; KO 20 = 7 (Ruhe) → KO 47 = 7, KO 48 = 0x08, Stufe 0, S1 = 5,00 V; KO 20 = 0 → Standby, KO 48 = 0x02. KO 20 = 9 → ignoriert, Konsole meldet „Betriebsart 9 ungueltig“.
+
+> Braucht Firmware vom **2026-10-06** (Befund B). Vorher las die Firmware jede
+> Betriebsart über KO 20/21 als 0 = Auto, und KO 47 sendete nie – die KNX-Bibliothek
+> kennt DPT 20.102 nicht. Bis dahin meldete KO 48 die Betriebsart als Zahl 1…7.
 
 ---
 
@@ -227,10 +236,17 @@ Beide Räume auf Komfort (KO 20 = 1, KO 60 = 1), Handstufe 2 in Raum 1 (KO 26 = 
 | S1 und S2 liegen in **verschiedenen Hälften**: einer bei 3,21 V, der andere bei 6,91 V | ☐ |
 | KO 348 und KO 372 sind **verschieden** | ☐ |
 | Nach der Zykluszeit: beide für ~2 s auf **5,00 V**, dann getauscht | ☐ |
+| Während der Totzeit bleiben KO 346/370 auf **2** – die Totzeit ist kein Stillstand | ☐ |
+| Je Wechsel senden nur KO 348, 350, 351 (bzw. 372, 374, 375), nicht alle sechs Statusobjekte | ☐ |
+| KO 348 = **1** an dem Lüfter, der gerade Zuluft fördert (S unter 5 V) | ☐ |
 | `kwl grp`: Verbund 1, Stufe 2, Zykluszeit, „Totzeit" während des Wechsels | ☐ |
 | KO 349 = 1 (WRG aktiv) | ☐ |
 
 **Sommer:** KO 30 = 1 → `kwl grp` zeigt 3600 s, KO 349 = 0. Der Wechsel findet weiter statt, nur seltener.
+
+> Die Zeilen zu KO 346/370, zur Telegrammzahl und zu KO 348 brauchen Firmware vom
+> **2026-10-06** (Befunde F und I). Vorher meldete die Totzeit Stufe 0, jeder
+> Wechsel sendete 12 Telegramme je Lüfter, und KO 348 war invertiert (1 = Abluft).
 
 **Stufenregel Nachtdeckel:** Raum 1 Nacht (KO 22 = 1), Raum 2 Hand 3 (KO 66 = 3) → **beide** Lüfter Stufe 1. Raum 1 Standby → beide Stufe 2. Regel „Raum 2 führt" in der ETS → beide Stufe 3.
 
@@ -341,6 +357,8 @@ Raum 1 Komfort, Entfeuchtung an (Vorgabe).
 | 3 | KO 37 = 12 °C, KO 36 = 80 % | KO 51 = 0 — Nachtluft, jetzt lohnt es; KO 45 = **4** (90 % > GW4) | ☐ |
 | 4 | KO 34 = 52 % | KO 45 = 1 (52 liegt zwischen GW1 50 und GW2 55 → Stufe 1) | ☐ |
 | 5 | KO 36 löschen geht nicht — stattdessen Überwachungszeit auf 1 min stellen, 1 min warten | KO 51 = **0**, `kwl r1`: „Wert fehlt" — fehlende Werte sind kein „sperrt" (Code 8, nicht 7) | ☐ |
+| 6 | Überwachungszeit zurück, KO 35 = 18, KO 37 = 28, KO 36 = 60, KO 34 = 40 % | KO 51 = **1** (Vergleich sperrt), aber KO 357 ≠ 7 – bei 40 % will die Feuchteführung nichts (Befund E, ab 2026-10-06) | ☐ |
+| 7 | KO 34 = 60 % | KO 357 = **7** – jetzt unterdrückt die Sperre eine Anforderung | ☐ |
 
 Absolute Feuchte: KO 52/53 (Raum 1: 32+20 = 52, 53) zeigen g/kg; bei 20 °C/50 % und 500 m ≈ 7,7 g/kg.
 
@@ -523,7 +541,7 @@ Handstufe 4 (S1 auf 0,01 oder 10,00 V). Dann in der ETS **programmieren** (Appli
 |---|---|
 | Mit **Beginn** des Downloads: S1 → **5,00 V** — nicht erst vor dem Neustart | ☐ |
 | Konsole: „Parametrierung ungueltig (ETS-Download?) - sicherer Zustand“, danach „Sicherer Zustand vor Neustart geschrieben“ | ☐ |
-| Nach dem Neustart: 5,00 V, dann Sollwerte — Handstufe ist weg (nicht persistent) | ☐ |
+| Nach dem Neustart: 5,00 V für die Totzeit (2 s), dann Sollwerte — Handstufe ist weg (nicht persistent) | ☐ |
 | Oszilloskop an S1 beim 12-V-Einschalten: Dauer 0 V → 5,00 V notieren (**P16** im Messprotokoll) | ☐ |
 
 > Bis 2026-09-27 blieb S1 während des ganzen Downloads auf der letzten Stufe:
@@ -577,7 +595,7 @@ Dafür in der ETS „Applikation entladen“ oder ein frisch geflashtes Board ne
 | Schritt | Tun | Erwartung | ☐ |
 |---|---|---|---|
 | B1 | 12 V aus | KO 357 = **4** (DAC nicht erreichbar), KO 356 = 1, LED Blinkcode 4 | ☐ |
-| B2 | 12 V ein | nach höchstens ~0,3 s Bereich und 5,00 V, danach wieder Stufe 3; KO 357 = 0; Konsole: „DAC wieder erreichbar“ | ☐ |
+| B2 | 12 V ein | nach höchstens ~0,3 s Bereich und 5,00 V, **2 s Totzeit**, danach wieder Stufe 3; KO 357 = 0; Konsole: „DAC wieder erreichbar“ | ☐ |
 | B3 | KNX-Bus ziehen, 12 V bleiben an | S1 → **5,00 V**, bevor der RP2040 ausgeht, und bleibt dort | ☐ |
 | B4 | KNX-Bus stecken | Neustart, 5,00 V, dann Sollwerte (Handstufe weg) | ☐ |
 
@@ -592,6 +610,25 @@ Dafür in der ETS „Applikation entladen“ oder ein frisch geflashtes Board ne
 > Zwischen Wiederkehr der 12 V und dem ersten Schreibzugriff liegen die DACs auf
 > ihrem Werkswert 0 V. Das Fenster ist das Abfrageintervall (250 ms) plus die
 > Anlaufzeit der DACs. Kürzer geht es ohne EEPROM-Startwert nicht (Invariante 7).
+
+---
+
+## T20 — ego: Abluftstoß und Sommerzyklus
+
+**Eigener Aufbau:** ein ego an S1/S2 (U2), Raum 1, Verbund **eigenständig**,
+Abluftanforderung mit 10 s Vorlauf. Oszilloskop oder Messgerät an S1.
+**Ziel:** die Befunde A und C am echten Gerät.
+
+| Schritt | Tun | Erwartung | ☐ |
+|---|---|---|---|
+| 1 | Handstufe 1 (KO 26 = 1) | ego pendelt: S1 und S2 in verschiedenen Hälften, Wechsel über 5,00 V | ☐ |
+| 2 | KO 32 = 1, in einer Halbwelle mit S1 **über** 5 V | nach dem Vorlauf: S1 und S2 erst **2 s auf 5,00 V**, dann beide 1,11 V (Abluftstoß) | ☐ |
+| 3 | KO 32 = 0, Nachlauf abwarten | zurück ins Pendeln, wieder über 2 s bei 5,00 V | ☐ |
+| 4 | KO 30 = 1 (Sommer), Busmonitor 10 min | Lüfter-Objekte 340…357 senden nur bei echter Änderung, **keine** Telegrammflut | ☐ |
+
+> Braucht Firmware vom **2026-10-06**. Vorher sprang Motor 1 in Schritt 2 direkt
+> von 6,85 V auf 1,11 V (Befund C), und in Schritt 4 sendete der ego seine
+> Statusobjekte in jeder Schleife (Befund A).
 
 ---
 
