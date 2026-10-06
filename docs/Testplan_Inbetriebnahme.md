@@ -7,6 +7,11 @@ so gewählt, dass jeder auf dem vorigen aufbaut.
 **Nur S1 und S2 benutzen.** S3 und S4 der Platine 1 sind seit Befund B1 nicht
 verwendbar. Lüfter bleiben abgeklemmt — gemessen wird die Spannung an der Klemme.
 
+**Stand der Firmware:** Die Erwartungen gelten ab dem Stand vom **2026-09-27 (Review)**:
+Zu-/Abluftanforderung je Lüfter, Anteil nach der Übersteuerung, eigenständige Lüfter,
+sicherer Zustand beim ETS-Download, bei Busausfall und nach einem 12-V-Ausfall. Wo ein
+älterer Stand etwas anderes zeigt, steht es beim jeweiligen Plan.
+
 ---
 
 ## Vorbereitung
@@ -46,6 +51,14 @@ Raum 2 will Stufe 1. Deshalb zwei Aufbauten:
 Umstellen heißt: Parameter „Verbund“ auf der Seite von Lüfter 2, programmieren.
 Raumanforderung KO 45 zeigt in beiden Aufbauten die Stufe von Raum 1 — bei Zweifeln
 immer zuerst dort nachsehen.
+
+In Aufbau A fährt Lüfter 2 **seinen eigenen Takt** aus Raum 2: Stufe von Raum 2,
+Zykluszeit 70 s, Sommer 3600 s, Totzeit 2 s (feste Vorgaben, kein ETS-Parameter).
+S2 pendelt also für sich; für die Pläne mit Aufbau A ist S2 Nebensache.
+
+> Braucht Firmware vom **2026-09-27 (Review)**. Vorher gab es für „eigenständig“
+> keinen Antriebsweg: S2 blieb in Aufbau A dauerhaft auf 5,00 V, Status und
+> Fehlercode von Lüfter 2 änderten sich nie.
 
 Vorgaben der Betriebsarten (Grundstufe / Maximalstufe): Komfort 1/4 · Standby 1/2 ·
 Nacht 1/1 · Schutz 0/1 · Stoßlüften 4/4 · Absenkung 1/2 · Ruhe 0/0.
@@ -224,27 +237,55 @@ Beide Räume auf Komfort (KO 20 = 1, KO 60 = 1), Handstufe 2 in Raum 1 (KO 26 = 
 > Braucht Firmware mit dem Verbunddeckel vom **2026-09-27**. Vorher ging an den
 > Verbund immer Deckel 4, und hier liefen beide Lüfter auf Stufe 3.
 
+**Vor der nächsten Tabelle:** Stufenregel von Verbund 1 in der ETS wieder auf
+**Maximum mit Deckel**, programmieren. Die Tabelle rechnet mit dieser Regel; mit
+„Raum 2 führt“ ergäben Zeile 1 und 2 Stufe 1. Das Programmieren setzt auch die
+Objektzustände zurück (Nacht aus, Handstufen weg).
+
 | Deckel im Verbund | Senden | Erwartung | ☐ |
 |---|---|---|---|
 | eigene Hand hebt den eigenen Deckel | Raum 1 Nacht (KO 22 = 1) **und** Hand 3 (KO 26 = 3), Raum 2 Komfort (KO 60 = 1) | beide Stufe **3** — der Nachtraum deckelt nicht unter seine eigene Handstufe | ☐ |
 | Nachbar deckelt fremde Hand | Raum 1 Hand 4 (KO 26 = 4), Raum 2 Standby (KO 60 = 0) | beide Stufe **2** — Standby-Deckel von Raum 2 | ☐ |
 | Ruhe stoppt den Verbund | Raum 2 Ruhe (KO 60 = 7) | S1 = S2 = **5,00 V** — Ruhe hat Deckel 0 | ☐ |
 
-**Sperre im Verbund:** Raum 1 Sperre (KO 33 = 1), Raum 2 Komfort mit Hand 2 (KO 66 = 2).
+**Sperre im Verbund:** Aus der Tabelle davor steht Raum 1 noch auf Nacht und
+Raum 2 auf Ruhe. Eine Handstufe setzt nur Ränge über 5 zurück, also erst
+aufräumen: Raum 1 Nacht aus (KO 22 = 0), Raum 1 Komfort (KO 20 = 1), Raum 2
+Komfort (KO 60 = 1). Dann Raum 1 Sperre (KO 33 = 1), Raum 2 Hand 2 (KO 66 = 2).
 
 | Erwartung | ☐ |
 |---|---|
 | S1 = **5,00 V** — Lüfter 1 steht, sein Raum ist gesperrt (Fenster, Kamin) | ☐ |
 | S2 läuft weiter auf Stufe 2 | ☐ |
 
+> Ohne das Aufräumen zeigt S2 Stufe **1**: Raum 1 bringt als Nachtraum Deckel 1
+> in den Verbund, auch wenn er gesperrt ist. Das ist richtig gerechnet, nur nicht
+> das, was dieser Schritt prüft.
+
 > Braucht Firmware vom **2026-09-27** oder neuer. Vorher wirkten Sperre und Schutz
 > nur auf die Raumanforderung; im Verbund fuhr Lüfter 1 dann die Stufe des Nachbarn
 > weiter — gegen Invariante 9. Seitdem gilt für den Lüfter eines gesperrten oder
 > geschützten Raums die Raumstufe statt der Verbundstufe.
 >
-> Gegenprobe **Sperre mit Grundstufe** (ETS Raum 1 „Sperrverhalten“): S1 fährt die
-> Grundstufe von Raum 1, nicht Stufe 2 des Nachbarn. **Schutz:** Raum 1 Frostschutz
-> (KO 35 = 7) → S1 = 5,00 V, S2 läuft weiter.
+
+**Gegenprobe Sperre mit Grundstufe:** ETS Raum 1 „Sperrverhalten“ = Grundstufe,
+programmieren. Dann KO 20 = 1, KO 60 = 1, KO 66 = 2, KO 33 = 1.
+
+| Erwartung | ☐ |
+|---|---|
+| S1 fährt Stufe **1** (Komfort-Grundstufe von Raum 1), nicht Stufe 2 des Nachbarn | ☐ |
+| S2 läuft weiter auf Stufe 2 | ☐ |
+
+**Gegenprobe Schutz:** zuerst die Sperre lösen (KO 33 = 0) — sonst liefert Rang 1
+schon allein 5,00 V, und der Schutzpfad wird gar nicht geprüft. Dann Raum 1
+Frostschutz (KO 35 = 7).
+
+| Erwartung | ☐ |
+|---|---|
+| S1 = **5,00 V**, `kwl r1`: Rang 2 (Schutz), nicht Rang 1 | ☐ |
+| KO 357 = **9** (Schutzbetrieb, Meldung), S2 läuft weiter | ☐ |
+
+KO 35 wieder auf Raumtemperatur (z. B. 21), ETS-Sperrverhalten zurück auf Stillstand.
 
 ---
 
@@ -353,11 +394,17 @@ Raum 1: Stufe bei Abluftanforderung 4, Vorlauf 10 s, Nachlauf 1 min. Verbund 1: 
 |---|---|---|---|
 | 1 | KO 32 = 1 | 10 s lang nichts (Vorlauf), `kwl r1`: „Vorlauf" | ☐ |
 | 2 | nach 10 s | S1 → **Abluft** Stufe 4 (10,00 V oder 0,01 V), KO 54 = 1; S2 → **Zuluft** — der Verbund folgt der Zuluftanforderung | ☐ |
+| 2a | während Schritt 2: Raum 2 Standby (KO 60 = 0) | S1 bleibt Abluft Stufe **4**; S2 Zuluft Stufe **2** — der Standby-Deckel von Raum 2 gilt für den Verbund, nicht für die Anforderung von Raum 1 | ☐ |
 | 3 | KO 32 = 0 | läuft weiter (Nachlauf), `kwl r1`: „Nachlauf" | ☐ |
 | 4 | nach 1 min | zurück auf Grundstufe, KO 54 = 0, Pendeln läuft wieder | ☐ |
 | 5 | KO 32 = 1, nach 3 s KO 32 = 0 | **nichts** — im Vorlauf zurückgenommen, kein Nachlauf für eine Lüftung, die nie lief | ☐ |
 
 **Intermittierend:** ETS „1 min je 5 min" → 1 min Abluft, 4 min Grundlüftung (nicht Stufe 0!), wieder 1 min…
+
+> Schritt 2a braucht Firmware vom **2026-09-27 (Review)**. Mit dem Verbunddeckel
+> vom selben Tag, aber davor, begrenzte der Nachbar die Badlüftung: S1 fuhr Abluft
+> Stufe 2, bei Raum 2 auf Nacht nur Stufe 1. Seitdem gelten Rang 1–3 (Sperre, Schutz,
+> Zu-/Abluftanforderung) je Lüfter nach der Verbundbildung (PLAN 0.6).
 
 ---
 
@@ -403,11 +450,15 @@ Lüfter 1: „Freigabe über Objekt" an, Suspendieren erlaubt.
 |---|---|---|---|
 | 1 | nach dem Programmieren nichts | S1 = 5,00 V, KO 357 = **1**, KO 356 = 1, LED Blinkcode 1 | ☐ |
 | 2 | KO 340 = 1 | Fehler weg, Lüfter läuft | ☐ |
-| 3 | 12 V aus/ein | Freigabe **noch da** — sie überlebt den Spannungsausfall (Flash) | ☐ |
+| 3 | KNX-Bus aus/ein (Busklemme ziehen, 5 s warten, stecken) | Freigabe **noch da** — sie überlebt den Neustart (Flash) | ☐ |
 | 4 | KO 341 = 1 | S1 = 5,00 V, KO 357 = **6**, KO 356 = 0 (Meldung, kein Alarm) | ☐ |
 | 5 | KO 341 = 0 | läuft wieder | ☐ |
 
 **Priorität:** Freigabe weg (1) *und* Suspendiert (6) → KO 357 = **1**. Der kleinste gewinnt.
+
+> Schritt 3 hieß bis 2026-09-27 „12 V aus/ein“. Der RP2040 hängt aber am KNX-Bus,
+> nicht an den 12 V: ein 12-V-Ausfall startet ihn nicht neu, und der Flash wird gar
+> nicht gelesen. Was bei 12 V aus/ein passiert, prüft T19.
 
 ---
 
@@ -470,9 +521,15 @@ Handstufe 4 (S1 auf 0,01 oder 10,00 V). Dann in der ETS **programmieren** (Appli
 
 | Erwartung | ☐ |
 |---|---|
-| Während des Programmierens: S1 → **5,00 V**, bevor das Gerät neu startet | ☐ |
+| Mit **Beginn** des Downloads: S1 → **5,00 V** — nicht erst vor dem Neustart | ☐ |
+| Konsole: „Parametrierung ungueltig (ETS-Download?) - sicherer Zustand“, danach „Sicherer Zustand vor Neustart geschrieben“ | ☐ |
 | Nach dem Neustart: 5,00 V, dann Sollwerte — Handstufe ist weg (nicht persistent) | ☐ |
 | Oszilloskop an S1 beim 12-V-Einschalten: Dauer 0 V → 5,00 V notieren (**P16** im Messprotokoll) | ☐ |
+
+> Bis 2026-09-27 blieb S1 während des ganzen Downloads auf der letzten Stufe:
+> `knx.configured()` fällt mit dem ersten Tabellen-Download auf false, und die
+> Lüfterschleife kehrte dann sofort zurück. Erst `processBeforeRestart()` schrieb
+> 5,00 V. Auch ein Download nur der Gruppenadressen löst das aus.
 
 ---
 
@@ -488,8 +545,53 @@ Verbund 1 auf **Slave**, Überwachungszeit 30 s. Den Master spielst du mit der E
 | 2 | KO 343 = 1 | Totzeit 2 s bei 5,00 V, dann **getauscht** — der Slave wechselt nicht ohne Totzeit | ☐ |
 | 3 | 30 s nichts senden | S1 = S2 = 5,00 V, KO 357 = **2** (Master-Timeout), KO 356 = 1 | ☐ |
 | 4 | KO 344 = 1 | läuft wieder, Fehler weg | ☐ |
+| 5 | Raum 1 Frostschutz (KO 35 = 7), weiter Lebenszeichen senden | S1 = 5,00 V, KO 357 = **9** (Schutz, Meldung); S2 folgt weiter dem Master | ☐ |
+| 6 | KO 35 = 21 | S1 folgt wieder dem Master, KO 357 = 0 | ☐ |
+
+> Schritt 5 braucht Firmware vom **2026-09-27 (Review)**. Vorher hielt der Schutz
+> den Slave-Lüfter zwar an, der Fehlercode blieb aber 0 — ein Lüfter, der dem Master
+> nicht folgt, ohne es zu sagen.
 
 Rolle auf **Master**: `kwl grp` läuft intern, und auf KO 342/343/344 erscheinen Stufe, Halbwelle und alle 60 s ein Lebenszeichen.
+
+---
+
+## T19 — Erstinbetriebnahme, Busausfall, 12-V-Ausfall
+
+**Ziel:** Die Zeitfenster ohne gültige Parametrierung oder ohne Versorgung enden in
+5,00 V, nicht in 0 V. Ablauf und Begründung: Applikationsbeschreibung, Abschnitt
+„Erstinbetriebnahme“.
+
+**Teil A — neues Board, noch nie programmiert.** Firmware geflasht, ETS noch nicht.
+Dafür in der ETS „Applikation entladen“ oder ein frisch geflashtes Board nehmen.
+
+| Schritt | Tun | Erwartung | ☐ |
+|---|---|---|---|
+| A1 | nur KNX-Bus, keine 12 V | Konsole: „Ohne Parametrierung: DAC nicht erreichbar (12 V fehlen?)“ | ☐ |
+| A2 | 12 V ein | nach höchstens ~0,3 s S1 = S2 = **5,00 V**; Konsole: „DAC erreichbar, alle Kanaele 5,00 V“ | ☐ |
+| A3 | 12 V aus, 5 s, 12 V ein | wieder **5,00 V** nach höchstens ~0,3 s — nicht 0 V | ☐ |
+| A4 | Oszilloskop an S1 bei A3 | Dauer 0 V → 5,00 V notieren | ☐ |
+
+**Teil B — parametriert, im Betrieb.** Aufbau A, Handstufe 3 (KO 26 = 3).
+
+| Schritt | Tun | Erwartung | ☐ |
+|---|---|---|---|
+| B1 | 12 V aus | KO 357 = **4** (DAC nicht erreichbar), KO 356 = 1, LED Blinkcode 4 | ☐ |
+| B2 | 12 V ein | nach höchstens ~0,3 s Bereich und 5,00 V, danach wieder Stufe 3; KO 357 = 0; Konsole: „DAC wieder erreichbar“ | ☐ |
+| B3 | KNX-Bus ziehen, 12 V bleiben an | S1 → **5,00 V**, bevor der RP2040 ausgeht, und bleibt dort | ☐ |
+| B4 | KNX-Bus stecken | Neustart, 5,00 V, dann Sollwerte (Handstufe weg) | ☐ |
+
+> Alles in T19 braucht Firmware vom **2026-09-27 (Review)**. Vorher: A2/A3 blieben
+> auf 0 V = **Volllast**, bis jemand programmierte; B2 blieb bei Fehlercode 4 und
+> 0 V bis zum nächsten Neustart; B3 hielt die letzte Stufe, solange die 12 V anlagen.
+>
+> B3 hängt am SAVE-Interrupt (GPIO14, KNX_SAVE) und daran, dass die Busspannung
+> lange genug reicht, um vier I²C-Frames zu schreiben. Ohne Oszilloskop an S1 nicht
+> sicher zu beurteilen — den Messwert bitte ins Messprotokoll.
+>
+> Zwischen Wiederkehr der 12 V und dem ersten Schreibzugriff liegen die DACs auf
+> ihrem Werkswert 0 V. Das Fenster ist das Abfrageintervall (250 ms) plus die
+> Anlaufzeit der DACs. Kürzer geht es ohne EEPROM-Startwert nicht (Invariante 7).
 
 ---
 

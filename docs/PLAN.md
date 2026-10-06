@@ -865,9 +865,20 @@ bedeutet: ein Lüfter in Phase 1, der Abluft fordert, verlangt Zuluft für Phase
 - Auch der Weg in eine erzwungene Richtung läuft über die **Totzeit**
   (Sicherheitsinvariante 5).
 
-**Busausfall:** DACs halten den letzten Wert. Bei Rückkehr Zustand erneut schreiben.
-**12-V-Ausfall bei stehendem Bus:** Adressabfrage fehlgeschlagen → Fehlercode 4,
-Alarm, LED rot; bei Rückkehr `begin()` und Zustand neu schreiben.
+**Busausfall:** DACs halten den letzten Wert, solange die 12 V anliegen. Deshalb
+schreibt `savePower()` (SAVE-Interrupt) vor dem Abschalten 5,00 V, und `loop()`
+überschreibt das bis `restorePower()` nicht. Bei Rückkehr mit Neustart: `setup()`
+wie immer. *(umgesetzt 2026-09-27, Review)*
+**12-V-Ausfall bei stehendem Bus:** Schreibzugriff ohne ACK → Fehlercode 4,
+Alarm, LED rot. `tryRecoverOutput()` versucht alle 250 ms `begin()` (Adressabfrage,
+Bereich, sicherer Zustand); erst wenn es ganz durchläuft, ist der Fehler weg.
+Nur für Code 4 — Code 3 heilt nicht von selbst. *(umgesetzt 2026-09-27)*
+**Ohne Parametrierung und beim ETS-Download:** `knx.configured()` fällt mit dem
+ersten Tabellen-Download auf false. Beim Übergang schreibt `loop()` sofort den
+sicheren Zustand; solange keine Parameter da sind, schreibt `holdSafeUnconfigured()`
+alle 250 ms Bereich und 5,00 V — auch über ein 12-V-Aus/Ein hinweg und wenn die 12 V
+erst nach dem Bus kommen. Zeitfenster und Einbauablauf: Applikationsbeschreibung,
+„Erstinbetriebnahme“; Prüfung: Testplan T19. *(umgesetzt 2026-09-27)*
 
 **Fertig, wenn:**
 - [ ] Pendelpaar 24 h synchron, 70 s, Totzeit sichtbar 5,00 V

@@ -22,7 +22,7 @@
       <GroupAddress Name="R1 Relative Feuchte außen" Address="9/6/26" DPTs="DPST-9-7" Description="Raum 1, KO 36, Ein" />
       <GroupAddress Name="R1 Temperatur außen" Address="9/6/27" DPTs="DPST-9-1" Description="Raum 1, KO 37, Ein" />
       <GroupAddress Name="R1 CO₂" Address="9/6/28" DPTs="DPST-9-8" Description="Raum 1, KO 38, Ein" />
-      <GroupAddress Name="R1 Luftgüte" Address="9/6/29" DPTs="DPST-9-8" Description="Raum 1, KO 39, Ein" />
+      <GroupAddress Name="R1 Luftgüte ppb" Address="9/6/29" DPTs="DPST-9-8" Description="Raum 1, KO 39, Ein, nur bei VOC-Format ppb (9.008)" />
       <GroupAddress Name="R1 Solltemperatur" Address="9/6/30" DPTs="DPST-9-1" Description="Raum 1, KO 40, Ein" />
       <GroupAddress Name="R1 Temperaturführung aktiv" Address="9/6/31" DPTs="DPST-1-3" Description="Raum 1, KO 41, Ein/Aus" />
       <GroupAddress Name="R1 Feuchteführung aktiv" Address="9/6/32" DPTs="DPST-1-3" Description="Raum 1, KO 42, Ein" />
@@ -39,7 +39,8 @@
       <GroupAddress Name="R1 Absolute Feuchte außen" Address="9/6/43" DPTs="DPST-9-29" Description="Raum 1, KO 53, Aus" />
       <GroupAddress Name="R1 Zuluftanforderung" Address="9/6/44" DPTs="DPST-1-3" Description="Raum 1, KO 54, Aus" />
       <GroupAddress Name="R1 Intervall aktiv" Address="9/6/45" DPTs="DPST-1-1" Description="Raum 1, KO 55, Aus" />
-      <GroupAddress Name="R1 Luftgüte" Address="9/6/46" DPTs="DPST-5-10" Description="Raum 1, KO 56, Ein" />
+      <GroupAddress Name="R1 Luftgüte Index 1 Byte" Address="9/6/46" DPTs="DPST-5-10" Description="Raum 1, KO 56, Ein, nur bei VOC-Format Index 0…255 (5.010)" />
+      <GroupAddress Name="R1 Luftgüte Index 2 Byte" Address="9/6/47" DPTs="DPST-7-1" Description="Raum 1, KO 39, Ein, nur bei VOC-Format Index 0…65535 (7.001), statt 9/6/29" />
       <GroupAddress Name="R2 Betriebsart" Address="9/6/60" DPTs="DPST-20-102" Description="Raum 2, KO 60, Ein" />
       <GroupAddress Name="R2 Zwangsbetriebsart" Address="9/6/61" DPTs="DPST-20-102" Description="Raum 2, KO 61, Ein" />
       <GroupAddress Name="R2 Nacht" Address="9/6/62" DPTs="DPST-1-3" Description="Raum 2, KO 62, Ein" />
@@ -59,7 +60,7 @@
       <GroupAddress Name="R2 Relative Feuchte außen" Address="9/6/76" DPTs="DPST-9-7" Description="Raum 2, KO 76, Ein" />
       <GroupAddress Name="R2 Temperatur außen" Address="9/6/77" DPTs="DPST-9-1" Description="Raum 2, KO 77, Ein" />
       <GroupAddress Name="R2 CO₂" Address="9/6/78" DPTs="DPST-9-8" Description="Raum 2, KO 78, Ein" />
-      <GroupAddress Name="R2 Luftgüte" Address="9/6/79" DPTs="DPST-9-8" Description="Raum 2, KO 79, Ein" />
+      <GroupAddress Name="R2 Luftgüte ppb" Address="9/6/79" DPTs="DPST-9-8" Description="Raum 2, KO 79, Ein, nur bei VOC-Format ppb (9.008)" />
       <GroupAddress Name="R2 Solltemperatur" Address="9/6/80" DPTs="DPST-9-1" Description="Raum 2, KO 80, Ein" />
       <GroupAddress Name="R2 Temperaturführung aktiv" Address="9/6/81" DPTs="DPST-1-3" Description="Raum 2, KO 81, Ein/Aus" />
       <GroupAddress Name="R2 Feuchteführung aktiv" Address="9/6/82" DPTs="DPST-1-3" Description="Raum 2, KO 82, Ein" />
@@ -76,7 +77,8 @@
       <GroupAddress Name="R2 Absolute Feuchte außen" Address="9/6/93" DPTs="DPST-9-29" Description="Raum 2, KO 93, Aus" />
       <GroupAddress Name="R2 Zuluftanforderung" Address="9/6/94" DPTs="DPST-1-3" Description="Raum 2, KO 94, Aus" />
       <GroupAddress Name="R2 Intervall aktiv" Address="9/6/95" DPTs="DPST-1-1" Description="Raum 2, KO 95, Aus" />
-      <GroupAddress Name="R2 Luftgüte" Address="9/6/96" DPTs="DPST-5-10" Description="Raum 2, KO 96, Ein" />
+      <GroupAddress Name="R2 Luftgüte Index 1 Byte" Address="9/6/96" DPTs="DPST-5-10" Description="Raum 2, KO 96, Ein, nur bei VOC-Format Index 0…255 (5.010)" />
+      <GroupAddress Name="R2 Luftgüte Index 2 Byte" Address="9/6/97" DPTs="DPST-7-1" Description="Raum 2, KO 79, Ein, nur bei VOC-Format Index 0…65535 (7.001), statt 9/6/79" />
       <GroupAddress Name="L1 Freigabe" Address="9/6/110" DPTs="DPST-1-3" Description="Lüfter 1, KO 340, Ein" />
       <GroupAddress Name="L1 Suspendieren" Address="9/6/111" DPTs="DPST-1-1" Description="Lüfter 1, KO 341, Ein" />
       <GroupAddress Name="L1 Verbund Stufe" Address="9/6/112" DPTs="DPST-5-100" Description="Lüfter 1, KO 342, Ein/Aus" />
