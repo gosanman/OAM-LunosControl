@@ -19,6 +19,7 @@ Die Befunde sind nach Wirkung am Gerät geordnet, nicht nach Fundzeitpunkt.
 | F | Status in jeder Totzeit zweimal gesendet | ~1.300 Telegramme/h bei zwei Lüftern | mittel |
 | G | ETS-Parameter „Zuordnung der Spannungshälften“ je Lüfter wirkungslos | Parameter ohne Funktion | niedrig |
 | H | Rang 4 im Arbiter ungenutzt | toter Code, Doku stimmt | niedrig |
+| I | „Richtung Status“ invertiert (Nachtrag, gefunden bei F) | Firmware sendet 1 = Abluft, ETS und Doku sagen 1 = Zuluft | mittel |
 
 ### A – Telegrammsturm beim ego
 
@@ -303,8 +304,62 @@ Kein `git push`, kein Branch, kein Tag ohne ausdrückliche Aufforderung.
 | C | Totzeit je Kanal, auch nach jedem Start |
 | E | nur der Fehlercode bekommt die Bedingung, Objekt 31 bleibt |
 | F | Status „Stufe“ in der Totzeit = laufende Stufe |
-| G | **offen** – umsetzen oder entfernen, siehe Abschnitt 2 |
+| G | Parameter aus der ETS entfernen |
 | Stufe 0 | freigegeben: liegengebliebene Änderungen in sieben Commits sichern |
 
 Durch die Entscheidung zu Objekt 28 ändert Commit 1.2 auch die ETS
 (`Room.templ.xml`, knxprod neu) und in OAM den KoOffset-Plan in PLAN.md.
+
+## 5. Umsetzung und Ergebnis (2026-10-06)
+
+### Commits
+
+| Plan | Repo | Commit | Inhalt |
+|---|---|---|---|
+| 0.1–0.3 | OFM | `14ac530`, `083b507`, `2055081` | Review 27.09.: Code, ETS, Applikationsbeschreibung |
+| 0.4–0.7 | OAM | `8f0e484`, `40a35a2`, `265f60c`, `5f3d1c4` | Review-Doku, Ablaufdiagramme, Simulator, dieses Dokument |
+| 1.1 | OFM | `8cc637b` | A – Telegrammsturm beim ego |
+| 1.2 | OFM | `010a1bc` | B – Betriebsart als Byte, erweiterter HVAC-Modus, Objekt 28 HVAC-Status |
+| 1.3 | OFM | `b7adcb6` | D – sicherer Zustand je Chip als Paar |
+| 1.4 | OFM | `c5cb4b4` | C – Totzeit je Kanal (`DirectionGuard`) |
+| 1.5 | OFM | `ddacf6b` | F – Status nur bei Änderung, Totzeit ohne Stufe 0 |
+| – | OFM | `91277da` | I – Richtung Status 1 = Zuluft |
+| 1.6 | OFM | `69f6c47` | E – Fehlercode 7 nur mit Feuchteanforderung |
+| 1.7 | OFM | `284c504` | G – Parameter „Zuordnung der Spannungshälften“ entfernt |
+| – | OFM | `89c91fb` | H – Rang 4 als ungenutzt kommentiert |
+
+Jeder Befund hat einen Test, der mit dem alten Kern scheitert und mit dem neuen
+besteht: native Tests 219 (neu `test_directionguard`, HVAC-Status, Paar-Schreiben),
+Selbsttest des Simulators mit den Fällen 6b, 9, 10 und den Prüfungen zu Objekt 47,
+48 und 348.
+
+### Wochenläufe vorher und nachher
+
+Gleiche Projekte, gleiche Startwerte, gleiche Störungen.
+
+| | Aufbau B, Winter | ego-Bad, Winter | ego-Bad, Sommer |
+|---|---|---|---|
+| Befunde vorher | 9 | 15 | 14 |
+| Befunde nachher | **0** | **0** | **0** |
+| Gesendete Telegramme je Stunde, vorher | 1.276 | 1.908 | 93.558 |
+| Gesendete Telegramme je Stunde, nachher | 490 | 724 | 596 |
+| Betriebsart Komfort ohne Wirkung, vorher | 12 von 12 | 12 von 18 | 12 von 12 |
+| Betriebsart Komfort ohne Wirkung, nachher | 0 | 0 | 0 |
+| Meldungen Invariante 5 / 6, vorher | 1 / 0 | 4 / 1 | 3 / 1 |
+| Meldungen Invariante 5 / 6, nachher | 0 / 0 | 0 / 0 | 0 / 0 |
+
+Nach allen vier Störungen war das Gerät nach spätestens drei Minuten wieder in
+Betrieb. Die Firmware-Fehlerzeile „Ausgabe fehlgeschlagen – Fehlercode 4“ beim
+12-V-Ausfall ist die erwartete Meldung und zählt im Wochenlauf nicht mehr als
+Befund.
+
+### Beobachtungen ohne Firmware-Fehler
+
+- **Schlafzimmer nachts:** Im Sommer liegt das CO₂ dort rund 11 h je Woche über
+  1500 ppm, weil nachts Nacht/Eco mit Maximalstufe 1 gilt. Für zwei Personen in
+  40 m³ reicht Stufe 1 nicht. Das ist eine Frage der Parametrierung (Maximalstufe
+  Nacht oder CO₂-Führung nachts), keine der Firmware.
+- **Code 7 im Sommer:** Er steht jetzt nur noch an, wenn feuchte Sommerluft eine
+  tatsächliche Feuchteanforderung blockiert – so gewollt.
+- **Raummodell:** ohne Sonneneinstrahlung; die Sommertemperaturen sind Tendenz,
+  nicht Messung.
