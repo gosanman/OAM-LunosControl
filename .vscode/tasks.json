@@ -176,6 +176,49 @@
             }
         },
         {
+            // Simulator: Kern (sim/build/kwlsim.exe) und Metadaten bauen. Setzt
+            // eine aktuelle knxprod voraus (Task "knxprod erzeugen").
+            "label": "Simulator bauen",
+            "type": "shell",
+            "command": "powershell",
+            "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "sim/build.ps1"],
+            "problemMatcher": "$gcc",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+        {
+            // Startet die Simulator-App und oeffnet sie im Browser
+            // (http://127.0.0.1:8765). Beenden mit Strg+C im Terminal.
+            "label": "Simulator starten",
+            "type": "shell",
+            "command": "~/.platformio/penv/Scripts/python.exe",
+            "args": ["sim/kwlsim.py"],
+            "isBackground": true,
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+        {
+            // Ablaeufe aus dem Testplan gegen den echten Firmware-Code, ohne
+            // Oberflaeche. Rot heisst: Firmware weicht von der Erwartung ab.
+            "label": "Simulator-Selbsttest",
+            "type": "shell",
+            "command": "~/.platformio/penv/Scripts/python.exe",
+            "args": ["sim/selftest.py"],
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+        {
             "label": "Aufraeumen (.pio)",
             "type": "shell",
             "command": "~/.platformio/penv/Scripts/pio.exe",

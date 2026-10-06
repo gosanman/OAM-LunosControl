@@ -1,0 +1,91 @@
+{
+ "name": "Bad mit ego + e2 60-Paar",
+ "note": "ego im Bad (Raum 1, S1/S2, eigenständig, Abluftanforderung 10 s Vorlauf, 1 min Nachlauf); e²60-Paar in Raum 2/3 (S3/S4, Verbund 1) folgt der Zuluftanforderung von Raum 1.",
+ "values": {
+  "FAN_Hardware": 1,
+  "BASE_Info1LedFunc": 110,
+  "ROOM_r1Active": 1,
+  "ROOM_r2Active": 1,
+  "ROOM_r3Active": 1,
+  "FAN_Grp1Active": 1,
+  "FAN_Grp1FollowSupply": 1,
+  "ROOM_r1ExhaustLead": 10,
+  "ROOM_r1ExhaustLag": 1,
+  "FAN_f1Active": 1,
+  "FAN_f1Type": 1,
+  "FAN_f1Channel": 1,
+  "FAN_f1Room": 1,
+  "FAN_f1Group": 0,
+  "FAN_f1Phase": 0,
+  "FAN_f2Active": 1,
+  "FAN_f2Type": 0,
+  "FAN_f2Channel": 3,
+  "FAN_f2Room": 2,
+  "FAN_f2Group": 1,
+  "FAN_f2Phase": 0,
+  "FAN_f3Active": 1,
+  "FAN_f3Type": 0,
+  "FAN_f3Channel": 4,
+  "FAN_f3Room": 3,
+  "FAN_f3Group": 1,
+  "FAN_f3Phase": 1,
+  "ROOM_r1Name": "Bad",
+  "ROOM_r2Name": "Wohnzimmer",
+  "ROOM_r3Name": "Schlafzimmer",
+  "FAN_f1Name": "ego Bad"
+ },
+ "env": {
+  "enabled": false,
+  "season": "Winter",
+  "startHour": 6.0,
+  "strength": 1.0,
+  "coupling": true,
+  "events": true,
+  "cycleMin": 5.0,
+  "seed": 1,
+  "rooms": {
+   "1": {
+    "profile": "Bad",
+    "volume": 15,
+    "persons": 1,
+    "setpoint": 23.0,
+    "send": {
+     "temp": true,
+     "hum": true,
+     "co2": true,
+     "voc": true,
+     "out": true,
+     "set": true
+    }
+   },
+   "2": {
+    "profile": "Wohnraum",
+    "volume": 60,
+    "persons": 2,
+    "setpoint": 21.0,
+    "send": {
+     "temp": true,
+     "hum": true,
+     "co2": true,
+     "voc": true,
+     "out": true,
+     "set": true
+    }
+   },
+   "3": {
+    "profile": "Schlafzimmer",
+    "volume": 40,
+    "persons": 2,
+    "setpoint": 19.0,
+    "send": {
+     "temp": true,
+     "hum": true,
+     "co2": true,
+     "voc": true,
+     "out": true,
+     "set": true
+    }
+   }
+  }
+ }
+}

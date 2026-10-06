@@ -1,0 +1,27 @@
+{
+ "name": "Aufbau B (Testplan)",
+ "note": "Testplan Vorbereitung, Aufbau B: beide Lüfter in Verbund 1, gegenläufig.",
+ "values": {
+  "FAN_Hardware": 1,
+  "BASE_Info1LedFunc": 110,
+  "ROOM_r1Active": 1,
+  "ROOM_r2Active": 1,
+  "FAN_Grp1Active": 1,
+  "FAN_f1Active": 1,
+  "FAN_f1Type": 0,
+  "FAN_f1Channel": 1,
+  "FAN_f1Room": 1,
+  "FAN_f1Group": 1,
+  "FAN_f1Phase": 0,
+  "FAN_f1CalibGain": 9975,
+  "FAN_f2Active": 1,
+  "FAN_f2Type": 0,
+  "FAN_f2Channel": 2,
+  "FAN_f2Room": 2,
+  "FAN_f2Group": 1,
+  "FAN_f2Phase": 1,
+  "FAN_f2CalibGain": 9973,
+  "ROOM_r1Name": "Wohnzimmer",
+  "ROOM_r2Name": "Schlafzimmer"
+ }
+}

@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KWL-Simulator</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <header class="bar">
+    <div class="brand">
+      <strong>KWL-Simulator</strong>
+      <span class="sub">KNXFANDRV · Lüftungsmodul, echter Firmware-Code</span>
+    </div>
+
+    <div class="group" title="Simulationszeit seit Programmstart / Laufzeit seit dem letzten Neustart">
+      <span class="clock" id="clock">T+00:00:00</span>
+      <span class="uptime" id="uptime">—</span>
+      <span class="tod hidden" id="tod" title="Tageszeit der Umgebungssimulation"></span>
+    </div>
+
+    <div class="group" id="speed" aria-label="Geschwindigkeit">
+      <button data-speed="0" title="Anhalten">❚❚</button>
+      <button data-speed="1">1×</button>
+      <button data-speed="10">10×</button>
+      <button data-speed="60">60×</button>
+      <button data-speed="600">600×</button>
+      <span class="sep"></span>
+      <button data-step="1000" title="Angehalten: eine Sekunde weiter">+1 s</button>
+      <button data-step="10000">+10 s</button>
+      <button data-step="60000">+1 min</button>
+      <button data-step="900000">+15 min</button>
+    </div>
+
+    <div class="group" aria-label="Versorgung">
+      <button class="toggle" id="pwr-bus" title="KNX-Bus: versorgt den Prozessor">KNX-Bus</button>
+      <button class="toggle" id="pwr-v12" title="12 V: versorgen die DACs und die Lüfter">12 V</button>
+    </div>
+
+    <div class="group" aria-label="ETS">
+      <button class="primary" id="btn-program" title="Parameter wie die ETS herunterladen, mit Neustart">Programmieren</button>
+      <button id="btn-restart" title="Neustart des Geräts">Neustart</button>
+      <button id="btn-unload" title="Applikation entladen: Gerät wie neu">Entladen</button>
+    </div>
+
+    <div class="group" aria-label="Gerät">
+      <span class="led" id="led" title="Info-LED"></span>
+      <button data-btn="short" title="Funktionstaste kurz">Taste kurz</button>
+      <button data-btn="long" title="Funktionstaste lang">lang</button>
+      <button data-btn="double" title="Funktionstaste doppelt">doppelt</button>
+    </div>
+
+    <div class="group" aria-label="Projekt">
+      <select id="project" title="Projekt laden (startet das Gerät neu)"></select>
+      <button id="btn-save" title="Aktuelle Parameter als Projekt speichern">Speichern unter …</button>
+    </div>
+
+    <div class="badges" id="badges"></div>
+  </header>
+
+  <main>
+    <section class="left">
+      <nav class="tabs" id="tabs">
+        <button data-tab="inputs" class="active">Bedienung</button>
+        <button data-tab="env">Umgebung</button>
+        <button data-tab="params">Parameter <span class="count" id="dirty-count"></span></button>
+        <button data-tab="kos">Objekte</button>
+        <button data-tab="bus">Telegramme</button>
+        <button data-tab="console">Konsole</button>
+        <button data-tab="checks">Prüfung <span class="count warn" id="warn-count"></span></button>
+      </nav>
+      <div class="tabbody" id="tab-inputs"></div>
+      <div class="tabbody hidden" id="tab-env">
+        <div id="env-global"></div>
+        <div class="card chart envchart">
+          <div class="cardhead">
+            <h3>Verlauf der Umgebung</h3>
+            <div class="seg" id="env-q">
+              <button data-q="T" class="active">Temperatur</button>
+              <button data-q="RH">Feuchte</button>
+              <button data-q="CO2">CO₂</button>
+              <button data-q="VOC">VOC</button>
+              <button data-q="Q">Luftstrom</button>
+            </div>
+            <div class="seg" id="env-win">
+              <button data-win="3600000">1 h</button>
+              <button data-win="21600000" class="active">6 h</button>
+              <button data-win="86400000">24 h</button>
+              <button data-win="259200000">3 Tage</button>
+            </div>
+          </div>
+          <canvas id="envchart"></canvas>
+        </div>
+        <div class="chcards" id="env-rooms"></div>
+        <div class="card occ" id="env-occ"></div>
+      </div>
+      <div class="tabbody hidden" id="tab-params">
+        <div class="params">
+          <aside id="pagelist"></aside>
+          <div id="page"></div>
+        </div>
+      </div>
+      <div class="tabbody hidden" id="tab-kos"></div>
+      <div class="tabbody hidden" id="tab-bus">
+        <div class="tools">
+          <input id="bus-filter" placeholder="Filter: Nummer oder Name">
+          <label><input type="checkbox" id="bus-rx" checked> empfangen</label>
+          <label><input type="checkbox" id="bus-tx" checked> gesendet</label>
+          <button id="bus-clear">Leeren</button>
+        </div>
+        <div class="scroll"><table class="grid" id="bus-table"></table></div>
+      </div>
+      <div class="tabbody hidden" id="tab-console">
+        <div class="tools">
+          <input id="cmd" placeholder="Konsolenbefehl, z. B. kwl r1" list="cmds">
+          <datalist id="cmds">
+            <option value="kwl st"><option value="kwl grp"><option value="kwl r"><option value="kwl r1">
+            <option value="kwl r2"><option value="kwl f1"><option value="kwl f2"><option value="help">
+          </datalist>
+          <label title="Befehl über das Diagnose-KO 7 schicken; die Antwort kommt in 14-Zeichen-Telegrammen"><input type="checkbox" id="cmd-diag"> über Diagnose-KO</label>
+          <button id="cmd-send" class="primary">Senden</button>
+          <button data-cmd="kwl st">kwl st</button>
+          <button data-cmd="kwl grp">kwl grp</button>
+          <button data-cmd="kwl r1">kwl r1</button>
+          <button data-cmd="kwl f1">kwl f1</button>
+          <button id="log-clear">Leeren</button>
+        </div>
+        <pre class="log" id="log"></pre>
+      </div>
+      <div class="tabbody hidden" id="tab-checks">
+        <p class="hint">Der Invariantenwächter prüft nach jedem Durchlauf, was CLAUDE.md fordert: Bereich vor Sollwert (3), Richtungswechsel nur über die Totzeit bei 5,00 V (5), ego immer als Paar (6). Dazu kommen Hinweise auf Volllast-Signale (0 V an einem bipolaren Kanal) und Fehler des Kerns.</p>
+        <div class="scroll"><table class="grid" id="checks-table"></table></div>
+      </div>
+    </section>
+
+    <section class="right">
+      <div class="outputs" id="outputs"></div>
+      <div class="card chart">
+        <div class="cardhead">
+          <h3>Verlauf der Stellsignale</h3>
+          <div class="seg" id="window">
+            <button data-win="120000">2 min</button>
+            <button data-win="600000" class="active">10 min</button>
+            <button data-win="3600000">1 h</button>
+            <button data-win="21600000">6 h</button>
+          </div>
+        </div>
+        <canvas id="chart"></canvas>
+      </div>
+      <div class="card"><h3>Lüfter</h3><table class="grid" id="fans"></table></div>
+      <div class="card"><h3>Räume</h3><table class="grid" id="rooms"></table></div>
+      <div class="card"><h3>Takt (Verbünde und eigenständige Lüfter)</h3><table class="grid" id="groups"></table></div>
+      <div class="card small" id="module"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

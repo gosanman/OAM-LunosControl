@@ -1,0 +1,8 @@
+{
+ "name": "Neues Gerät (Vorgaben)",
+ "note": "Alle Parameter auf Vorgabe, nichts aktiviert.",
+ "values": {
+  "FAN_Hardware": 1,
+  "BASE_Info1LedFunc": 110
+ }
+}

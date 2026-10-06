@@ -13,3 +13,5 @@ release-collection/*
 include/versions.h
 include/knxprod.h
 include/buildtime.h
+sim/build/
+sim/__pycache__/
