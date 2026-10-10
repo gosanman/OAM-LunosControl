@@ -34,7 +34,6 @@ ERR = {1: 'Freigabe fehlt', 2: 'Master-Timeout', 3: 'Konfiguration', 4: 'DAC nic
        5: 'ungültiger Empfangswert', 6: 'suspendiert', 7: 'Feuchtevergleich sperrt',
        8: 'Messwerte fehlen', 9: 'Schutzbetrieb', 10: 'Filterwechsel fällig', 11: 'Richtungskonflikt'}
 WEEKDAY = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
-BELOW_5V_IS_SUPPLY = True      # Board-Header FANDRV_BELOW_5V_IS_SUPPLY = 1
 
 
 def when(env, t):
@@ -167,8 +166,9 @@ class Recorder:
                     # Stufe 0, Totzeit oder Totzeit-Halt je Kanal: 5,00 V ist richtig.
                     good = abs(v - 5.0) < 0.06
                 else:
+                    # Polaritaet je Luefter (ETS-Parameter), Standard: ueber 5 V Zuluft.
                     below = v < 5.0
-                    good = below == ((f['dir'] == 'Zuluft') == BELOW_5V_IS_SUPPLY) and abs(v - 5.0) > 0.2
+                    good = below == ((f['dir'] == 'Zuluft') == f.get('below5vSupply', False)) and abs(v - 5.0) > 0.2
                 if not good:
                     self.mismatch[f['no']] += 1
                     if len(self.mismatch_ex) < 5:

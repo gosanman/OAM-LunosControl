@@ -304,7 +304,7 @@ Kein `git push`, kein Branch, kein Tag ohne ausdrückliche Aufforderung.
 | C | Totzeit je Kanal, auch nach jedem Start |
 | E | nur der Fehlercode bekommt die Bedingung, Objekt 31 bleibt |
 | F | Status „Stufe“ in der Totzeit = laufende Stufe |
-| G | Parameter aus der ETS entfernen |
+| G | Parameter aus der ETS entfernen – **revidiert 2026-10-10:** Polarität geklärt (über 5 V Zuluft, unter 5 V Abluft, umgekehrt zur Board-Annahme). Sie ist jetzt der Parameter „Polarität“ je Lüfter, `FANDRV_BELOW_5V_IS_SUPPLY` entfällt. |
 | Stufe 0 | freigegeben: liegengebliebene Änderungen in sieben Commits sichern |
 
 Durch die Entscheidung zu Objekt 28 ändert Commit 1.2 auch die ETS

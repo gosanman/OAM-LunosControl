@@ -408,7 +408,7 @@ flowchart TD
     CL --> SV{"Curve::stageVolt<br/>Gerätetyp"}
     SV -->|"unipolar RA 15-60"| UV["Tabellenwert,<br/>keine Richtung"]
     SV -->|"ego, Stufe 4"| EG4["Abluftstoß<br/>beide Motoren gleichsinnig"]
-    SV -->|"bipolar"| BH{"FANDRV_BELOW_5V_IS_SUPPLY<br/>welche Hälfte ist Zuluft?"}
+    SV -->|"bipolar"| BH{"Polarität des Lüfters (ETS)<br/>Standard: über 5 V Zuluft"}
     BH --> BV["untere oder obere Hälfte<br/>ego: Motor 2 in der Gegenhälfte"]
 
     UV & EG4 & BV --> CO["condition je Motor<br/>1. + Kabelkompensation, Stufe > 0<br/>2. × Kalibrierfaktor<br/>3. klemmen 0…10 V"]

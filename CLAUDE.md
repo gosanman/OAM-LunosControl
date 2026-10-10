@@ -92,8 +92,10 @@ Lesestoff, keine Kopiervorlage. Der Plan steht in `docs/PLAN.md`, die Hardware i
   abgegrenzte Stücke (Taupunktformel, Sendebedingung mit Totband), die mit
   Herkunftskommentar übernommen werden. Die Vorlage ist GPL-3.0; dieses Projekt auch.
 - **Richtung heißt Zuluft/Abluft, nicht A/B.** Welche Spannungshälfte welche ist,
-  legt der Board-Header über `FANDRV_BELOW_5V_IS_SUPPLY` fest (Messung M1). Modulcode
-  rechnet in Zuluft/Abluft, nur `KwlCurve` übersetzt in Spannungshälften.
+  legt der ETS-Parameter „Polarität“ **je Lüfter** fest (seit 2026-10-10, vorher
+  `FANDRV_BELOW_5V_IS_SUPPLY` im Board-Header). Standard: **über 5 V Zuluft, unter
+  5 V Abluft** — 10 V = Zuluft voll, 0 V = Abluft voll. Modulcode rechnet in
+  Zuluft/Abluft, nur `KwlCurve` übersetzt in Spannungshälften.
 - **WRG ist die Pendelbewegung.** Kurzer Zyklus (70 s) = WRG, langer Zyklus (1 h,
   Sommer) = praktisch ohne WRG, aber weiter wechselnd. Feste Richtung nur auf
   ausdrückliche Betriebsweise-Vorgabe. Beim ego ist WRG in Stufe 1–3 immer aktiv.

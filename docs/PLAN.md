@@ -542,7 +542,8 @@ und Kabelkompensation. Noch kein Takt — Richtung wird per KO vorgegeben.
 - [ ] Ein Knoten mehr aktiviert als Kanäle vorhanden → Fehlercode 3, kein Absturz
 
 **Offene Messungen, die hier einfließen:** M1 (Polarität: ist < 5 V Zuluft oder
-Abluft? — entscheidet die Richtungsnamen in ETS und Status-KO), M2 (Strom je
+Abluft? — geklärt 2026-10-10: unter 5 V Abluft, über 5 V Zuluft; seitdem ein
+ETS-Parameter je Lüfter), M2 (Strom je
 Stufe → I-Tabelle), M3 (Totband → Warnschwelle im Kommentar), M5 (Eingangsstrom S).
 
 ---
@@ -847,7 +848,9 @@ liefern nach — sonst pfeift es an den Fenstern.
 - **Totzeit** vor jedem Wechsel 5,00 V, Vorgabe 2 s. Beim ego beide Motoren
   gleichzeitig; er pendelt intern und kann trotzdem Slave sein.
 - **Richtungsnamen** in der ETS: Zuluft / Abluft. Welche Spannungshälfte welche ist,
-  entscheidet Messung M1 → `FANDRV_BELOW_5V_IS_SUPPLY` im Board-Header.
+  legt der Parameter „Polarität“ je Lüfter fest, Standard über 5 V Zuluft, unter
+  5 V Abluft (geklärt 2026-10-10; vorher `FANDRV_BELOW_5V_IS_SUPPLY` im
+  Board-Header mit der Annahme unter 5 V Zuluft).
 
 **Richtungskonflikt** (ergänzt 2026-09-23, vorher offen): Ein Verbund hat genau
 **eine** Richtung — die der Phase 0; Phase 1 ist immer die Gegenrichtung. Was in den

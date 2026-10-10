@@ -139,6 +139,7 @@ namespace sim
             first = false;
             o += "{\"no\":" + std::to_string(i + 1) + ",\"type\":\"" + typeName(f->type()) +
                  "\",\"bipolar\":" + b(bipolar(f->type())) +
+                 ",\"below5vSupply\":" + b(f->below5vIsSupply()) +
                  ",\"ch\":" + std::to_string(f->dacChannel() + 1) +
                  ",\"channels\":" + std::to_string(f->channelsNeeded()) +
                  ",\"room\":" + std::to_string(f->roomNo()) +

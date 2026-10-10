@@ -137,5 +137,4 @@ namespace Kwl
     bool boardLeftAligned() { return FANDRV_DAC_LEFT_ALIGNED != 0; }
     uint8_t boardChannels() { return FANDRV_BOARD_CHANNELS; }
     uint8_t boardId() { return FANDRV_BOARD_ID; }
-    bool boardBelow5vIsSupply() { return FANDRV_BELOW_5V_IS_SUPPLY != 0; }
 } // namespace Kwl

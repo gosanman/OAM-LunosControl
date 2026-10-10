@@ -85,6 +85,32 @@ def ego_boost(meta):
     core.close()
 
 
+def polarity(meta):
+    """Polaritaet je Luefter (2026-10-10): Standard ueber 5 V Zuluft, umkehrbar je Luefter."""
+    print('11. Polarität je Lüfter')
+    img = aufbau_b(meta)
+    for n, v in {'FAN_f1Group': 0, 'FAN_f2Group': 0,      # beide eigenständig
+                 'FAN_f1Polarity': 0, 'FAN_f2Polarity': 1}.items():
+        img.set(n, v)
+    core = Core()
+    core.cmd('load ' + img.hex())
+    core.cmd('v12 1')
+    core.cmd('bus 1')
+    core.cmd('run 5000')
+    for ko_stage, ko_dir in ((26, 31), (66, 71)):        # Raum 1 und 2: Stufe 2, nur Zuluft
+        core.cmd(f'ko {ko_stage} 5.100 2')
+        core.cmd(f'ko {ko_dir} 5.010 2')
+    core.cmd('run 5000')
+    st = core.state()['sim']
+    f1, f2 = st['fans'][0], st['fans'][1]
+    v1, v2 = st['dac'][0]['volt'], st['dac'][1]['volt']
+    check('Lüfter 1, Standard: Zuluft über 5 V', f1['dir'] == 'Zuluft' and abs(v1 - 6.91) < 0.05,
+          (f1['dir'], v1, f1['below5vSupply']))
+    check('Lüfter 2, umgekehrt: Zuluft unter 5 V', f2['dir'] == 'Zuluft' and abs(v2 - 3.21) < 0.05,
+          (f2['dir'], v2, f2['below5vSupply']))
+    core.close()
+
+
 def dac(core):
     return [round(c['volt'], 2) for c in core.state()['sim']['dac']]
 
@@ -220,7 +246,13 @@ def main():
     core.cmd('run 2000')
     st = core.state()
     check('Fehler weg nach Wiederkehr', st['sim']['module']['error'] == 0, st['sim']['module'])
-    check('Ausgang nicht auf 0 V', st['sim']['dac'][0]['volt'] > 0.5, st['sim']['dac'][0])
+    # Nicht "Spannung > 0,5 V": seit 2026-10-10 ist unter 5 V Abluft, und Stufe 4
+    # Abluft des e²60 liegt bei 0,01 V. Der Werkswert ist Code 0 ohne Bereich.
+    d0 = st['sim']['dac'][0]
+    check('Ausgang neu geschrieben, nicht Werkswert', d0['wire'] != 0 and d0['range'] == 0x11, d0)
+    f0 = st['sim']['fans'][0]
+    check('Spannung passt zur Richtung (Polarität Standard)',
+          f0['stage'] == 0 or (d0['volt'] > 5.0) == (f0['dir'] == 'Zuluft'), (f0['stage'], f0['dir'], d0['volt']))
 
     print('8. KNX-Bus weg, 12 V bleiben')
     core.cmd('run 3000')
@@ -232,6 +264,7 @@ def main():
     core.close()
     ego_summer(meta)
     ego_boost(meta)
+    polarity(meta)
 
     print('Invariantenwächter:')
     for w in warns:

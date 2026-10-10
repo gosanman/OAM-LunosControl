@@ -54,14 +54,6 @@
 //   2 = KNXFANDRV 6   3 = KNXFANDRV 8   4 = KNXFANDRV 10   5 = KNXFANDRV 12
 #define FANDRV_BOARD_ID         1
 
-// --- Polaritaet der Spannungshaelften ---------------------------------------
-// 1 = unter 5,00 V foerdert der Luefter Zuluft, ueber 5,00 V Abluft.
-// ANNAHME bis zur Messung M1. Sie deckt sich mit der Vorgabe des ETS-Parameters
-// "Zuordnung der Spannungshaelften". Ist sie falsch, heissen Zuluft und Abluft vertauscht —
-// unangenehm, aber ungefaehrlich: die Drehzahl stimmt, nur die Richtungsnamen nicht.
-// Deshalb hier eine dokumentierte Annahme und kein #error.
-#define FANDRV_BELOW_5V_IS_SUPPLY 1
-
 // --- Busformat des 15-Bit-Werts ---------------------------------------------
 //
 // GEMESSEN am 2026-09-25 an S1, RIGOL DM858 (Phase 1, Messung P6):

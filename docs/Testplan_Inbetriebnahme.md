@@ -141,9 +141,10 @@ Die Kennlinie, gegen die du misst. Bei eingetragenem Kalibrierfaktor ±30 mV.
 | 3 | 1,96 | 8,15 |
 | 4 | 0,01 | 10,00 |
 
-Zuluft ist die Hälfte *unter* 5 V — das ist die Annahme `FANDRV_BELOW_5V_IS_SUPPLY`
-aus dem Board-Header, bis Messung M1 sie bestätigt. Sind Zu- und Abluft in allen
-Tests vertauscht, ist die Annahme falsch, nicht der Test.
+Zuluft ist die Hälfte *über* 5 V, Abluft die *unter* 5 V — die Vorgabe des
+Parameters „Polarität“ je Lüfter (seit 2026-10-10; vorher galt im Board-Header die
+umgekehrte Annahme). Sind Zu- und Abluft an einem Lüfter vertauscht, steht seine
+Polarität falsch, nicht der Test.
 
 ### Konsole
 
@@ -183,7 +184,7 @@ Platine zurückstellen, programmieren, weiter.
 
 | Schritt | Senden | Erwartung | ☐ |
 |---|---|---|---|
-| 1 | KO 26 = **2** | KO 45 = 2; S1 → 3,21 V (Zuluft, Stufe 2) oder 6,91 V; KO 346 = 2; `kwl r1`: Rang 5 | ☐ |
+| 1 | KO 26 = **2** | KO 45 = 2; S1 → 6,91 V (Zuluft, Stufe 2) oder 3,21 V (Abluft); KO 346 = 2; `kwl r1`: Rang 5 | ☐ |
 | 2 | KO 26 = **0** | KO 45 = 0; S1 → 5,00 V. (In Aufbau B stünde S1 auf Stufe 1 — Raum 2 hält den Verbund.) | ☐ |
 | 3 | KO 27 = **60 %** | Stufe 3 (Prozent → Stufe mit Hysterese: 60 % liegt über 54) | ☐ |
 | 4 | KO 28 = **1** | Stufe 4 (eine höher) | ☐ |
@@ -238,7 +239,7 @@ Beide Räume auf Komfort (KO 20 = 1, KO 60 = 1), Handstufe 2 in Raum 1 (KO 26 = 
 | Nach der Zykluszeit: beide für ~2 s auf **5,00 V**, dann getauscht | ☐ |
 | Während der Totzeit bleiben KO 346/370 auf **2** – die Totzeit ist kein Stillstand | ☐ |
 | Je Wechsel senden nur KO 348, 350, 351 (bzw. 372, 374, 375), nicht alle sechs Statusobjekte | ☐ |
-| KO 348 = **1** an dem Lüfter, der gerade Zuluft fördert (S unter 5 V) | ☐ |
+| KO 348 = **1** an dem Lüfter, der gerade Zuluft fördert (S über 5 V) | ☐ |
 | `kwl grp`: Verbund 1, Stufe 2, Zykluszeit, „Totzeit" während des Wechsels | ☐ |
 | KO 349 = 1 (WRG aktiv) | ☐ |
 
@@ -637,5 +638,5 @@ Abluftanforderung mit 10 s Vorlauf. Oszilloskop oder Messgerät an S1.
 1. `kwl r1` — welcher Rang liefert die Stufe? Steht dort Rang 1 oder 2, ist es keine Führung.
 2. `kwl f1` — passt der Stellkanal? Steht „GESPERRT"?
 3. Fehlercode am Lüfter (KO 357): die Nummer sagt, wo. 8 = Messwert fehlt, 11 = Richtungskonflikt.
-4. Zu- und Abluft **überall** vertauscht → Messung M1, `FANDRV_BELOW_5V_IS_SUPPLY` im Board-Header.
+4. Zu- und Abluft an einem Lüfter vertauscht → Parameter „Polarität“ dieses Lüfters (Kennlinie). `kwl fNN` zeigt die eingestellte Zuordnung.
 5. Spannung stimmt bis auf ~0,25 % → Kalibrierfaktor nicht eingetragen.
