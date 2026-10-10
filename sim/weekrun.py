@@ -154,13 +154,16 @@ class Recorder:
             return
         dac = s['dac']
         env_rh = {no: e['RH'] for no, e in sim.env.status.items()}
+        # Verbuende in der Rampe: dort liegt die Spannung zwischen Stufe und 5,00 V,
+        # der Status meldet absichtlich das Ziel (seit 2026-10-10).
+        ramping = {g['slot'] + 1 for g in s.get('groups', []) if g.get('ramp', 1.0) < 0.999}
         for f in s['fans']:
             self.fan_stage[f['no']][f['stage']] += 1
             self.fan_err[f['no']][f['err']] += 1
             if f['err'] == 7 and env_rh.get(f['room'], 100) < 45:
                 self.code7_dry[f['no']] += 1
             # Plausibilitaet: Status gegen Spannung (bipolar, erster Motor)
-            if f['bipolar'] and dac[f['ch'] - 1]['powered'] and not (f['type'] == 'ego' and f['stage'] == 4):
+            if f['bipolar'] and dac[f['ch'] - 1]['powered'] and not (f['type'] == 'ego' and f['stage'] == 4)                     and f['group'] not in ramping:
                 v = dac[f['ch'] - 1]['volt']
                 if f['stage'] == 0 or abs(v - 5.0) < 0.06:
                     # Stufe 0, Totzeit oder Totzeit-Halt je Kanal: 5,00 V ist richtig.

@@ -294,18 +294,19 @@ function renderOutputs() {
   // Takt
   const groups = st.sim.groups;
   $('#groups').replaceChildren(
-    h('tr', {}, ...['Takt', 'Rolle', 'Mitgl.', 'Stufe', 'Phase A', 'Zyklus', 'seit', 'Totzeit', 'WRG', 'Hinweis'].map(x => h('th', {}, x))),
+    h('tr', {}, ...['Takt', 'Rolle', 'Mitgl.', 'Stufe', 'Phase A', 'Zyklus', 'seit', 'Rampe', 'Totzeit', 'WRG', 'Hinweis'].map(x => h('th', {}, x))),
     ...(groups.length ? groups.map(g => h('tr', {},
       h('td', {}, g.name), h('td', {}, g.role), h('td', { class: 'num' }, g.members),
       h('td', { class: 'num' }, g.stage),
       h('td', { class: 'dir-' + g.dir }, g.dir + (g.fixed ? ' (fest)' : '')),
       h('td', { class: 'num' }, g.cycle + ' s'),
       h('td', { class: 'num' }, de(g.since, 0) + ' s'),
+      h('td', {}, g.ramp < 0.999 && !g.inDeadTime ? h('b', {}, `${de(g.ramp * 100, 0)} %`) : g.rampTime + ' s'),
       h('td', {}, g.inDeadTime ? h('b', {}, 'läuft') : g.deadTime + ' s'),
       h('td', {}, g.hrv ? 'ja' : '—'),
       h('td', { class: g.conflict || g.timedOut ? 'err' : 'muted' },
         [g.conflict ? `Konflikt Raum ${g.conflictRoom}` : null, g.timedOut ? 'Master fehlt' : null].filter(Boolean).join(' · ') || '—'),
-    )) : [h('tr', {}, h('td', { colspan: 10, class: 'muted' }, 'kein Takt aktiv'))]));
+    )) : [h('tr', {}, h('td', { colspan: 11, class: 'muted' }, 'kein Takt aktiv'))]));
 
   const m = st.sim.module;
   $('#module').textContent = `I²C-Frames ${m.i2cFrames.toLocaleString('de-DE')} · ohne ACK ${m.i2cNacks} · Ausgabe ${m.outputReady ? 'bereit' : 'NICHT bereit'} · Modulfehler ${m.error} (${ERR[m.error]})`;
@@ -569,7 +570,7 @@ function fanContext(no) {
     h('span', {}, type),
     h('span', {}, Number(v[`FAN_f${no}Type`]) === 1   // ego: zwei Motoren, zwei Kanäle
       ? `Stellkanal S${v[`FAN_f${no}Channel`]}/S${Number(v[`FAN_f${no}Channel`]) + 1}` : `Stellkanal S${v[`FAN_f${no}Channel`]}`),
-    h('span', {}, grp ? `Verbund ${grp} · Phase ${Number(v[`FAN_f${no}Phase`]) ? 'B' : 'A'}` : 'eigenständig (eigener Takt)'),
+    h('span', {}, grp ? `Verbund ${grp} · Phase ${Number(v[`FAN_f${no}Phase`]) ? 'B' : 'A'}` : 'kein Verbund – Fehlercode 3'),
     Number(v[`FAN_f${no}Share`]) < 100 ? h('span', {}, `Anteil ${v[`FAN_f${no}Share`]} %`) : null,
     grp ? h('span', { class: 'muted' }, partners.length ? 'Partner: ' + partners.join(', ') : 'kein Partner im Verbund') : null);
 }

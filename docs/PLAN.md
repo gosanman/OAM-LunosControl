@@ -189,7 +189,7 @@ Deshalb drei Ebenen:
 |---|---|---|---|
 | **Raum** | Sensor-KOs (rF, T, CO₂, VOC, Tsoll, Außenwerte), Betriebsart-Ebenen, Zwangsobjekte, Handstufe, Sommer, Sperre, Abluftanforderung, Führungen, Schutz → **Raumanforderung** (Stufe), **Raumdeckel** (Maximalstufe), **Zyklusregel-Wunsch**, **Richtungswunsch** | eigenes OpenKNX-Modul `KwlRoomModule`, Präfix `ROOM`, Kanaltemplate = Raum | **max. 8**, in der ETS 1…8 einblendbar |
 | **Verbund** | Stufenregel, Zyklusregel-Konflikt, Zykluszeiten je Stufe, Sommerzykluszeit, Totzeit, Rolle (intern / Master sendet / Slave folgt extern), „folgt Zuluftanforderung von Raum …" | Parameterblock im share.xml des Lüftermoduls; kein eigener KO-Block — Gruppen-KOs liegen beim Lüfter mit Rolle Master/Slave | **max. 8**, sichtbar bis ⌈Lüfter/2⌉ + 2 |
-| **Lüfter** | Gerätetyp, DAC-Kanal(e), Kennlinie, Kalibrierung, Kabelkompensation, **Raum** (1…8), **Verbund** (1…8 oder eigenständig), Phase (0/1), Anteil, Freigabe, Gruppen-KOs, Status-KOs, Betriebsstunden, Filter, Störung | eigenes OpenKNX-Modul `KwlFanModule`, Präfix `FAN`, Kanaltemplate = Lüfter | **max. 12**, Anzahl folgt der **Hardwareauswahl** |
+| **Lüfter** | Gerätetyp, DAC-Kanal(e), Kennlinie, Kalibrierung, Kabelkompensation, **Raum** (1…8), **Verbund** (1…8, Pflicht – „eigenständig“ entfallen 2026-10-10), Phase (0/1), Anteil, Freigabe, Gruppen-KOs, Status-KOs, Betriebsstunden, Filter, Störung | eigenes OpenKNX-Modul `KwlFanModule`, Präfix `FAN`, Kanaltemplate = Lüfter | **max. 12**, Anzahl folgt der **Hardwareauswahl** |
 
 **Regeln:**
 - Ein Lüfter gehört zu genau einem Raum und genau einem Verbund. Ein Raum kann null
@@ -845,6 +845,9 @@ liefern nach — sonst pfeift es an den Fenstern.
 - **Balance-Hinweis** (Arcus §5.3) in die Applikationsbeschreibung: Zuluft- und
   Abluftseite müssen sich die Waage halten, sonst gibt es weder Luftaustausch noch
   WRG.
+- **Rampe** (seit 2026-10-10) je Verbund, Vorgabe 5 s, 0 = Sprung: vor der Totzeit
+  linear auf 5,00 V, danach linear auf die neue Stufe. Nur Richtungswechsel.
+  Offset 3 des Verbundblocks, vorher Reserve; Blockgröße unverändert.
 - **Totzeit** vor jedem Wechsel 5,00 V, Vorgabe 2 s. Beim ego beide Motoren
   gleichzeitig; er pendelt intern und kann trotzdem Slave sein.
 - **Richtungsnamen** in der ETS: Zuluft / Abluft. Welche Spannungshälfte welche ist,

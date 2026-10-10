@@ -7,8 +7,10 @@ so gewählt, dass jeder auf dem vorigen aufbaut.
 **Nur S1 und S2 benutzen.** S3 und S4 der Platine 1 sind seit Befund B1 nicht
 verwendbar. Lüfter bleiben abgeklemmt — gemessen wird die Spannung an der Klemme.
 
-**Stand der Firmware:** Die Erwartungen gelten ab dem Stand vom **2026-10-06**
-(Befunde A–I aus `docs/Befunde_Simulation_2026-10-06.md`): Betriebsart als Byte
+**Stand der Firmware:** Die Erwartungen gelten ab dem Stand vom **2026-10-10**:
+Polarität je Lüfter (über 5 V Zuluft), Rampe beim Richtungswechsel (Vorgabe 5 s),
+jeder Lüfter in einem Verbund – „eigenständig“ ist entfallen. Davor galt der Stand
+vom **2026-10-06** (Befunde A–I aus `docs/Befunde_Simulation_2026-10-06.md`): Betriebsart als Byte
 mit erweitertem HVAC-Modus, HVAC-Status auf Objekt 28, Totzeit je Kanal auch nach
 Start und 12-V-Wiederkehr, Status nur bei Änderung, Richtung Status 1 = Zuluft,
 Code 7 nur mit Feuchteanforderung. Davor galt der Stand vom **2026-09-27 (Review)**:
@@ -49,20 +51,22 @@ Raum 2 will Stufe 1. Deshalb zwei Aufbauten:
 
 | Aufbau | Lüfter 2 | S1 zeigt | für |
 |---|---|---|---|
-| **A — Raum** | Verbund **eigenständig** | genau Raum 1 (Lüfter 1 ist allein in Verbund 1) | T1–T3, T5–T9, T12–T17 |
+| **A — Raum** | **Verbund 2** (allein) | genau Raum 1 (Lüfter 1 ist allein in Verbund 1) | T1–T3, T5–T9, T12–T17 |
 | **B — Verbund** | **Verbund 1** | Verbundstufe aus Raum 1 und Raum 2 | T4, T10, T11, T18 |
 
-Umstellen heißt: Parameter „Verbund“ auf der Seite von Lüfter 2, programmieren.
+Umstellen heißt: Parameter „Verbund“ auf der Seite von Lüfter 2, programmieren. Für
+Aufbau A muss Verbund 2 auf der Kanalauswahl aktiviert sein, sonst meldet Lüfter 2
+Fehlercode 3 und bleibt auf 5,00 V.
 Raumanforderung KO 45 zeigt in beiden Aufbauten die Stufe von Raum 1 — bei Zweifeln
 immer zuerst dort nachsehen.
 
-In Aufbau A fährt Lüfter 2 **seinen eigenen Takt** aus Raum 2: Stufe von Raum 2,
-Zykluszeit 70 s, Sommer 3600 s, Totzeit 2 s (feste Vorgaben, kein ETS-Parameter).
+In Aufbau A fährt Lüfter 2 **seinen eigenen Takt** aus Raum 2 – mit den Werten von
+Verbund 2 (Vorgaben: Zykluszeit 70 s, Sommer 3600 s, Totzeit 2 s, Rampe 5 s).
 S2 pendelt also für sich; für die Pläne mit Aufbau A ist S2 Nebensache.
 
-> Braucht Firmware vom **2026-09-27 (Review)**. Vorher gab es für „eigenständig“
-> keinen Antriebsweg: S2 blieb in Aufbau A dauerhaft auf 5,00 V, Status und
-> Fehlercode von Lüfter 2 änderten sich nie.
+> Bis 2026-10-10 stand Lüfter 2 in Aufbau A auf „eigenständig“ mit festen Werten.
+> Die Auswahl gibt es nicht mehr; ein altes Projekt mit „eigenständig“ zeigt bei
+> Lüfter 2 Fehlercode 3.
 
 Vorgaben der Betriebsarten (Grundstufe / Maximalstufe): Komfort 1/4 · Standby 1/2 ·
 Nacht 1/1 · Schutz 0/1 · Stoßlüften 4/4 · Absenkung 1/2 · Ruhe 0/0.
@@ -236,7 +240,9 @@ Beide Räume auf Komfort (KO 20 = 1, KO 60 = 1), Handstufe 2 in Raum 1 (KO 26 = 
 |---|---|
 | S1 und S2 liegen in **verschiedenen Hälften**: einer bei 3,21 V, der andere bei 6,91 V | ☐ |
 | KO 348 und KO 372 sind **verschieden** | ☐ |
-| Nach der Zykluszeit: beide für ~2 s auf **5,00 V**, dann getauscht | ☐ |
+| Nach der Zykluszeit: beide in **5 s** gleichmäßig auf 5,00 V (Rampe), **2 s** bei 5,00 V (Totzeit), dann in 5 s auf die Gegenseite | ☐ |
+| Während der Rampen sendet KO 351 (Ausgangsspannung) **keine** Zwischenwerte: alte Stufenspannung → 5,00 V → neue Stufenspannung | ☐ |
+| Rampe auf 0 s stellen, programmieren: Wechsel wieder als Sprung, ~2 s bei 5,00 V | ☐ |
 | Während der Totzeit bleiben KO 346/370 auf **2** – die Totzeit ist kein Stillstand | ☐ |
 | Je Wechsel senden nur KO 348, 350, 351 (bzw. 372, 374, 375), nicht alle sechs Statusobjekte | ☐ |
 | KO 348 = **1** an dem Lüfter, der gerade Zuluft fördert (S über 5 V) | ☐ |
@@ -616,15 +622,16 @@ Dafür in der ETS „Applikation entladen“ oder ein frisch geflashtes Board ne
 
 ## T20 — ego: Abluftstoß und Sommerzyklus
 
-**Eigener Aufbau:** ein ego an S1/S2 (U2), Raum 1, Verbund **eigenständig**,
+**Eigener Aufbau:** ein ego an S1/S2 (U2), Raum 1, allein in **Verbund 1**,
 Abluftanforderung mit 10 s Vorlauf. Oszilloskop oder Messgerät an S1.
 **Ziel:** die Befunde A und C am echten Gerät.
 
 | Schritt | Tun | Erwartung | ☐ |
 |---|---|---|---|
 | 1 | Handstufe 1 (KO 26 = 1) | ego pendelt: S1 und S2 in verschiedenen Hälften, Wechsel über 5,00 V | ☐ |
-| 2 | KO 32 = 1, in einer Halbwelle mit S1 **über** 5 V | nach dem Vorlauf: S1 und S2 erst **2 s auf 5,00 V**, dann beide 1,11 V (Abluftstoß) | ☐ |
-| 3 | KO 32 = 0, Nachlauf abwarten | zurück ins Pendeln, wieder über 2 s bei 5,00 V | ☐ |
+| 2 | KO 32 = 1, in einer Halbwelle mit S1 **über** 5 V | nach dem Vorlauf: S1 und S2 in 5 s auf 5,00 V, **2 s** dort, dann in 5 s beide auf 1,11 V (Abluftstoß) | ☐ |
+| 2b | wie 2, aber in einer Halbwelle mit S1 **unter** 5 V | kein Wechsel des Verbunds, Motor 2 wechselt aber die Seite: S1 und S2 halten **2 s** bei 5,00 V (Totzeit je Kanal, beim ego immer beide), dann beide 1,11 V – als Sprung, ohne Rampe | ☐ |
+| 3 | KO 32 = 0, Nachlauf abwarten | zurück ins Pendeln, wieder über Rampe und 2 s bei 5,00 V | ☐ |
 | 4 | KO 30 = 1 (Sommer), Busmonitor 10 min | Lüfter-Objekte 340…357 senden nur bei echter Änderung, **keine** Telegrammflut | ☐ |
 
 > Braucht Firmware vom **2026-10-06**. Vorher sprang Motor 1 in Schritt 2 direkt

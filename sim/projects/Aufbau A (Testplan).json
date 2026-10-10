@@ -1,6 +1,6 @@
 {
  "name": "Aufbau A (Testplan)",
- "note": "Testplan Vorbereitung, Aufbau A: Lüfter 2 eigenständig, S1 zeigt genau Raum 1.",
+ "note": "Testplan Vorbereitung, Aufbau A: Lüfter 2 allein in Verbund 2, S1 zeigt genau Raum 1.",
  "values": {
   "FAN_Hardware": 1,
   "BASE_Info1LedFunc": 110,
@@ -18,10 +18,11 @@
   "FAN_f2Type": 0,
   "FAN_f2Channel": 2,
   "FAN_f2Room": 2,
-  "FAN_f2Group": 0,
+  "FAN_f2Group": 2,
   "FAN_f2Phase": 1,
   "FAN_f2CalibGain": 9973,
   "ROOM_r1Name": "Wohnzimmer",
-  "ROOM_r2Name": "Schlafzimmer"
+  "ROOM_r2Name": "Schlafzimmer",
+  "FAN_Grp2Active": 1
  }
 }

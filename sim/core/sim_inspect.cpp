@@ -93,13 +93,13 @@ namespace sim
         return s.valid ? num(s.value, decimals) : "null";
     }
 
-    /// Takt-Platz eines Luefters: Verbund n -> n-1, eigenstaendig -> 8 + Index.
+    /// Takt-Platz eines Luefters: Verbund n -> n-1, ohne Verbund -1.
     static int slotOf(uint8_t fanIndex)
     {
         const KwlFan* f = openknxKwlFanModule.mFan[fanIndex];
         if (f == nullptr)
             return -1;
-        return f->groupNo() == 0 ? kGroupsMax + fanIndex : f->groupNo() - 1;
+        return (f->groupNo() == 0 || f->groupNo() > kGroupsMax) ? -1 : f->groupNo() - 1;
     }
 
     std::string snapshotJson()
@@ -203,9 +203,7 @@ namespace sim
             if (!first)
                 o += ",";
             first = false;
-            std::string name = g < kGroupsMax
-                                   ? "Verbund " + std::to_string(g + 1)
-                                   : "Luefter " + std::to_string(g - kGroupsMax + 1) + " eigenst.";
+            std::string name = "Verbund " + std::to_string(g + 1);
             static const char* roles[] = {"intern", "Master", "Slave"};
             o += "{\"slot\":" + std::to_string(g) + ",\"name\":" + esc(name) + ",\"role\":\"" +
                  roles[static_cast<int>(m.mGroupRole[g]) % 3] +
@@ -213,6 +211,8 @@ namespace sim
                  ",\"stage\":" + std::to_string(r.stage) + ",\"dir\":\"" +
                  dirName(r.phase0Direction) + "\",\"cycle\":" + std::to_string(r.cycleSeconds) +
                  ",\"deadTime\":" + std::to_string(grp.mDeadTime) +
+                 ",\"rampTime\":" + std::to_string(grp.mRampTime) +
+                 ",\"ramp\":" + num(r.ramp, 3) +
                  ",\"inDeadTime\":" + b(r.inDeadTime) + ",\"hrv\":" + b(r.hrv) +
                  ",\"fixed\":" + b(r.directionFixed) + ",\"conflict\":" + b(r.conflict) +
                  ",\"conflictRoom\":" + std::to_string(r.conflictRoom) +

@@ -89,7 +89,7 @@ def polarity(meta):
     """Polaritaet je Luefter (2026-10-10): Standard ueber 5 V Zuluft, umkehrbar je Luefter."""
     print('11. Polarität je Lüfter')
     img = aufbau_b(meta)
-    for n, v in {'FAN_f1Group': 0, 'FAN_f2Group': 0,      # beide eigenständig
+    for n, v in {'FAN_Grp2Active': 1, 'FAN_f2Group': 2,   # je ein eigener Verbund
                  'FAN_f1Polarity': 0, 'FAN_f2Polarity': 1}.items():
         img.set(n, v)
     core = Core()
@@ -100,7 +100,7 @@ def polarity(meta):
     for ko_stage, ko_dir in ((26, 31), (66, 71)):        # Raum 1 und 2: Stufe 2, nur Zuluft
         core.cmd(f'ko {ko_stage} 5.100 2')
         core.cmd(f'ko {ko_dir} 5.010 2')
-    core.cmd('run 5000')
+    core.cmd('run 15000')             # Rampe ab, Totzeit, Rampe auf
     st = core.state()['sim']
     f1, f2 = st['fans'][0], st['fans'][1]
     v1, v2 = st['dac'][0]['volt'], st['dac'][1]['volt']
@@ -108,6 +108,25 @@ def polarity(meta):
           (f1['dir'], v1, f1['below5vSupply']))
     check('Lüfter 2, umgekehrt: Zuluft unter 5 V', f2['dir'] == 'Zuluft' and abs(v2 - 3.21) < 0.05,
           (f2['dir'], v2, f2['below5vSupply']))
+    core.close()
+
+
+def without_group(meta):
+    """Seit 2026-10-10 braucht jeder Luefter einen aktiven Verbund."""
+    print('12. Lüfter ohne aktiven Verbund')
+    img = aufbau_b(meta)
+    img.set('FAN_f2Group', 3)                              # Verbund 3 ist nicht aktiv
+    core = Core()
+    core.cmd('load ' + img.hex())
+    core.cmd('v12 1')
+    core.cmd('bus 1')
+    core.cmd('run 5000')
+    core.cmd('ko 66 5.100 3')                              # Raum 2 will Stufe 3
+    core.cmd('run 5000')
+    st = core.state()['sim']
+    check('Lüfter 2: Fehlercode 3', st['fans'][1]['err'] == 3, st['fans'][1]['err'])
+    check('Lüfter 2: S2 auf 5,00 V', abs(st['dac'][1]['volt'] - 5.0) < 0.02, st['dac'][1])
+    check('Lüfter 1 nicht betroffen (Verbund 1)', st['fans'][0]['err'] != 3, st['fans'][0]['err'])
     core.close()
 
 
@@ -173,10 +192,23 @@ def main():
 
     print('4. Pendeln über die Totzeit (70 s Zyklus)')
     side0 = v[0] > 5
+    full0 = abs(v[0] - 5.0)
+    # Seit 2026-10-10: Rampe 5 s (ETS-Vorgabe) vor und nach der Totzeit.
     waited = 0
-    while waited < 80000 and not core.state()['sim']['groups'][0]['inDeadTime']:
+    while waited < 80000 and core.state()['sim']['groups'][0]['ramp'] >= 0.999:
         core.cmd('run 100')
         waited += 100
+    core.cmd('run 2500')              # Mitte der Rampe nach unten
+    g = core.state()['sim']['groups'][0]
+    x = dac(core)
+    check('Rampe ab: halber Ausschlag, alte Seite',
+          abs(g['ramp'] - 0.5) < 0.05 and (x[0] > 5) == side0 and 0.3 * full0 < abs(x[0] - 5) < 0.7 * full0,
+          (g['ramp'], x))
+    waited = 0
+    while waited < 10000 and not core.state()['sim']['groups'][0]['inDeadTime']:
+        core.cmd('run 100')
+        waited += 100
+    check('Rampe dauert 5 s', 2300 <= waited <= 2700, f'{2500 + waited} ms bis 5,00 V')
     x = dac(core)
     check('Totzeit erreicht, beide Kanäle 5,00 V', abs(x[0] - 5.0) < 0.02 and abs(x[1] - 5.0) < 0.02, x)
     dead = 0
@@ -184,8 +216,14 @@ def main():
         core.cmd('run 100')
         dead += 100
     check('Totzeit dauert 2 s', 1900 <= dead <= 2100, f'{dead} ms')
+    core.cmd('run 2500')              # Mitte der Rampe nach oben
+    x = dac(core)
+    check('Rampe auf: neue Seite, halber Ausschlag',
+          (x[0] > 5) != side0 and 0.3 * full0 < abs(x[0] - 5) < 0.7 * full0, x)
+    core.cmd('run 2600')
     v = dac(core)
-    check('danach getauscht', (v[0] > 5) != side0, v)
+    # Stufe 2 liegt nicht symmetrisch um 5 V: 6,91 V Zuluft, 3,21 V Abluft.
+    check('danach getauscht, volle Stufe', (v[0] > 5) != side0 and min(abs(v[0] - 6.91), abs(v[0] - 3.21)) < 0.02, v)
     fans = core.state()['sim']['fans']
     check('Status in der Totzeit = laufende Stufe (Befund F)', fans[0]['stage'] == 2, fans[0]['stage'])
     sent.clear()
@@ -208,7 +246,7 @@ def main():
     core.cmd('ko 66 5.100 0')
     core.cmd('ko 60 20.102 2')
     core.cmd('ko 32 1.3 1')
-    core.cmd('run 4000')
+    core.cmd('run 13000')             # Rampe ab 5 s, Totzeit 2 s, Rampe auf 5 s
     fans = core.state()['sim']['fans']
     check('Lüfter 1 Abluft Stufe 4', fans[0]['stage'] == 4 and fans[0]['dir'] == 'Abluft',
           (fans[0]['stage'], fans[0]['dir']))
@@ -265,6 +303,7 @@ def main():
     ego_summer(meta)
     ego_boost(meta)
     polarity(meta)
+    without_group(meta)
 
     print('Invariantenwächter:')
     for w in warns:

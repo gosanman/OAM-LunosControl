@@ -41,8 +41,8 @@ flowchart LR
     end
 
     subgraph FAN["KwlFanModule"]
-        S["Takt-Plätze<br/>8 Verbünde + 12 eigenständige"]
-        K["KwlGroup<br/>Stufenregel, Takt, Totzeit"]
+        S["Takt-Plätze<br/>8 Verbünde, jeder Lüfter in genau einem"]
+        K["KwlGroup<br/>Stufenregel, Takt, Rampe, Totzeit"]
         F["KwlFan × 12<br/>Anteil, Kennlinie, Kalibrierung,<br/>Kabelkompensation, Status"]
         S --> K --> F
     end
@@ -137,7 +137,7 @@ flowchart TD
     U4 --> UEND(["Ende — loop hält den Zustand,<br/>siehe Diagramm 4"])
 
     Q1 -->|"ja"| C1["setupChannels<br/>Kanaltyp je Stellkanal setzen<br/>VOR begin: er bestimmt den sicheren Zustand"]
-    C1 --> C2["setupGroups<br/>eigenständige Plätze + 8 Verbünde,<br/>Sprecher-Lüfter je Verbund"]
+    C1 --> C2["setupGroups<br/>8 Verbünde, Sprecher-Lüfter je Verbund,<br/>Lüfter ohne aktiven Verbund → Code 3"]
     C2 --> C3["setupButton, LED-Funktionen 110 / 111"]
     C3 --> C4{"checkHardware<br/>FAN_Hardware = FANDRV_BOARD_ID?"}
     C4 -->|"nein"| E3["mError = Configuration, Code 3<br/>begin + safeAll"]
@@ -180,7 +180,7 @@ flowchart TD
 
     Q3 -->|"nein"| RUN["Taste auswerten<br/>Flag aus dem Interrupt"]
     RUN --> FL["KwlFan::loop je Lüfter<br/>Betriebsstunden, Filter"]
-    FL --> DG["driveGroup je aktivem Takt-Platz<br/>0…7 Verbünde, 8…19 eigenständig<br/>Diagramm 7"]
+    FL --> DG["driveGroup je aktivem Verbund 0…7<br/>Diagramm 7<br/>danach driveWithoutGroup: 5,00 V, Code 3"]
     DG --> LED["updateLed<br/>Diagramm 12"]
     LED --> RET4(["return"])
 ```
@@ -278,9 +278,11 @@ Ränge über *n* bis einschließlich 5 zurück. Rang 1…4 setzt nichts zurück.
 
 ## 7. Verbund je Takt-Platz — `KwlFanModule::driveGroup()`
 
-Platz 0…7 sind die ETS-Verbünde 1…8, Platz 8…19 je ein eigenständiger Lüfter
-(Verbund 0) mit KwlGroup-Vorgaben. `inSlot()` entscheidet, welcher Lüfter zu
-welchem Platz gehört.
+Platz 0…7 sind die ETS-Verbünde 1…8. Jeder Lüfter gehört zu genau einem, auch
+ein Lüfter allein im Raum (seit 2026-10-10; davor gab es Platz 8…19 für
+„eigenständig“). `inSlot()` entscheidet, welcher Lüfter zu welchem Platz gehört.
+Ein Lüfter ohne aktiven Verbund fährt nicht: `driveWithoutGroup()` hält ihn auf
+5,00 V und meldet Fehlercode 3.
 
 ```mermaid
 flowchart TD
@@ -341,31 +343,47 @@ Code 11.
 
 ---
 
-## 8. Takt und Totzeit — `KwlGroup::update()`
+## 8. Takt, Rampe und Totzeit — `KwlGroup::update()`
 
 `mCurrent` ist die Richtung von Phase 0. Die Totzeit ist der einzige Weg von einer
-Richtung in die andere (Invariante 5).
+Richtung in die andere (Invariante 5). Seit 2026-10-10 liegt davor und danach je
+eine Rampe (`GroupResult::ramp`, 0…1 des Ausschlags um 5,00 V); Rampenzeit 0
+überspringt beide Rampen.
 
 ```mermaid
 stateDiagram-v2
     state "Stillstand<br/>Stufe 0<br/>Uhr läuft nicht" as STOP
-    state "Richtung halten<br/>mCurrent" as HOLD
+    state "Richtung halten<br/>mCurrent, ramp = 1" as HOLD
+    state "Rampe ab<br/>mCurrent, ramp 1 → 0" as DOWN
     state "Totzeit<br/>alle Kanäle 5,00 V<br/>Ziel mPending" as DEAD
+    state "Rampe auf<br/>neue Richtung, ramp 0 → 1" as UP
 
     [*] --> HOLD : erster update setzt Zeitbezug
     HOLD --> STOP : Stufe 0
-    DEAD --> STOP : Stufe 0, Totzeit verworfen
+    DOWN --> STOP : Stufe 0, Wechsel verworfen
+    DEAD --> STOP : Stufe 0, Wechsel verworfen
+    UP --> STOP : Stufe 0
     STOP --> HOLD : Stufe > 0, Uhr beginnt neu
 
-    HOLD --> DEAD : feste Richtung weicht ab
-    HOLD --> DEAD : Zykluszeit abgelaufen, Gegenrichtung
+    HOLD --> DOWN : Zykluszeit abgelaufen<br/>oder feste Richtung weicht ab
+    HOLD --> DEAD : dasselbe, aber Rampe 0<br/>oder Verbund stand
+    DOWN --> UP : Forderung weg vor 5,00 V,<br/>ohne Sprung zurück
+    DOWN --> DEAD : Rampe abgelaufen
     DEAD --> DEAD : feste Richtung ändert das Ziel,<br/>Totzeit läuft weiter
-    DEAD --> HOLD : Totzeit abgelaufen,<br/>mCurrent = mPending
+    DEAD --> UP : Totzeit abgelaufen,<br/>mCurrent = mPending, Zyklus ab hier
+    DEAD --> HOLD : dasselbe bei Rampe 0
+    UP --> DOWN : neue Forderung in Gegenrichtung
+    UP --> HOLD : Rampe abgelaufen
 ```
 
 Aus dem Stillstand heraus beginnt der Takt mit der zuletzt gültigen Richtung.
-Verlangt eine Forderung dann die andere Richtung, geht es trotzdem erst über die
-Totzeit.
+Verlangt eine Forderung dann die andere Richtung, geht es ohne Rampe ab direkt in
+die Totzeit – es dreht sich ja noch nichts – und danach die Rampe hinauf.
+
+`KwlFan::drive()` skaliert den Ausschlag um 5,00 V erst nach Kompensation und
+Kalibrierung. So bleibt jeder Rampenwert auf der Seite seines Ziels, und der
+Totzeitwächter je Kanal sieht keinen zusätzlichen Seitenwechsel. Der Status
+„Ausgangsspannung“ meldet das Ziel ohne Rampe.
 
 ---
 

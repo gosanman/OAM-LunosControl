@@ -1,6 +1,6 @@
 {
  "name": "Bad mit ego + e2 60-Paar",
- "note": "ego im Bad (Raum 1, S1/S2, eigenständig, Abluftanforderung 10 s Vorlauf, 1 min Nachlauf); e²60-Paar in Raum 2/3 (S3/S4, Verbund 1) folgt der Zuluftanforderung von Raum 1.",
+ "note": "ego im Bad (Raum 1, S1/S2, allein in Verbund 2, Abluftanforderung 10 s Vorlauf, 1 min Nachlauf); e²60-Paar in Raum 2/3 (S3/S4, Verbund 1) folgt der Zuluftanforderung von Raum 1.",
  "values": {
   "FAN_Hardware": 1,
   "BASE_Info1LedFunc": 110,
@@ -15,7 +15,7 @@
   "FAN_f1Type": 1,
   "FAN_f1Channel": 1,
   "FAN_f1Room": 1,
-  "FAN_f1Group": 0,
+  "FAN_f1Group": 2,
   "FAN_f1Phase": 0,
   "FAN_f2Active": 1,
   "FAN_f2Type": 0,
@@ -32,7 +32,8 @@
   "ROOM_r1Name": "Bad",
   "ROOM_r2Name": "Wohnzimmer",
   "ROOM_r3Name": "Schlafzimmer",
-  "FAN_f1Name": "ego Bad"
+  "FAN_f1Name": "ego Bad",
+  "FAN_Grp2Active": 1
  },
  "env": {
   "enabled": false,
