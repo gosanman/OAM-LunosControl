@@ -8,7 +8,7 @@
   <!-- Applikationsversion des Geraets. ReplacesVersions listet bewusst NUR die eigene
        Version: es gibt keine Vorgaengerapplikation, aus der die ETS migrieren koennte,
        und das Attribut ist nicht weglassbar - der Producer erzwingt es. -->
-  <op:config name="%ReleaseApplicationVersion%" value="0.1" />
+  <op:config name="%ReleaseApplicationVersion%" value="0.2" />
   <op:config name="%ReleaseReplacesVersions%" value="0.1" />
 
   <!-- Vorbelegung der Info-LED-Auswahl.
