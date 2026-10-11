@@ -85,6 +85,57 @@
             "problemMatcher": []
         },
         {
+            // Nur die Release-Firmware (Watchdog an, Debug aus), ohne Paket und
+            // ohne knxprod. Ergebnis: .pio/build/release_KnxFanDrv/firmware.uf2
+            "label": "Release-Firmware bauen",
+            "type": "shell",
+            "command": "lib/OGM-Common/scripts/build/OpenKNX-Build.ps1",
+            "args": [
+                "-env",
+                "release_KnxFanDrv"
+            ],
+            "group": "build",
+            "problemMatcher": "$gcc",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+        {
+            // Komplettes Paket: knxprod, Release-Firmware, Readme.
+            // Ergebnis: release/KwlControl-Release-<Version>.zip
+            // Schreibt dependencies.txt neu - danach den git diff ansehen.
+            "label": "Release-Paket bauen (KwlControl)",
+            "type": "shell",
+            "command": "scripts/Build-Release.ps1",
+            "args": [
+                "Release"
+            ],
+            "group": "build",
+            "problemMatcher": "$gcc",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+        {
+            // Wie das Release-Paket, nur als Beta benannt:
+            // release/KwlControl-Beta-<Version>.zip
+            "label": "Beta-Paket bauen (KwlControl)",
+            "type": "shell",
+            "command": "scripts/Build-Release.ps1",
+            "args": [],
+            "group": "build",
+            "problemMatcher": "$gcc",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+        {
             // Laeuft im OFM-Repository: die pruefbare Logik liegt dort, nicht hier.
             "label": "Native Tests",
             "type": "shell",
