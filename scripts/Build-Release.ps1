@@ -6,8 +6,14 @@
 #
 # Ergebnis: release/KwlControl-<Release|Beta>-<Version>.zip mit knxprod-Daten,
 # Firmware (.uf2), Upload-Skripten und Readme. Beide Pakete enthalten die
-# Release-Firmware (Watchdog an, Debug aus); sie unterscheiden sich nur im Namen.
+# Release-Firmware (Watchdog an, Debug aus). Die Produktdefinition kommt beim
+# Release aus src/Kwl-Release.xml, bei Beta aus src/Kwl.xml mit "(Dev)" im Namen
+# (scripts/OpenKNX-Build-Settings.ps1).
 # Der Ordner release/ wird vorher geleert (steht in .gitignore).
+#
+# Die Vorbereitung schreibt include/knxprod.h aus der gebauten Definition. Nach
+# einem Release-Paket traegt die naechste develop-Firmware deshalb den Namen ohne
+# "(Dev)", bis "knxprod erzeugen" wieder laeuft. Die ETS-ID ist dieselbe.
 #
 # Abweichung von der Vorlage: Build-Release-Postprocess.ps1 loescht
 # dependencies.txt und will sie aus den lib/-Repositories neu erzeugen. Die

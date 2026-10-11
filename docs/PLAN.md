@@ -485,9 +485,9 @@ und Kabelkompensation. Noch kein Takt — Richtung wird per KO vorgegeben.
 
 | Typ | Kanäle | Stufen | Besonderheit |
 |---|---|---|---|
-| `E2_60` | 1 | 0…4, bipolar, Codierschalter 5 | Pendelpartner möglich |
-| `EGO` | **2** | 0…4, bipolar, Codierschalter 9 | Stufe 4 = Abluftstoß, beide 1,11 V |
-| `RA_15_60` | 1 | 0…4, **unipolar**, Codierschalter 0 | 0 V = aus, kein Pendel |
+| `E2_60` | 1 | 0…4, bipolar | Pendelpartner möglich |
+| `EGO` | **2** | 0…4, bipolar | Stufe 4 = Abluftstoß, beide 1,11 V |
+| `RA_15_60` | 1 | 0…4, **unipolar** | 0 V = aus, kein Pendel |
 | `GENERIC_BIPOLAR` | 1 | 0…4 | Spannungen frei parametrierbar |
 | `GENERIC_UNIPOLAR` | 1 | 0…4 | Spannungen frei parametrierbar |
 
@@ -1092,13 +1092,13 @@ Code = round(V × 3276.7), 0…0x7FFF. Wire = Code oder Code << 1 (Phase 1 entsc
 
 ### Sollspannungen (Nominal, ohne Kompensation)
 
-**e²60**, Codierschalter 5 — A / B:
+**e²60** — A / B:
 0: 5,00/5,00 · 1: 4,01/6,01 · 2: 3,21/6,91 · 3: 1,96/8,15 · 4: 0,01/10,00
 
-**ego**, Codierschalter 9 — M1 / M2:
+**ego** — M1 / M2:
 0: 5,00/5,00 · 1: 3,26/6,85 · 2: 2,09/8,00 · 3: 1,25/8,85 · **4: 1,11/1,11**
 
-**RA 15-60**, Codierschalter 0, unipolar:
+**RA 15-60**, unipolar:
 0: 0,01 · 1: 1,58 · 2: 3,57 · 3: 5,76 · 4: 8,15
 
 Volumenstrom nominal m³/h — e²60: 0/5/20/40/60 · ego: 0/5/10/20/45 · RA: 0/15/30/45/60.

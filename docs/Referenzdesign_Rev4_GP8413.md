@@ -340,7 +340,7 @@ Alle Codes in den folgenden Tabellen sind **logische 15-Bit-Werte**
 Bus gehen, entscheidet O17. Eine Zeile Firmware, aber die falsche Zeile
 verdoppelt jede Ausgangsspannung.
 
-**e²60, Codierschalter 5**
+**e²60**
 
 | Stufe | m³/h | Kanal A | Code A | hex | Kanal B | Code B | hex |
 |---|---|---|---|---|---|---|---|
@@ -350,7 +350,7 @@ verdoppelt jede Ausgangsspannung.
 | 3 | 40 | 1,96 V | 6422 | 0x1916 | 8,15 V | 26705 | 0x6851 |
 | 4 | 60 | 0,01 V | 33 | 0x0021 | 10,00 V | 32767 | 0x7FFF |
 
-**ego, Codierschalter 9**
+**ego**
 
 | Stufe | m³/h | Motor 1 | Code | hex | Motor 2 | Code | hex |
 |---|---|---|---|---|---|---|---|
@@ -360,7 +360,7 @@ verdoppelt jede Ausgangsspannung.
 | 3 | 20 | 1,25 V | 4096 | 0x1000 | 8,85 V | 28999 | 0x7147 |
 | 4 | 45 Abluft | 1,11 V | 3637 | 0x0E35 | **1,11 V** | 3637 | 0x0E35 |
 
-**RA 15-60, Codierschalter 0** (unipolar, für einen möglichen Reservekanal)
+**RA 15-60** (unipolar, für einen möglichen Reservekanal)
 
 | Stufe | m³/h | Spannung | Code | hex |
 |---|---|---|---|---|

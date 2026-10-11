@@ -4,18 +4,9 @@
   <op:config href="Kwl.conf.xml" />
 
   <!-- ===================================================================================
-       KNXFANDRV / OAM-KwlControl - ETS-Produktdefinition
+       OpenKnxKwlControl / OAM-KwlControl - ETS-Produktdefinition
 
-       EINGEFROREN mit der ersten knxprod (PLAN.md 0.6, Woche 1 Tag 1):
-       ApplicationNumber, OpenKnxId, die Praefixe ROOM/FAN, die KoOffsets 20/340/640 und
-       die Blockgroessen 40 (Raum) / 24 (Luefter). Eine spaetere Aenderung an einem dieser
-       Werte verschiebt die Gruppenadressen aller Anwender.
-
-       Die Blockgroessen stehen NICHT hier: der Producer bildet sie ausschliesslich aus der
-       hoechsten benutzten %Kn%-Nummer des jeweiligen Templates. Sie sind deshalb in
-       Room.templ.xml (%K39%) und Fan.templ.xml (%K23%) mit je einem Reserveobjekt
-       festgenagelt. Diese beiden Objekte duerfen verschwinden, sobald die echten KOs der
-       Bloecke geschrieben sind - aber nur, wenn dann wieder ein Objekt auf 39 bzw. 23 liegt.
+       Praefixe ROOM/FAN, KoOffsets 20/340/640, Blockgroessen 40 (Raum) / 24 (Luefter). 
 
        KO-Belegung:
          BASE/UCT   0 .. 19
@@ -24,7 +15,7 @@
          LOG      640 ..       30 Logiken
        =================================================================================== -->
 
-  <op:ETS ProductName="KNX Lüftersteuerung 0–10 V"
+  <op:ETS ProductName="Kontrollierte Wohnraumlüftung (KWL)"
     OpenKnxId="0xA8"
     ApplicationNumber="0x05"
     ApplicationVersion="%ReleaseApplicationVersion%"
@@ -35,7 +26,7 @@
     BuildSuffix="-dev"
     BuildSuffixText=" (Dev)"
     MediumTypes="MT-0"
-    OrderNumber="KNXFANDRV"
+    OrderNumber="OpenKnxKwlControl"
     IsRailMounted="true" />
 
   <op:define prefix="BASE" ModuleType="10"
@@ -49,10 +40,9 @@
     <op:verify File="../lib/OFM-ConfigTransfer/library.json" ModuleVersion="0.5" />
   </op:define>
 
-  <!-- Raum: Sensorik, Betriebsarten, Fuehrungen. Traegt keinen Antrieb.
-       8 Kanaele sind die Compile-Zeit-Obergrenze; sichtbar macht sie spaeter
-       ROOM_VisibleChannels (Room.share.xml, Woche 1 Tag 3). -->
+  <!-- Raum: Sensorik, Betriebsarten, Fuehrungen. Max 8 Kanaele (Room.share.xml) -->
   <op:define prefix="ROOM" ModuleType="20"
+    configTransferName="Räume"
     share="../lib/OFM-KwlControl/src/Room.share.xml"
     template="../lib/OFM-KwlControl/src/Room.templ.xml"
     NumChannels="8"
@@ -60,11 +50,9 @@
     <op:verify File="../lib/OFM-KwlControl/library.json" ModuleVersion="%ReleaseApplicationVersion%" />
   </op:define>
 
-  <!-- Luefter: Antrieb, Verbuende, DAC-Kanaele. Fuehrt ausserdem die geraeteweite
-       Hardwareauswahl FAN_Hardware (Enum-Wert = FANDRV_BOARD_ID), aus der per Assign
-       FAN_HardwareChannels und damit die Zahl der sichtbaren Luefterseiten folgt
-       (Fan.share.xml). 12 Kanaele sind die Obergrenze der Platinenfamilie. -->
+  <!-- Luefter: Antrieb, Verbuende, DAC-Kanaele. Max 12 Kanaele (Fan.share.xml), Hardwareauswahl (Enum-Wert = FANDRV_BOARD_ID) -->
   <op:define prefix="FAN" ModuleType="30"
+    configTransferName="Lüftung"
     share="../lib/OFM-KwlControl/src/Fan.share.xml"
     template="../lib/OFM-KwlControl/src/Fan.templ.xml"
     NumChannels="12"
@@ -72,11 +60,7 @@
     <op:verify File="../lib/OFM-KwlControl/library.json" ModuleVersion="%ReleaseApplicationVersion%" />
   </op:define>
 
-  <!-- Logikmodul: fertiges OpenKNX-Modul, nur eingebunden.
-       ModuleType 10 ist kein Tippfehler: das Logikmodul legt seine Versionsinformation
-       unter dem Typ des BASE-Moduls ab, deshalb teilen sich beide den Wert.
-       KoOffset 640 laesst dem Luefterblock (340..627) Luft nach oben, ohne dass eine
-       spaetere Erweiterung des Luefterblocks sofort kollidiert. -->
+  <!-- Logikmodul: ModuleType 10, KoOffset 640, Luefterblock (340..627) -->
   <op:define prefix="LOG" ModuleType="10"
     share="../lib/OFM-LogicModule/src/Logikmodul.share.xml"
     template="../lib/OFM-LogicModule/src/Logikmodul.templ.xml"

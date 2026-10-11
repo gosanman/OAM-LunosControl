@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns="http://knx.org/xml/project/20" xmlns:op="http://github.com/OpenKNX/OpenKNXproducer">
+
+  <op:config href="Kwl.conf.xml" />
+
+  <!-- ===================================================================================
+       OpenKnxKwlControl / OAM-KwlControl - ETS-Produktdefinition
+
+       Praefixe ROOM/FAN, KoOffsets 20/340/640, Blockgroessen 40 (Raum) / 24 (Luefter). 
+
+       KO-Belegung:
+         BASE/UCT   0 .. 19
+         ROOM      20 .. 339    8 Raeume    x 40
+         FAN      340 .. 627   12 Luefter   x 24
+         LOG      640 ..       30 Logiken
+       =================================================================================== -->
+
+  <op:ETS ProductName="Kontrollierte Wohnraumlüftung (KWL)"
+    OpenKnxId="0xA8"
+    ApplicationNumber="0x05"
+    ApplicationVersion="%ReleaseApplicationVersion%"
+    ReplacesVersions="%ReleaseReplacesVersions%"
+    ApplicationRevision="0"
+    ApplicationName="KwlControl"
+    BusCurrent="30"
+    MediumTypes="MT-0"
+    OrderNumber="OpenKnxKwlControl"
+    IsRailMounted="true" />
+
+  <op:define prefix="BASE" ModuleType="10"
+    share="../lib/OGM-Common/src/Common.share.xml">
+    <op:verify File="../lib/OGM-Common/library.json" ModuleVersion="%BASE_VerifyVersion%" />
+  </op:define>
+
+  <op:define prefix="UCT" ModuleType="99"
+    share="../lib/OFM-ConfigTransfer/src/ConfigTransfer.share.xml"
+    noConfigTransfer="true">
+    <op:verify File="../lib/OFM-ConfigTransfer/library.json" ModuleVersion="0.5" />
+  </op:define>
+
+  <!-- Raum: Sensorik, Betriebsarten, Fuehrungen. Max 8 Kanaele (Room.share.xml) -->
+  <op:define prefix="ROOM" ModuleType="20"
+    configTransferName="Räume"
+    share="../lib/OFM-KwlControl/src/Room.share.xml"
+    template="../lib/OFM-KwlControl/src/Room.templ.xml"
+    NumChannels="8"
+    KoOffset="20">
+    <op:verify File="../lib/OFM-KwlControl/library.json" ModuleVersion="%ReleaseApplicationVersion%" />
+  </op:define>
+
+  <!-- Luefter: Antrieb, Verbuende, DAC-Kanaele. Max 12 Kanaele (Fan.share.xml), Hardwareauswahl (Enum-Wert = FANDRV_BOARD_ID) -->
+  <op:define prefix="FAN" ModuleType="30"
+    configTransferName="Lüftung"
+    share="../lib/OFM-KwlControl/src/Fan.share.xml"
+    template="../lib/OFM-KwlControl/src/Fan.templ.xml"
+    NumChannels="12"
+    KoOffset="340">
+    <op:verify File="../lib/OFM-KwlControl/library.json" ModuleVersion="%ReleaseApplicationVersion%" />
+  </op:define>
+
+  <!-- Logikmodul: ModuleType 10, KoOffset 640, Luefterblock (340..627) -->
+  <op:define prefix="LOG" ModuleType="10"
+    share="../lib/OFM-LogicModule/src/Logikmodul.share.xml"
+    template="../lib/OFM-LogicModule/src/Logikmodul.templ.xml"
+    NumChannels="30"
+    KoOffset="640">
+    <op:verify File="../lib/OFM-LogicModule/library.json" ModuleVersion="4.4" />
+  </op:define>
+
+  <generate />
+</KNX>

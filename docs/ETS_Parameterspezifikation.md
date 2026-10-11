@@ -84,7 +84,7 @@ Sichtbar: Verbund n, wenn `FAN_GrpN_Active` = Aktiviert. Die Aktivität steht in
 
 | Parameter | Typ | Werte | Vorgabe |
 |---|---|---|---|
-| Info-LED 2/3 Funktion | PT-SLEDFunc | Basis 110: Lüfter 1…12 | Lüfter 1 / Lüfter 2 |
+| Info-LED 1 Funktion | PT-SLEDFunc | 110 Lüftung · 111 Lüftung, nur Störungen | **111** (Kwl.conf.xml, seit 2026-10-11) |
 
 ---
 

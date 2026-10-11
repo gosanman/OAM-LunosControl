@@ -85,8 +85,32 @@
             "problemMatcher": []
         },
         {
+            // knxprod aus src/Kwl-Release.xml: ohne "(Dev)" im Namen, sonst gleich
+            // (dieselbe ETS-ID). Ergebnis: src/Kwl-Release.knxprod. Schreibt auch
+            // include/knxprod.h - danach traegt die Firmware den Release-Namen,
+            // bis "knxprod erzeugen" wieder laeuft.
+            "label": "Release-knxprod bauen",
+            "type": "shell",
+            "command": "~/bin/OpenKNXproducer.exe",
+            "args": [
+                "create",
+                "--Debug",
+                "-h",
+                "include/knxprod.h",
+                "src/Kwl-Release"
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+        {
             // Nur die Release-Firmware (Watchdog an, Debug aus), ohne Paket und
             // ohne knxprod. Ergebnis: .pio/build/release_KnxFanDrv/firmware.uf2
+            // Fuer den Release-Namen vorher "Release-knxprod bauen".
             "label": "Release-Firmware bauen",
             "type": "shell",
             "command": "lib/OGM-Common/scripts/build/OpenKNX-Build.ps1",
