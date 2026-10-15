@@ -178,7 +178,12 @@ for r in static.iter(NS + 'ComObjectRef'):
     k = kos.get(r.get('RefId'))
     if k is None:
         continue
-    korefs[r.get('Id')] = (k['nr'], r.get('DatapointType') or (k['dpts'][0] if k['dpts'] else ''))
+    # Text je Referenz: Ein Objekt kann mehrere Referenzen haben, die ETS zeigt
+    # die, deren ComObjectRefRef gerade sichtbar ist (z.B. "Handbetrieb aktiv"
+    # bzw. "Automatik aktiv" je nach Polaritaet, seit 2026-10-13).
+    korefs[r.get('Id')] = (k['nr'], r.get('DatapointType') or (k['dpts'][0] if k['dpts'] else ''),
+                           clean(r.get('Text')) if r.get('Text') else '',
+                           clean(r.get('FunctionText')) if r.get('FunctionText') else '')
     if r.get('Text') and not k.get('rt'):
         k['rt'] = clean(r.get('Text'))
     if r.get('FunctionText') and not k.get('rf'):
@@ -268,7 +273,8 @@ def walk(e, conds, page, grid):
     elif t == 'ComObjectRefRef':
         ref = korefs.get(e.get('RefId'))
         if ref is not None:
-            page['items'].append(dict(type='k', nr=ref[0], dpt=dpt_short(ref[1]), cond=conds))
+            page['items'].append(dict(type='k', nr=ref[0], dpt=dpt_short(ref[1]), t=ref[2], f=ref[3],
+                                      cond=conds))
     elif t == 'Assign':
         tgt = params.get(refs.get(e.get('TargetParamRefRef')), {}).get('n')
         src = params.get(refs.get(e.get('SourceParamRefRef')), {}).get('n')

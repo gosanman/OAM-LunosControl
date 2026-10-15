@@ -106,7 +106,16 @@ function visibleKos(vals) {
   const m = new Map();
   for (const pg of S.pages)
     for (const it of pg.items)
-      if (it.type === 'k' && !m.has(it.nr) && condOk(it.cond, vals)) m.set(it.nr, it.dpt);
+      if (it.type === 'k' && !m.has(it.nr) && condOk(it.cond, vals)) {
+        m.set(it.nr, it.dpt);
+        // Text der sichtbaren Referenz, wie in der ETS ("Automatik aktiv" statt
+        // "Handbetrieb aktiv", wenn die Polaritaet umgestellt ist).
+        const k = S.kos[it.nr];
+        if (k) {
+          if (k.t0 === undefined) { k.t0 = k.t; k.f0 = k.f; }
+          k.t = it.t || k.t0; k.f = it.f || k.f0;
+        }
+      }
   return m;
 }
 
@@ -541,7 +550,8 @@ function renderInputs(force) {
       t.label, h('span', { class: 'fanchips' }, ...t.fans.map(f => h('span', { class: 'chip' }, 'L' + f.split(' ')[1]))),
       t.key !== 'orphans' ? h('span', { class: 'st', 'data-tabstate': t.key }, '') : null)));
   const pair = cur ? h('div', { class: 'pair' },
-    h('div', { class: 'paircol' }, cur.key === 'orphans' ? h('div', { class: 'emptynote' }, 'Diese Lüfter gehören zu einem Raum, der nicht aktiv ist. Sie laufen nicht.') : cardOf.get(cur.key)),
+    h('div', { class: 'paircol' }, ...(cur.key === 'orphans' ? [h('div', { class: 'emptynote' }, 'Diese Lüfter gehören zu einem Raum, der nicht aktiv ist. Sie laufen nicht.')]
+      : [panelWidget(Number(cur.key.split(' ')[1])), cardOf.get(cur.key)].filter(Boolean))),
     h('div', { class: 'paircol' }, ...(cur.fans.length ? cur.fans.map(f => cardOf.get(f))
       : [h('div', { class: 'emptynote' }, 'Diesem Raum ist kein aktiver Lüfter zugeordnet (Parameter Lüfter › Raum).')]))) : null;
 
@@ -554,6 +564,101 @@ function renderInputs(force) {
     tabs.length ? tabbar : null,
     pair || h('div', { class: 'emptynote' }, 'Keine Objekte sichtbar. Im Reiter „Parameter“ unter Lüftung › Kanalauswahl Räume und Lüfter aktivieren und programmieren.'));
   updateKoValues();
+}
+
+// ------------------------------------------------------------ Bedienfeld
+// Nachbildung eines KNX-Wandpanels mit Lüftungsseite (Stufe niedrig/mittel/
+// hoch, Automatik, Ein/Aus, Sperrobjekt), so verknüpft wie in der
+// Applikationsbeschreibung unter "Bedienfelder anbinden":
+//   Stufe -> Stufe manuell, Status <- Raumanforderung Stufe,
+//   Automatik <-> Handbetrieb/Automatik aktiv, Ein/Aus -> Zwangsobjekt 1.
+// Die Polaritäten der Raumseite werden beachtet, das Panel sendet also genau
+// das, was ein echtes Bedienfeld an dieser Stelle senden würde.
+const PANEL_STAGES = [['niedrig', 1], ['mittel', 2], ['hoch', 3]];
+
+function roomKo(no, suffix) {
+  for (const [nr, dpt] of S.visKos.entries()) {
+    const k = S.kos[nr];
+    if (k && k.name === `ROOM_${no}${suffix}`) return { nr, dpt: dpt || k.dpts[0] || '' };
+  }
+  return null;
+}
+
+function panelState(no) {
+  const v = S.activeValues;
+  const manualInv = Number(v[`ROOM_r${no}ManualPolarity`]) === 1;
+  const forceOnZero = Number(v[`ROOM_r${no}ForcePolarity`]) === 1;
+  const ko = { stage: roomKo(no, 'StageSet'), status: roomKo(no, 'DemandStage'),
+               auto: roomKo(no, 'ManualAct'), power: roomKo(no, 'Force1') };
+  const val = k => k ? S.kovals[k.nr]?.val : undefined;
+  const manual = val(ko.auto);                      // Rohwert des Objekts
+  const auto = manual === undefined ? true : (manualInv ? manual === true : manual === false);
+  const force = val(ko.power);
+  const on = force === undefined ? true : (forceOnZero ? force === true : force === false);
+  const r = S.poll.state?.sim?.rooms.find(x => x.no === no);
+  return { ko, manualInv, forceOnZero, stage: val(ko.status), auto, on, room: r,
+           locked: !!(r && (r.locked || r.protection)) };
+}
+
+/// Kleine Symbole als SVG - Schriftzeichen wie ⏻ fehlen in vielen Schriften.
+function svgIcon(kind) {
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('class', 'ico ' + kind);
+  const path = d => { const p = document.createElementNS(ns, 'path'); p.setAttribute('d', d); svg.append(p); };
+  if (kind === 'power') {
+    path('M12 3v9');
+    path('M6.3 6.3a8 8 0 1 0 11.4 0');
+  } else {
+    // Lüfterrad: drei Flügel um eine Nabe
+    path('M12 12c0-4 1-7 4-7s3 4-4 7z');
+    path('M12 12c3.5 2 5.5 4.5 4 7s-5 0-4-7z');
+    path('M12 12c-3.5 2-7 2-8-1s3-4 8 1z');
+  }
+  return svg;
+}
+
+function panelWidget(no) {
+  const s = panelState(no);
+  if (!s.ko.stage || !s.ko.status) return null;
+  const btn = (cls, label, title, onclick, data) =>
+    h('button', Object.assign({ class: 'pbtn ' + cls, title, onclick }, data || {}), label);
+  const send = (k, value) => { if (k && !panelState(no).locked) sendKo(k.nr, k.dpt, value); };
+  return h('div', { class: 'kpanel', 'data-panel': no },
+    h('div', { class: 'phead' },
+      h('span', { class: 'ptitle' }, 'Bedienfeld · ', chName('Raum ' + no)),
+      h('span', { class: 'plock', 'data-p': 'lock', title: 'Sperrobjekt: Fenstersperre oder Schutzbetrieb' }, '🔒 gesperrt')),
+    h('div', { class: 'pgrid' },
+      s.ko.power ? btn('power', svgIcon('power'), 'Ein/Aus → Zwangsobjekt 1' + (s.forceOnZero ? ' (wirkt bei 0)' : ' (wirkt bei 1)'),
+        () => { const on = panelState(no).on; send(s.ko.power, s.forceOnZero ? (on ? 0 : 1) : (on ? 1 : 0)); },
+        { 'data-p': 'power' }) : null,
+      ...PANEL_STAGES.map(([lbl, st]) => btn('stage', h('span', { class: 'pst' }, h('span', { class: 'fan' }, ...Array.from({ length: st }, () => svgIcon('fan'))), lbl),
+        `Stufe ${st} → Stufe manuell`, () => send(s.ko.stage, st), { 'data-p': 'stage', 'data-st': st })),
+      s.ko.auto ? btn('auto', 'A', 'Automatik → ' + (s.manualInv ? 'Automatik aktiv (1 = Automatik)' : 'Handbetrieb aktiv (0 = Automatik)'),
+        () => { const p = panelState(no); send(s.ko.auto, s.manualInv ? (p.auto ? 0 : 1) : (p.auto ? 1 : 0)); },
+        { 'data-p': 'auto' }) : null),
+    h('div', { class: 'pfoot', 'data-p': 'foot' }, ''),
+    (!s.manualInv || !s.forceOnZero) ? h('div', { class: 'phint' },
+      'Hinweis: Für ein Bedienfeld wie dieses gehören auf der Raumseite „Objekt Handbetrieb = 1 = Automatik“ und „Zwangsobjekte wirken bei 0“ (mit Zwangsobjekt 1 = Ruhe). Das Panel sendet hier mit der aktuellen Einstellung.') : null);
+}
+
+function updatePanels() {
+  for (const el of $$('[data-panel]')) {
+    const no = Number(el.dataset.panel), s = panelState(no);
+    el.classList.toggle('locked', s.locked);
+    el.classList.toggle('off', !s.on);
+    $('[data-p="power"]', el)?.classList.toggle('on', s.on);
+    $('[data-p="auto"]', el)?.classList.toggle('on', s.auto);
+    for (const b of $$('[data-p="stage"]', el)) {
+      const st = Number(b.dataset.st);
+      b.classList.toggle('on', s.on && (s.stage === st || (st === 3 && s.stage === 4)));
+    }
+    const r = s.room;
+    const foot = $('[data-p="foot"]', el);
+    if (foot) foot.textContent = r ? `Status Stufe ${s.stage ?? '—'} · ${r.mode} · ${r.source} · ${r.cycle}` +
+      (r.locked ? ' · Fenster/Sperre' : '') + (r.protection ? ' · Schutz' : '') : '';
+  }
 }
 
 function saveInRoom() { try { localStorage.setItem('kwlsim.inRoom', S.inRoom); } catch (e) {} }
@@ -586,6 +691,7 @@ function updateKoValues() {
   }
   const st = S.poll.state?.sim;
   if (!st) return;
+  updatePanels();
   for (const el of $$('[data-tabstate]')) {
     const r = st.rooms.find(x => 'Raum ' + x.no === el.dataset.tabstate);
     el.textContent = r ? `Stufe ${r.stage}` : '';

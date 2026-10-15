@@ -1,0 +1,49 @@
+{
+ "name": "Schlafzimmer e2 60 allein",
+ "note": "Ein e²60 an S1 allein im Raum Schlafzimmer, allein in Verbund 1 \"Schlafzimmer\" (Takt 70 s, Totzeit 2 s, Rampe 5 s). Raum für ein Bedienfeld eingestellt: Objekt Handbetrieb = 1 = Automatik, Zwangsobjekte wirken bei 0, Zwangsobjekt 1 = Ruhe ohne Laufzeit.",
+ "values": {
+  "FAN_Hardware": 1,
+  "BASE_Info1LedFunc": 111,
+  "ROOM_r1Active": 1,
+  "ROOM_r1Name": "Schlafzimmer",
+  "ROOM_r1ManualPolarity": 1,
+  "ROOM_r1ForcePolarity": 1,
+  "ROOM_r1Force1Mode": 7,
+  "ROOM_r1Force1Time": 0,
+  "FAN_Grp1Active": 1,
+  "FAN_Grp1Name": "Schlafzimmer",
+  "FAN_f1Active": 1,
+  "FAN_f1Name": "Schlafzimmer",
+  "FAN_f1Type": 0,
+  "FAN_f1Channel": 1,
+  "FAN_f1Room": 1,
+  "FAN_f1Group": 1,
+  "FAN_f1Phase": 0
+ },
+ "env": {
+  "enabled": false,
+  "season": "Winter",
+  "startHour": 6.0,
+  "strength": 1.0,
+  "coupling": true,
+  "events": true,
+  "cycleMin": 5.0,
+  "seed": 1,
+  "rooms": {
+   "1": {
+    "profile": "Schlafzimmer",
+    "volume": 40,
+    "persons": 2,
+    "setpoint": 19.0,
+    "send": {
+     "temp": true,
+     "hum": true,
+     "co2": true,
+     "voc": true,
+     "out": true,
+     "set": true
+    }
+   }
+  }
+ }
+}

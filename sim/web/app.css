@@ -215,6 +215,27 @@ tr.rx td:nth-child(2) { color: var(--supply); }
 .subtabs button .st { font-size: 11px; opacity: .75; }
 .fanchips { display: inline-flex; gap: 2px; }
 .chip { font: 10px var(--mono); padding: 0 4px; border-radius: 4px; border: 1px solid currentColor; opacity: .8; }
+/* Bedienfeld: Nachbildung eines Wandpanels mit Lüftungsseite */
+.kpanel { border-radius: 14px; padding: 10px 12px; background: #1d232c; color: #e6e9ee; box-shadow: inset 0 0 0 1px #2c3440; }
+.kpanel .phead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 13px; }
+.kpanel .ptitle { color: #c7ccd4; }
+.kpanel .plock { display: none; color: #f0b429; font-size: 12px; }
+.kpanel.locked .plock { display: inline; }
+.kpanel .pgrid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.kpanel .pbtn { height: 64px; border-radius: 12px; border: 1px solid #39424f; background: #262d38; color: #c7ccd4; font-size: 13px; cursor: pointer; line-height: 1.25; }
+.kpanel .pbtn:hover { border-color: #5b6778; }
+.kpanel .pbtn.on { background: #1a7f37; border-color: #2ea043; color: #fff; }
+.kpanel .pbtn.power { font-size: 26px; }
+.kpanel .pbtn.auto { font-size: 22px; font-weight: 600; }
+.kpanel .pst { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.kpanel .fan { display: flex; gap: 2px; }
+.kpanel .ico { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.kpanel .ico.power { width: 28px; height: 28px; stroke-width: 2.4; }
+.kpanel .ico.fan { fill: currentColor; stroke-width: 1; }
+.kpanel.off .pbtn.stage, .kpanel.off .pbtn.auto { opacity: .45; }
+.kpanel.locked .pbtn { opacity: .4; cursor: not-allowed; }
+.kpanel .pfoot { margin-top: 8px; font-size: 12px; color: #97a0ad; }
+.kpanel .phint { margin-top: 6px; font-size: 11px; color: #f0b429; }
 .pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; align-items: start; }
 .paircol { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 @media (max-width: 1500px) { .pair { grid-template-columns: 1fr; } }
