@@ -130,6 +130,63 @@ def without_group(meta):
     core.close()
 
 
+def panel_polarity(meta):
+    """Polaritaet der Bedienobjekte (2026-10-13) fuer Bedienfelder mit Automatik,
+    WRG und Ein/Aus - und KO 29 als Ausgang, der bis dahin nie sendete."""
+    print('13. Bedienfeld: Polarität Handbetrieb, Sommer, Zwangsobjekte')
+    img = aufbau_b(meta)
+    for n, v in {'ROOM_r1ManualPolarity': 1, 'ROOM_r1SummerPolarity': 1,
+                 'ROOM_r1ForcePolarity': 1, 'ROOM_r1Force1Mode': 7}.items():
+        img.set(n, v)
+    sent = []
+    core = Core(on_event=lambda ev: sent.append(ev) if ev.get('ev') == 'ko' else None)
+    core.cmd('load ' + img.hex())
+    core.cmd('v12 1')
+    core.cmd('bus 1')
+    core.cmd('ko 20 20.102 1')           # beide Raeume Komfort
+    core.cmd('ko 60 20.102 1')
+    core.cmd('run 5000')
+
+    ko29 = [e['val'] for e in sent if e['nr'] == 29]
+    check('KO 29 meldet nach dem Start "Automatik aktiv" = 1', bool(ko29) and ko29[-1] is True, ko29[-2:])
+    stage_before = core.state()['sim']['rooms'][0]['stage']
+
+    core.cmd('ko 29 1.1 0')              # Bedienfeld: Automatik aus
+    core.cmd('run 2000')
+    r = core.state()['sim']['rooms'][0]
+    check('Automatik aus: Handbetrieb mit der laufenden Stufe', r['source'] == '5 Hand' and r['stage'] == stage_before,
+          (r['source'], r['stage'], stage_before))
+    core.cmd('ko 29 1.1 1')              # Automatik ein
+    core.cmd('run 2000')
+    r = core.state()['sim']['rooms'][0]
+    check('Automatik ein: Raum wieder in der Automatik', r['source'] == '6 Automatik', r['source'])
+
+    core.cmd('ko 26 5.100 3')            # Stufe am Bedienfeld
+    core.cmd('run 2000')
+    ko29 = [e['val'] for e in sent if e['nr'] == 29]
+    check('Stufe vom Bedienfeld: KO 29 meldet Automatik = 0', bool(ko29) and ko29[-1] is False, ko29[-2:])
+
+    core.cmd('ko 30 1.1 0')              # WRG aus = Sommer
+    core.cmd('ko 70 1.1 1')              # Raum 2 (normale Polaritaet) auch Sommer -
+    core.cmd('run 2000')                 # sonst gewinnt im Verbund der kurze Zyklus
+    g = core.state()['sim']['groups'][0]
+    check('WRG = 0 waehlt den langen Zyklus', g['cycle'] == 3600, g['cycle'])
+    core.cmd('ko 30 1.1 1')              # WRG ein
+    core.cmd('run 2000')
+    g = core.state()['sim']['groups'][0]
+    check('WRG = 1 waehlt den kurzen Zyklus', g['cycle'] == 70, g['cycle'])
+
+    core.cmd('ko 23 1.1 0')              # Bedienfeld: Aus
+    core.cmd('run 2000')
+    r = core.state()['sim']['rooms'][0]
+    check('Aus (0) erzwingt Ruhe', r['mode'] == 'Ruhe' and r['stage'] == 0, (r['mode'], r['stage']))
+    core.cmd('ko 23 1.1 1')              # Ein
+    core.cmd('run 2000')
+    r = core.state()['sim']['rooms'][0]
+    check('Ein (1) nimmt den Zwang zurueck', r['mode'] != 'Ruhe', r['mode'])
+    core.close()
+
+
 def dac(core):
     return [round(c['volt'], 2) for c in core.state()['sim']['dac']]
 
@@ -304,6 +361,7 @@ def main():
     ego_boost(meta)
     polarity(meta)
     without_group(meta)
+    panel_polarity(meta)
 
     print('Invariantenwächter:')
     for w in warns:

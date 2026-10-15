@@ -8,8 +8,8 @@
   <!-- Applikationsversion des Geraets. ReplacesVersions listet bewusst NUR die eigene
        Version: es gibt keine Vorgaengerapplikation, aus der die ETS migrieren koennte,
        und das Attribut ist nicht weglassbar - der Producer erzwingt es. -->
-  <op:config name="%ReleaseApplicationVersion%" value="0.3" />
-  <op:config name="%ReleaseReplacesVersions%" value="0.2 0.1" />
+  <op:config name="%ReleaseApplicationVersion%" value="0.4" />
+  <op:config name="%ReleaseReplacesVersions%" value="0.3 0.2 0.1" />
 
   <!-- Vorbelegung der Info-LED-Auswahl: Info-LED 1 zeigt Lueftung, nur Stoerungen" 
        (111, PT-SLEDFunc in Fan.share.xml, im Modul kLedFunctionFaultsOnly). 

@@ -280,6 +280,9 @@ Für jede Betriebsart X ∈ {Komfort, Standby, Nacht, Schutz, Stoßlüften, Abse
 | `ROOM_ExhaustInterval` | enum | 0 dauernd · 1 min/5 min · 2/5 · 1/15 · 2/15 · 5/15 · 1/30 · 2/30 · 5/30 · 10/30 | 0 | | Aktivzeit / Periode bei intermittierender Abluft. |
 | `ROOM_ExhaustSendSupply` | bool | | ja | | Während der Abluftanforderung Zuluftanforderung (KO 34) senden. |
 | `ROOM_LockBehaviour` | enum | 0 Stillstand · 1 Grundstufe | 0 | | Verhalten bei Sperre (Fenster offen, Kamin). |
+| `ROOM_ManualPolarity` | enum | 0 „1 = Handbetrieb“ · 1 „1 = Automatik“ | 0 | | Bedeutung von KO 9, Ein- und Ausgang. Bei 1 heißt das Objekt „Automatik aktiv“. Seit 2026-10-13. |
+| `ROOM_SummerPolarity` | enum | 0 „1 = langer Zyklus“ · 1 „1 = Wärmerückgewinnung“ | 0 | | Bedeutung von KO 10. Bei 1 heißt das Objekt „Wärmerückgewinnung“. |
+| `ROOM_ForcePolarity` | enum | 0 bei 1 · 1 bei 0 | 0 | | Bei welchem Wert die Zwangsobjekte 1–3 (KO 3–5) wirken. Speicher: Offset 1 Bit 1…3 des Bedienungsblocks, vorher Reserve. |
 
 ### KOs je Raum (Block 40, Nummer = 20 + 40·(n−1) + #)
 
