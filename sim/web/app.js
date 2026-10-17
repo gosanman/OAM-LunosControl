@@ -589,14 +589,14 @@ function panelState(no) {
   const manualInv = Number(v[`ROOM_r${no}ManualPolarity`]) === 1;
   const forceOnZero = Number(v[`ROOM_r${no}ForcePolarity`]) === 1;
   const ko = { stage: roomKo(no, 'StageSet'), status: roomKo(no, 'DemandStage'),
-               auto: roomKo(no, 'ManualAct'), power: roomKo(no, 'Force1') };
+               auto: roomKo(no, 'ManualAct'), power: roomKo(no, 'Force1'), text: roomKo(no, 'StatusText') };
   const val = k => k ? S.kovals[k.nr]?.val : undefined;
   const manual = val(ko.auto);                      // Rohwert des Objekts
   const auto = manual === undefined ? true : (manualInv ? manual === true : manual === false);
   const force = val(ko.power);
   const on = force === undefined ? true : (forceOnZero ? force === true : force === false);
   const r = S.poll.state?.sim?.rooms.find(x => x.no === no);
-  return { ko, manualInv, forceOnZero, stage: val(ko.status), auto, on, room: r,
+  return { ko, manualInv, forceOnZero, stage: val(ko.status), auto, on, room: r, text: val(ko.text),
            locked: !!(r && (r.locked || r.protection)) };
 }
 
@@ -656,7 +656,7 @@ function updatePanels() {
     }
     const r = s.room;
     const foot = $('[data-p="foot"]', el);
-    if (foot) foot.textContent = r ? `Status Stufe ${s.stage ?? '—'} · ${r.mode} · ${r.source} · ${r.cycle}` +
+    if (foot) foot.textContent = r ? (s.text ? `„${s.text}“ · ` : '') + `Status Stufe ${s.stage ?? '—'} · ${r.mode} · ${r.source} · ${r.cycle}` +
       (r.locked ? ' · Fenster/Sperre' : '') + (r.protection ? ' · Schutz' : '') : '';
   }
 }

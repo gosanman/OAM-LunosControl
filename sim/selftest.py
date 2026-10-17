@@ -187,6 +187,87 @@ def panel_polarity(meta):
     core.close()
 
 
+def status_text(meta):
+    """Klartext-Status je Raum (2026-10-15): Stufe und Grund in 14 Zeichen."""
+    print('14. Klartext-Status (KO 57)')
+    img = aufbau_b(meta)
+    img.set('ROOM_r1StatusText', 1)
+    sent = []
+    core = Core(on_event=lambda ev: sent.append(ev) if ev.get('ev') == 'ko' and ev['nr'] == 57 else None)
+    core.cmd('load ' + img.hex())
+    core.cmd('v12 1')
+    core.cmd('bus 1')
+    core.cmd('ko 20 20.102 1')
+    core.cmd('ko 60 20.102 1')
+    core.cmd('run 5000')
+    last = lambda: sent[-1]['val'] if sent else None
+    check('Start: Betriebsart auf der Grundstufe', bool(last()) and last().endswith('Komfort'), last())
+    core.cmd('ko 38 9.8 1400')            # CO2 ueber GW3
+    core.cmd('run 3000')
+    check('CO2 treibt: "S3 CO2"', last() == 'S3 CO2', last())
+    core.cmd('ko 26 5.100 2')
+    core.cmd('run 2000')
+    check('Hand: "S2 Hand"', last() == 'S2 Hand', last())
+    core.cmd('ko 33 1.1 1')               # Fenster
+    core.cmd('run 2000')
+    check('Sperre: "S0 Sperre"', last() == 'S0 Sperre', last())
+    core.cmd('ko 33 1.1 0')
+    core.cmd('ko 29 1.1 0')               # Handbetrieb beenden
+    core.cmd('ko 32 1.1 1')               # Abluftanforderung
+    core.cmd('run 3000')
+    check('Bad: "S4 Bad"', last() == 'S4 Bad', last())
+    core.cmd('ko 32 1.1 0')
+    core.cmd('ko 20 20.102 5')            # Stossluefte
+    core.cmd('run 960000')                # Bad-Nachlauf (15 min) abwarten
+    check('Stoßlüften mit Umlauten', last() == 'S4 Stoßlüften', last())
+    check('nur bei Änderung gesendet', len(sent) < 20, f'{len(sent)} Telegramme')
+    core.close()
+
+
+def overlay_feedback(meta):
+    """Rueckmeldung (2026-10-17): Zwangsobjekte, Nacht und Zwangsbetriebsart
+    melden, wenn die Lueftung sie selbst beendet - nie beim Start, nie als Echo."""
+    print('15. Rückmeldung Zwangsobjekte, Nacht, Zwangsbetriebsart')
+    img = aufbau_b(meta)
+    for n, v in {'ROOM_r1ForcePolarity': 1, 'ROOM_r1ForceFeedback': 1,
+                 'ROOM_r1NightFeedback': 1}.items():
+        img.set(n, v)
+    sent = []
+    core = Core(on_event=lambda ev: sent.append(ev) if ev.get('ev') == 'ko' and 21 <= ev['nr'] <= 25
+                or ev.get('ev') == 'ko' and 61 <= ev['nr'] <= 65 else None)
+    nr = lambda k: [e['val'] for e in sent if e['nr'] == k]
+    core.cmd('load ' + img.hex())
+    core.cmd('v12 1')
+    core.cmd('bus 1')
+    core.cmd('ko 20 20.102 1')
+    core.cmd('ko 60 20.102 1')
+    core.cmd('run 5000')
+    check('Start: keine Rückmeldung gesendet', not sent, sent[:3])
+
+    core.cmd('ko 24 1.1 0')              # Bedienfeld Aus -> Zwangsobjekt 2 = Ruhe
+    core.cmd('run 2000')
+    r = core.state()['sim']['rooms'][0]
+    check('Zwangsobjekt 2 (0) erzwingt Ruhe, kein Echo', r['mode'] == 'Ruhe' and not nr(24), (r['mode'], nr(24)))
+
+    core.cmd('ko 22 1.1 1')              # Nacht setzt das Zwangsobjekt zurueck
+    core.cmd('run 2000')
+    check('Nacht beendet den Zwang: KO 24 meldet 1 (= Ein)', nr(24) == [True], nr(24))
+    check('Nacht selbst: kein Echo', not nr(22), nr(22))
+
+    core.cmd('ko 21 20.102 1')           # Zwangsbetriebsart Komfort setzt die Nacht zurueck
+    core.cmd('run 2000')
+    check('Zwangsbetriebsart beendet die Nacht: KO 22 meldet 0', nr(22) == [False], nr(22))
+    core.cmd('run 1800000')              # Laufzeit 30 min
+    check('Ablauf der Zwangsbetriebsart: KO 21 meldet 0', nr(21) == [0], nr(21))
+
+    core.cmd('ko 64 1.1 1')              # Raum 2 ohne Rueckmeldung
+    core.cmd('ko 62 1.1 1')
+    core.cmd('run 2000')
+    check('Raum 2 ohne Rückmeldung sendet nichts', not nr(64) and not nr(62), (nr(64), nr(62)))
+    check('insgesamt genau drei Rückmeldungen', len(sent) == 3, [(e['nr'], e['val']) for e in sent])
+    core.close()
+
+
 def dac(core):
     return [round(c['volt'], 2) for c in core.state()['sim']['dac']]
 
@@ -362,6 +443,8 @@ def main():
     polarity(meta)
     without_group(meta)
     panel_polarity(meta)
+    status_text(meta)
+    overlay_feedback(meta)
 
     print('Invariantenwächter:')
     for w in warns:

@@ -1119,11 +1119,11 @@ Gruppenadressen der Anwender.
 | # | R | KO | DPT | Arcus |
 |---|---|---|---|---|
 | 0 | E | Betriebsart (dauerhaft) | 20.102 | Obj 0 |
-| 1 | E | Zwangsbetriebsart (Laufzeit) | 20.102 | Obj 1 |
-| 2 | E | Nacht | 1.003 | Obj 2 |
-| 3 | E | Zwangsobjekt 1 (Vorgabe Stoßlüften) | 1.003 | Obj 3 |
-| 4 | E | Zwangsobjekt 2 (Vorgabe Ruhe) | 1.003 | Obj 4 |
-| 5 | E | Zwangsobjekt 3 (Vorgabe Komfort) | 1.003 | Obj 5 |
+| 1 | E(/A) | Zwangsbetriebsart (Laufzeit); Ausgang nur bei ROOM_NightFeedback | 20.102 | Obj 1 |
+| 2 | E(/A) | Nacht; Ausgang nur bei ROOM_NightFeedback | 1.003 | Obj 2 |
+| 3 | E(/A) | Zwangsobjekt 1 (Vorgabe Stoßlüften); Ausgang nur bei ROOM_ForceFeedback | 1.003 | Obj 3 |
+| 4 | E(/A) | Zwangsobjekt 2 (Vorgabe Ruhe); Ausgang nur bei ROOM_ForceFeedback | 1.003 | Obj 4 |
+| 5 | E(/A) | Zwangsobjekt 3 (Vorgabe Komfort); Ausgang nur bei ROOM_ForceFeedback | 1.003 | Obj 5 |
 | 6 | E | Stufe manuell | 5.100 | Obj 6 |
 | 7 | E | Stufe manuell % | 5.001 | Obj 6 |
 | 8 | E | Stufe +/− | 1.007 | Obj 8 |
@@ -1155,7 +1155,12 @@ Gruppenadressen der Anwender.
 | 34 | A | Zuluftanforderung (an Fremdgeräte) | 1.003 | Obj 22 |
 | 35 | A | Intervall aktiv | 1.001 | — |
 | 36 | E | VOC / Luftgüte als Index 0…255 — Alternative zu 19 | 5.010 | — |
-| 37–39 | — | Reserve | | |
+| 37 | A | Status Klartext „S2 Feuchte“, nur bei ROOM_StatusText (seit 2026-10-15, auf der Reserve) | 16.001 | — |
+| 38–39 | — | Reserve | | |
+
+Änderung 2026-10-17: Objekte 1–5 wahlweise Ein-/Ausgang (Rückmeldung, wenn die
+Lüftung den Zustand selbst beendet: Laufzeit oder Rücksetzen). Nur Flags und
+ComObjectRefs, keine neue Nummer.
 
 Änderung 2026-10-06 (Befund B): Objekt 28 umgewidmet, keine neue Nummer, keine
 Verschiebung – KoOffsets und Blockgrößen bleiben eingefroren.

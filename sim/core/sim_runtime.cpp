@@ -124,7 +124,22 @@ namespace sim
         if (type.mainGroup == 1)
             return static_cast<bool>(v) ? "true" : "false";
         if (type.mainGroup == 16)
-            return esc(static_cast<const char*>(v));
+        {
+            // DPT 16.001 ist ISO 8859-1 (z.B. "K\xFChlen" im Klartext-Status), das
+            // JSON zur Oberflaeche ist UTF-8: Bytes ab 0x80 umsetzen.
+            std::string utf8;
+            for (const unsigned char c : std::string(static_cast<const char*>(v)))
+            {
+                if (c < 0x80)
+                    utf8 += static_cast<char>(c);
+                else
+                {
+                    utf8 += static_cast<char>(0xC0 | (c >> 6));
+                    utf8 += static_cast<char>(0x80 | (c & 0x3F));
+                }
+            }
+            return esc(utf8);
+        }
         return num(static_cast<double>(v), 3);
     }
 } // namespace sim

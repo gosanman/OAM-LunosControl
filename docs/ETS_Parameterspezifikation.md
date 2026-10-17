@@ -230,6 +230,8 @@ Für jede Betriebsart X ∈ {Komfort, Standby, Nacht, Schutz, Stoßlüften, Abse
 | `ROOM_Force1_Timeout` | time | 0 unendlich · 1…240 min | 30 min | | Nach Ablauf zurück zur darunterliegenden Ebene. |
 | `ROOM_Force2_Mode` / `_Timeout` | | | 7 Ruhe / 0 | | |
 | `ROOM_Force3_Mode` / `_Timeout` | | | 1 Komfort / 30 min | | |
+| `ROOM_ForceFeedback` | bool | nein · ja | nein | | Zwangsobjekte 1–3 (KO 3–5) melden ihren Zustand, wenn die Lüftung ihn selbst beendet (Laufzeit, Rücksetzen); mit der eingestellten Polarität. Kein Echo, nichts beim Start. Speicher: Offset 0 Bit 6 des Zwangsobjekt-Blocks, vorher frei. Seit 2026-10-17. |
+| `ROOM_NightFeedback` | bool | nein · ja | nein | | Ebenso für Nacht (KO 2) und Zwangsbetriebsart (KO 1, meldet 0). Nicht auf zentralen Adressen. Speicher: Offset 0 Bit 7. Seit 2026-10-17. |
 | `ROOM_ForcedModeTimeout` | time | 0 unendlich · 1…240 min | 30 min | | Laufzeit der Zwangsbetriebsart (KO 1). |
 | `ROOM_NightMode` | enum | 3 Nacht · 6 Absenkung · 7 Ruhe | 3 | | Betriebsart, die das Nacht-KO setzt. |
 
@@ -282,6 +284,7 @@ Für jede Betriebsart X ∈ {Komfort, Standby, Nacht, Schutz, Stoßlüften, Abse
 | `ROOM_LockBehaviour` | enum | 0 Stillstand · 1 Grundstufe | 0 | | Verhalten bei Sperre (Fenster offen, Kamin). |
 | `ROOM_ManualPolarity` | enum | 0 „1 = Handbetrieb“ · 1 „1 = Automatik“ | 0 | | Bedeutung von KO 9, Ein- und Ausgang. Bei 1 heißt das Objekt „Automatik aktiv“. Seit 2026-10-13. |
 | `ROOM_SummerPolarity` | enum | 0 „1 = langer Zyklus“ · 1 „1 = Wärmerückgewinnung“ | 0 | | Bedeutung von KO 10. Bei 1 heißt das Objekt „Wärmerückgewinnung“. |
+| `ROOM_StatusText` | bool | | nein | | Klartext-Status auf KO 37 senden (DPT 16.001, „S2 Feuchte“ usw.). Offset 1 Bit 4 des Bedienungsblocks. Seit 2026-10-15. |
 | `ROOM_ForcePolarity` | enum | 0 bei 1 · 1 bei 0 | 0 | | Bei welchem Wert die Zwangsobjekte 1–3 (KO 3–5) wirken. Speicher: Offset 1 Bit 1…3 des Bedienungsblocks, vorher Reserve. |
 
 ### KOs je Raum (Block 40, Nummer = 20 + 40·(n−1) + #)
@@ -325,6 +328,7 @@ Für jede Betriebsart X ∈ {Komfort, Standby, Nacht, Schutz, Stoßlüften, Abse
 | 34 | Zuluftanforderung | 1.003 | K L Ü | nach ExhaustSendSupply |
 | 35 | Intervall aktiv | 1.001 | K L Ü | |
 | 36 | VOC (1 Byte) | 5.010 | K L S | nur VOCUnit = Index 0…255; ein KO hat genau eine Größe |
+| 37 | Status Klartext | 16.001 | K L Ü | nur bei ROOM_StatusText; bei Änderung |
 | 37–39 | Reserve | | | |
 
 ---

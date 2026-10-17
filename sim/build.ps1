@@ -38,7 +38,7 @@ $knx = Join-Path $root 'lib/knx/src/knx'
 # bewusst: an seiner Stelle steht sim/core/sim_board.cpp.
 $ofmSources = @('CableComp', 'KwlCurve', 'KwlFan', 'KwlFanModule', 'KwlGroup', 'KwlOutput',
     'KwlRoom', 'KwlRoomModule', 'MoistAir', 'SendCondition', 'StageArbiter',
-    'StageLadder', 'StageMap', 'TempControl') | ForEach-Object { Join-Path $ofm "$_.cpp" }
+    'StageLadder', 'StageMap', 'StatusText', 'TempControl') | ForEach-Object { Join-Path $ofm "$_.cpp" }
 $knxSources = @('dpt', 'dptconvert', 'knx_value', 'bits') | ForEach-Object { Join-Path $knx "$_.cpp" }
 $simSources = Get-ChildItem (Join-Path $sim 'core') -Filter *.cpp | ForEach-Object FullName
 
