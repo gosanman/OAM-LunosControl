@@ -268,6 +268,116 @@ def overlay_feedback(meta):
     core.close()
 
 
+def config_faults(meta):
+    """Konfigurationsfehler je Luefter (2026-10-18): doppelter oder fehlender
+    DAC-Kanal, Typ oder Kalibrierfaktor ausserhalb - Fehlercode 3, Kanal 5,00 V,
+    der andere Luefter laeuft weiter."""
+    print('16. Konfigurationsfehler: Kanal doppelt, Kanal fehlt, Typ, Kalibrierung')
+
+    def run(label, name, value, clamp=True, both=False):
+        img = aufbau_b(meta)
+        img.set(name, value, clamp=clamp)
+        core = Core()
+        core.cmd('load ' + img.hex())
+        core.cmd('v12 1')
+        core.cmd('bus 1')
+        core.cmd('run 3000')
+        core.cmd('ko 26 5.100 3')          # Raum 1 will Stufe 3
+        core.cmd('ko 66 5.100 3')          # Raum 2 auch
+        core.cmd('run 5000')
+        st = core.state()['sim']
+        core.close()
+        f1, f2, d = st['fans'][0]['err'], st['fans'][1]['err'], st['dac']
+        if both:
+            check(f'{label}: beide Luefter Fehlercode 3', f1 == 3 and f2 == 3, (f1, f2))
+            check(f'{label}: S1 bleibt auf 5,00 V', abs(d[0]['volt'] - 5.0) < 0.02, d[0]['volt'])
+        else:
+            check(f'{label}: Luefter 1 Fehlercode 3', f1 == 3, f1)
+            check(f'{label}: S1 bleibt auf 5,00 V', abs(d[0]['volt'] - 5.0) < 0.02, d[0]['volt'])
+            check(f'{label}: Luefter 2 laeuft weiter', f2 != 3 and abs(d[1]['volt'] - 5.0) > 0.5, (f2, d[1]['volt']))
+
+    run('Kanal doppelt (Luefter 2 auf S1)', 'FAN_f2Channel', 1, both=True)
+    run('Kalibrierfaktor 0', 'FAN_f1CalibGain', 0, clamp=False)
+    run('Lueftertyp 5', 'FAN_f1Type', 5, clamp=False)
+
+    img = aufbau_b(meta)
+    img.set('FAN_f1Channel', 5)             # jenseits der 4-Kanal-Platine
+    core = Core()
+    core.cmd('load ' + img.hex())
+    core.cmd('v12 1')
+    core.cmd('bus 1')
+    core.cmd('run 3000')
+    st = core.state()['sim']
+    core.close()
+    check('Kanal 5 auf 4-Kanal-Platine: Luefter 1 Fehlercode 3', st['fans'][0]['err'] == 3, st['fans'][0]['err'])
+    check('Kanal 5: Luefter 2 nicht betroffen', st['fans'][1]['err'] != 3, st['fans'][1]['err'])
+
+
+def mode_from_room1(meta):
+    """Betriebsart von Raum 1 uebernehmen (2026-10-18): nur die Vorgabe aus dem
+    Objekt Betriebsart, nicht Nacht und Zwang von Raum 1 - sonst sendete der
+    Folgeraum mit Rueckmeldung Nacht = 0, obwohl dort niemand bedient hat."""
+    print('17. Betriebsart von Raum 1 uebernehmen')
+    img = aufbau_b(meta)
+    img.set('ROOM_r2ModeSource', 1)
+    img.set('ROOM_r2NightFeedback', 1)
+    sent = []
+    core = Core(on_event=lambda ev: sent.append(ev) if ev.get('ev') == 'ko' and ev['nr'] == 62 else None)
+    core.cmd('load ' + img.hex())
+    core.cmd('v12 1')
+    core.cmd('bus 1')
+    core.cmd('ko 20 20.102 1')             # Raum 1 Komfort -> Raum 2 folgt
+    core.cmd('run 3000')
+    rooms = lambda: core.state()['sim']['rooms']
+    check('Raum 2 folgt der Vorgabe Komfort', rooms()[1]['mode'] == 'Komfort', rooms()[1]['mode'])
+
+    core.cmd('ko 62 1.1 1')                # Nacht in Raum 2
+    core.cmd('run 2000')
+    check('Raum 2: Nacht', rooms()[1]['mode'] == 'Nacht/Eco', rooms()[1]['mode'])
+
+    core.cmd('ko 23 1.1 1')                # Zwangsobjekt 1 in Raum 1 = Stosslueften
+    core.cmd('run 2000')
+    r = rooms()
+    check('Raum 1: Stoßlüften', r[0]['mode'] == 'Stosslueften', r[0]['mode'])
+    check('Raum 2 bleibt in der Nacht', r[1]['mode'] == 'Nacht/Eco', r[1]['mode'])
+    check('Raum 2 sendet keine Nacht-Rückmeldung', not sent, [(e['nr'], e['val']) for e in sent])
+
+    core.cmd('ko 20 20.102 2')             # Vorgabe Standby: wie ein Telegramm in Raum 2
+    core.cmd('run 2000')
+    r = rooms()
+    check('Vorgabe Standby beendet die Nacht in Raum 2', r[1]['mode'] == 'Standby', r[1]['mode'])
+    check('Raum 2 meldet Nacht = 0', [e['val'] for e in sent] == [False], [(e['nr'], e['val']) for e in sent])
+    core.close()
+
+
+def dac_loss_reported(meta):
+    """12-V-Ausfall, wenn nur driveSafe() schreibt (2026-10-18): der Fehler stand
+    nur in der Ausgabeschicht, das Modul meldete Code 0 und erholte sich nie."""
+    print('18. 12-V-Ausfall bei Lüftern ohne Verbund: gemeldet und erholt')
+    img = aufbau_b(meta)
+    img.set('FAN_f1Group', 3)              # beide ohne aktiven Verbund
+    img.set('FAN_f2Group', 3)
+    core = Core()
+    core.cmd('load ' + img.hex())
+    core.cmd('v12 1')
+    core.cmd('bus 1')
+    core.cmd('run 3000')
+    st = core.state()['sim']
+    check('Ausgang: beide Fehlercode 3', st['fans'][0]['err'] == 3 and st['fans'][1]['err'] == 3,
+          (st['fans'][0]['err'], st['fans'][1]['err']))
+    core.cmd('v12 0')
+    core.cmd('run 2000')
+    st = core.state()['sim']
+    check('12 V weg: Fehlercode 4 statt 0', st['fans'][0]['err'] == 4, st['fans'][0]['err'])
+    core.cmd('v12 1')
+    core.cmd('run 2000')
+    st = core.state()['sim']
+    check('12 V zurück: wieder Fehlercode 3', st['fans'][0]['err'] == 3, st['fans'][0]['err'])
+    check('12 V zurück: S1/S2 auf 5,00 V', abs(st['dac'][0]['volt'] - 5.0) < 0.02 and abs(st['dac'][1]['volt'] - 5.0) < 0.02,
+          (st['dac'][0]['volt'], st['dac'][1]['volt']))
+    core.close()
+
+
 def dac(core):
     return [round(c['volt'], 2) for c in core.state()['sim']['dac']]
 
@@ -445,6 +555,9 @@ def main():
     panel_polarity(meta)
     status_text(meta)
     overlay_feedback(meta)
+    config_faults(meta)
+    mode_from_room1(meta)
+    dac_loss_reported(meta)
 
     print('Invariantenwächter:')
     for w in warns:

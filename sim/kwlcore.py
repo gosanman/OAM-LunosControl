@@ -49,7 +49,9 @@ class ParamImage:
     def get(self, name):
         return self.values.get(name, self.params[name]['d'])
 
-    def set(self, name, value):
+    def set(self, name, value, clamp=True):
+        """clamp=False laesst Werte ausserhalb des ETS-Bereichs durch - fuer Tests,
+        die ein beschaedigtes Parameterabbild nachstellen."""
         p = self.params[name]
         if p['k'] == 'text':
             value = str(value)
@@ -57,7 +59,7 @@ class ParamImage:
             value = float(value)
         else:
             value = int(float(value))
-            if 'min' in p and p['k'] in ('uint', 'int'):
+            if clamp and 'min' in p and p['k'] in ('uint', 'int'):
                 value = max(int(p['min']), min(int(p['max']), value))
         if value == p['d']:
             self.values.pop(name, None)
