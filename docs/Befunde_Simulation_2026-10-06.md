@@ -264,7 +264,7 @@ für sich nachvollziehbar bleibt.
 eine Aufteilung ginge nur hunk-weise und brächte keinen prüfbaren
 Zwischenstand.
 
-OAM bindet OFM als Symlink ein (`lib/OFM-KwlControl` → `../../OFM-LunosControl`)
+OAM bindet OFM als Symlink ein (`lib/OFM-KwlControl` → `../../OFM-KwlControl`)
 und hält den gebauten OFM-Stand in `dependencies.txt` fest (heute `6a829d2`).
 Die Datei schreibt der Build; sie geht jeweils mit dem nächsten OAM-Commit nach
 einem OFM-Commit mit (0.4 nach Stufe 0, 2.1 nach Stufe 1).

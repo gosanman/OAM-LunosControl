@@ -7,8 +7,8 @@ Diese Datei gilt in jeder Sitzung. Lies sie, bevor du Code änderst.
 OpenKNX-Firmware für eine KNX-Lüftersteuerung. Ein RP2040 steuert über einen
 galvanisch getrennten I²C-Bus zwei GP8413-DACs, die vier 0–10-V-Stellsignale für
 dezentrale Pendellüfter erzeugen (2 × e²60, 1 × ego mit zwei Motoren). Die Vorlage
-liegt in `reference/` (OpenKNX OAM-/OFM-FanControl, Branch cad435/main) und ist
-Lesestoff, keine Kopiervorlage. Der Plan steht in `docs/PLAN.md`, die Hardware ist in
+ist OpenKNX OAM-/OFM-FanControl (GitHub, Branch cad435/main); sie ist Lesestoff,
+keine Kopiervorlage und liegt nicht mehr im Repo. Der Plan steht in `docs/PLAN.md`, die Hardware ist in
 `docs/Referenzdesign_Rev4_GP8413.md` beschrieben.
 
 ## Sicherheitsinvarianten — gelten immer, ohne Ausnahme

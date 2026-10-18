@@ -3,7 +3,7 @@
 **Stand:** 20.09.2026 · **Zweck:** Vorlage für `Room.share.xml`, `Room.templ.xml`,
 `Fan.share.xml`, `Fan.templ.xml`, `Kwl.xml` und die Baggages-Hilfetexte. Claude Code
 setzt diese Tabellen in OpenKNX-XML um; die Syntax kommt aus der Vorlage
-(`reference/OFM-FanControl/src/Fan.templ.xml`), der Inhalt von hier.
+(`OFM-FanControl/src/Fan.templ.xml` auf GitHub), der Inhalt von hier.
 
 Konventionen in diesem Dokument:
 - **Typ**: `enum` (Auswahlliste), `uint8`/`uint16` (Zahl), `bool` (Ja/Nein),

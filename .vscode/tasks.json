@@ -164,7 +164,7 @@
             "label": "Native Tests",
             "type": "shell",
             "options": {
-                "cwd": "${workspaceFolder}/../OFM-LunosControl"
+                "cwd": "${workspaceFolder}/../OFM-KwlControl"
             },
             "command": "~/.platformio/penv/Scripts/pio.exe",
             "args": [

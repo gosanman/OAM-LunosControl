@@ -471,8 +471,9 @@ ein KO eine Stufe auf einen Kanal schreibt. Noch keine Regelung, kein Takt.
 
 **Claude Code braucht:** die Vorlage als Lesestoff (`FanModule.h/.cpp`, `Fan.xml`,
 `Fan.templ.xml` Kopfteil), Referenzdesign §2.3, §3.4, §6.1–6.3, die OpenKNX-Wiki-
-Seiten zu OpenKNXproducer. Die Vorlage in ein Verzeichnis `reference/` legen, das
-nicht gebaut wird.
+Seiten zu OpenKNXproducer. Die Vorlage liegt auf GitHub (OpenKNX/OAM-FanControl und
+OpenKNX/OFM-FanControl, Branch cad435/main); bis 2026-10-18 lag eine Lesekopie unter
+`reference/`, seitdem nicht mehr im Repo.
 
 ---
 
@@ -997,7 +998,7 @@ der Hardwareauswahl bleibt als Option erhalten, wird aber nicht beschafft.
 
 | Tag | Schritt | Ergebnis |
 |---|---|---|
-| 1 | Repos anlegen, Skelett aus der Vorlage, `Restore-Dependencies.ps1`, `reference/` mit Vorlage, `CLAUDE.md`, `docs/PLAN.md` | Producer läuft, leere Applikation baut |
+| 1 | Repos anlegen, Skelett aus der Vorlage, `Restore-Dependencies.ps1`, Vorlage als Lesekopie, `CLAUDE.md`, `docs/PLAN.md` | Producer läuft, leere Applikation baut |
 | 1 | **Einfrieren:** ApplicationNumber, Präfixe ROOM/FAN, KoOffsets 20/340/640, Blockgrößen 40/24, Hardware-Enum | steht in `Kwl.xml` und im Plan |
 | 2 | `Fan.share.xml` (Hardwareauswahl, Verbund-Parameter ×8) und `Fan.templ.xml` (Lüfter: Typ, Raum, Verbund, Phase, Anteil, Kompensation, Kalibrierung, Status-KOs) | Lüfterseiten in der ETS sichtbar, Sichtbarkeit folgt der Hardwareauswahl |
 | 3 | `Room.share.xml` (Höhe über Meer, Hysterese) und `Room.templ.xml` Teil 1: Sensoren, Führungen mit Grenzwert-Treppen, Feuchtevergleich, Temperaturführung | Raumseiten Sensorik |
@@ -1047,8 +1048,8 @@ fertig, die Logik getestet; es fehlt nur die eine gemessene Zahl.
   und die Regeln, die in jeder Sitzung gelten
 - `docs/PLAN.md` (dieses Dokument), `docs/Referenzdesign_Rev4_GP8413.md`,
   `docs/Pruefliste_KNXFANDRV_Rev01.md`
-- `reference/OAM-FanControl/` und `reference/OFM-FanControl/` als Lesekopie der
-  Vorlage, nicht im Build
+- die Vorlage OpenKNX/OAM-FanControl und OpenKNX/OFM-FanControl auf GitHub (bis
+  2026-10-18 als Lesekopie unter `reference/`)
 
 **Sitzungsstart:** „Lies CLAUDE.md und docs/PLAN.md. Wir sind in Phase N, Schritt M.
 Vorher: Was ist der Stand, was fehlt für die Fertig-Definition?"
