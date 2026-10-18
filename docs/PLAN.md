@@ -3,7 +3,7 @@
 **Stand:** 20.09.2026
 **Zielhardware:** KNXFANDRV Rev 0.1 (RP2040 + OpenKNX-BCU GN100, 2 × GP8413 über ADuM1250)
 **Vorlage:** `OpenKNX/OAM-FanControl` und `OpenKNX/OFM-FanControl`, Branch `cad435/main`
-**Funktionsmesslatte:** Arcus-EDS KNX-LUNOS-CONTROL4, Applikationsbeschreibung 682x_d4a vom 07.10.2024 (Abschnitt 0.5; Bedienlogik in Phase 4 daran ausgerichtet)
+**Funktionsmesslatte, im Folgenden „Vorbild“:** die Applikationsbeschreibung der Originalsteuerung dieser Lüfter, Stand 07.10.2024 (Abschnitt 0.5; Bedienlogik in Phase 4 daran ausgerichtet)
 **Begleitdokumente:** `Referenzdesign_Rev4_GP8413.md`, `Pruefliste_KNXFANDRV_Rev01.md`
 
 Dieser Plan ist so geschrieben, dass er in Claude Code Phase für Phase abgearbeitet
@@ -133,7 +133,7 @@ pio test -e native            (Unit-Tests ohne Hardware, im OFM-Repo)
 
 ### 0.5 Funktionsumfang — Zielbild
 
-Die Messlatte ist die Funktionsliste des kommerziellen Arcus-EDS KNX-LUNOS-CONTROL4.
+Die Messlatte ist die Funktionsliste des Vorbilds, der kommerziellen Originalsteuerung.
 Jede Funktion ist einem Mechanismus zugeordnet; wo mehrere Funktionen dasselbe
 meinen, steht es dabei. Umsetzung in den Phasen 3 bis 5.
 
@@ -164,7 +164,7 @@ meinen, steht es dabei. Umsetzung in den Phasen 3 bis 5.
 | *(neu)* Anteilsfaktor je Knoten | 25…100 % der Gruppen-Stufe | 4c |
 | *(neu)* Stufe +/− per Taster | KO 1.007 | 4a |
 
-Was das Arcus-Modul **nicht** kann und dieser Entwurf zusätzlich bietet: Mischbetrieb
+Was das Vorbild **nicht** kann und dieser Entwurf zusätzlich bietet: Mischbetrieb
 e²/ego auf einem Gerät, raumweise getrennte Betriebsarten, ETS-überschreibbare
 Kennlinien, Leitungskompensation je Knoten, Einschaltwert im EEPROM, Nachlauf,
 Fensterkontakt-Sperre, Betriebsstunden und Taktzähler auf dem Bus.
@@ -506,7 +506,7 @@ und Kabelkompensation. Noch kein Takt — Richtung wird per KO vorgegeben.
    beide auf 1,11 V, Richtung irrelevant.
 3. **Kennlinien als ETS-Parameter mit Vorgabewerten** aus §3.4. Sichtbar nur bei
    Typ GENERIC oder wenn „Kennlinie anpassen" gesetzt ist. Vorgabewerte sind die
-   gemessenen LUNOS-Werte, nicht Datenblattwerte.
+   an der Originalsteuerung gemessenen Werte, nicht Datenblattwerte.
 4. **`CableComp`** — reine Logik, testbar:
    ```
    R  = Länge × ρ / A           ρ = 0,0175 Ω·mm²/m, A aus Parameter
@@ -554,8 +554,8 @@ Stufe → I-Tabelle), M3 (Totband → Warnschwelle im Kommentar), M5 (Eingangsst
 (Temperatur, Feuchte, CO₂), Richtungsbildung mit Wärmerückgewinnung — und eine
 Vorfahrtsregel, die entscheidet, wer gewinnt.
 
-**Referenz für die Mechanik:** die Applikationsbeschreibung des Arcus-EDS
-KNX-LUNOS-CONTROL4 (682x_d4a, 07.10.2024), Abschnitte 3.2–3.14. Das Modul ist seit
+**Referenz für die Mechanik:** die Applikationsbeschreibung des Vorbilds
+(Stand 07.10.2024), Abschnitte 3.2–3.14. Das Modul ist seit
 Jahren im Feld, seine Bedienlogik ist erprobt. Wo dieser Plan davon abweicht, steht
 es dabei und hat einen Grund.
 
@@ -597,23 +597,23 @@ Gerüst ist, in das 4b und 4c ihre Ergebnisse einhängen.
                                                     Stufe + Richtung → KwlCurve → Volt
 ```
 
-**Vorfahrt, von oben nach unten — Übernahme aus Arcus §3.14, angepasst:**
+**Vorfahrt, von oben nach unten — Übernahme aus Vorbild §3.14, angepasst:**
 
 | Rang | Ebene | Bemerkung |
 |---|---|---|
 | 1 | **Sperre** (Fenster/Kamin, fehlende Freigabe, Master-Timeout) | immer 5,00 V, gewinnt gegen alles |
-| 2 | **Schutz** (Frost/Hitze) | Schutzstufe, gewinnt gegen Hand und Gruppe — **Abweichung von Arcus**, dort ist Frostschutz nur eine Führung. Ein durchfrierender Raum ist kein Bedienfall. |
+| 2 | **Schutz** (Frost/Hitze) | Schutzstufe, gewinnt gegen Hand und Gruppe — **Abweichung vom Vorbild**, dort ist Frostschutz nur eine Führung. Ein durchfrierender Raum ist kein Bedienfall. |
 | 3 | **Zu-/Abluftanforderung** | erzwingt Richtung und Anforderungsstufe |
 | 4 | **Gruppe** (nur Slave) | folgt Gruppen-Stufe und -Richtung |
 | 5 | **Handstufe** | ersetzt die Automatikstufe, Laufzeit parametriert |
 | 6 | **Automatikstufe** aus Führungen und aktiver Betriebsart | |
 | 7…11 | Betriebsart-Ebenen: Zwangsobjekt 1 / 2 / 3 → Nacht → Zwangsbetriebsart → Betriebsart → Standard | bestimmen, *welcher* Parametersatz in Rang 6 gilt |
 
-**Rücksetz-Semantik (Arcus §3.14, übernommen):** Ändert sich ein Objekt der Ränge 5
+**Rücksetz-Semantik (Vorbild §3.14, übernommen):** Ändert sich ein Objekt der Ränge 5
 bis 11, werden alle Objekte mit höherem Rang bis einschließlich 5 zurückgesetzt —
 jede Nutzeraktion bekommt eine sichtbare Reaktion. Ränge 1 bis 4 sind ausgenommen.
 Nach Ablauf oder Rücknahme fällt das Gerät auf die nächste noch aktive Ebene zurück.
-Die beiden Arcus-Bedienbeispiele sind Testfälle:
+Die beiden Bedienbeispiele des Vorbilds sind Testfälle:
 - Auto → Nacht → Zwangsobjekt 1: Zwangsobjekt 1 aktiv; nach Ablauf wieder Nacht.
 - Auto → Zwangsobjekt 1 → Nacht: Nacht löscht Zwangsobjekt 1; nach Rücknahme Auto.
 
@@ -624,7 +624,7 @@ Tabelle in der Applikationsbeschreibung abgedruckt. Jede Zeile ist ein Testfall.
 
 ### 4a — Betriebsarten und Arbitrierung
 
-**Sieben Betriebsarten**, wie Arcus (vier nach KNX-Standard, drei erweiterte):
+**Sieben Betriebsarten**, wie beim Vorbild (vier nach KNX-Standard, drei erweiterte):
 
 | # | Betriebsart | DPT 20.102 | Vorgabe Grundstufe | Vorgabe Maximalstufe |
 |---|---|---|---|---|
@@ -636,11 +636,11 @@ Tabelle in der Applikationsbeschreibung abgedruckt. Jede Zeile ist ein Testfall.
 | 6 | Temperatur-Absenkung | erweitert | 1 | 2 |
 | 7 | Ruhe (Aus) | erweitert | 0 | 0 |
 
-**Abweichung von Arcus:** dort hat jede Betriebsart *eine* Lüfterstufe, die die
+**Abweichung vom Vorbild:** dort hat jede Betriebsart *eine* Lüfterstufe, die die
 Führungen anheben dürfen. Hier Grundstufe **und** Maximalstufe — die Obergrenze ist
 für Nacht im Schlafzimmer der eigentliche Zweck des Projekts.
 
-**Parametersatz je Betriebsart, je Knoten** (Arcus §3.3, erweitert):
+**Parametersatz je Betriebsart, je Knoten** (Vorbild §3.3, erweitert):
 
 | Parameter | Bereich | Bemerkung |
 |---|---|---|
@@ -655,7 +655,7 @@ für Nacht im Schlafzimmer der eigentliche Zweck des Projekts.
 | Intervallbetrieb | aus / an | s. u. |
 | Nachlauf nach Anforderungsende | 0…60 min | |
 
-**Intervallbetrieb** (Arcus §3.7): innerhalb einer Periode wird für eine Aktivzeit
+**Intervallbetrieb** (Vorbild §3.7): innerhalb einer Periode wird für eine Aktivzeit
 auf Grundstufe gelüftet, sonst 5,00 V. Vorgaben 1 h / 15 min, 4 h / 30 min,
 12 h / 60 min, frei parametrierbar. Für Standby und Abwesenheit.
 
@@ -675,7 +675,7 @@ Die drei Zwangsobjekte ersetzen feste Stoßlüften- und Ruhe-KOs. Wer Stoßlüft
 einen Taster legt und Ruhe auf den Fensterkontakt, parametriert das — statt dass die
 Firmware es vorgibt.
 
-**Handstufe** (Arcus §3.6):
+**Handstufe** (Vorbild §3.6):
 
 | KO | DPT | Wirkung |
 |---|---|---|
@@ -691,7 +691,7 @@ früheren Fassungen dieses Plans.
 und Master-Überwachung aus der Vorlage.
 
 **Fertig, wenn:**
-- [ ] Native Tests: jede Zeile der Vorfahrtstabelle, beide Arcus-Bedienbeispiele,
+- [ ] Native Tests: jede Zeile der Vorfahrtstabelle, beide Bedienbeispiele des Vorbilds,
       Priorität gleich/hierarchisch, Laufzeitablauf jeder Ebene
 - [ ] Betriebsartwechsel per 20.102, Zwangsbetriebsart mit Ablauf, Nacht-Schaltobjekt,
       Zwangsobjekt-Kette — Status-KO folgt jeweils
@@ -707,14 +707,14 @@ Alle Sensorwerte kommen über KNX. Jeder Sensor-KO hat eine Überwachungszeit
 (Parameter, Vorgabe 60 min); fehlt der Wert, gilt der Parameter „bei fehlenden
 Messwerten" (weiterlüften auf Grundstufe / sperren). Außenwerte per Parameter von
 Knoten 1 übernehmbar. Jede Führung hat ein KO „… aktiv" (1.003), mit dem sie vom Bus
-mit 0 abgeschaltet wird (Arcus Obj 13/16/18).
+mit 0 abgeschaltet wird (Vorbild Obj 13/16/18).
 
 **Sensor-KOs je Knoten:** rF innen (9.007), T innen (9.001), rF außen (9.007), T außen
 (9.001), CO₂ (9.008), T Soll (9.001).
 
 #### Grenzwert-Treppe — der Mechanismus für rF und CO₂
 
-Übernommen aus Arcus §3.13, von drei auf vier Stufen erweitert: **fünf Grenzwerte
+Übernommen aus Vorbild §3.13, von drei auf vier Stufen erweitert: **fünf Grenzwerte
 für vier Stufen.** Grenzwert n schaltet Stufe n ein (n = 1…4), Grenzwert n−1 schaltet
 sie wieder aus. Ist eine höhere Stufe aktiv, ändert das Überschreiten eines
 niedrigeren Grenzwerts nichts. Die Hysterese ist der Abstand der Grenzwerte.
@@ -743,7 +743,7 @@ Prozent-Regler mit anschließender Stufenabbildung ein Umweg.
 VOC ist einheitenfrei: Parameter „VOC-Eingang als" ppb (9.008) / Index (5.010 oder
 7.001). Die Treppe ist dieselbe.
 
-Arcus-Vorgaben zum Vergleich (drei Stufen): rF 48/53/58/62, CO₂ 800/1000/1500/2000.
+Vorgaben des Vorbilds zum Vergleich (drei Stufen): rF 48/53/58/62, CO₂ 800/1000/1500/2000.
 
 #### Feuchtevergleich — Entfeuchtung, Kellertrocknung, Taupunktschutz
 
@@ -756,18 +756,18 @@ e      = rF/100 · e_s(T)                          Partialdruck [hPa]
 ```
 
 Der Partialdruck ist luftdruckunabhängig und vergleicht innen/außen korrekt auch bei
-verschiedenen Temperaturen — g/m³ täte das nicht, g/kg (Arcus) bräuchte den Luftdruck.
+verschiedenen Temperaturen — g/m³ täte das nicht, g/kg (Vorbild) bräuchte den Luftdruck.
 Für die **Anzeige** in g/kg (KO, DPT 9.029) wird der Luftdruck aus dem Parameter
 „Höhe über Meer" (0…2000 m, Vorgabe 500) geschätzt, Formeln im Anhang.
 
 Regel: `e_innen − e_außen ≥ Δe_ein` (Vorgabe 1,5 hPa ≈ 1 g/kg) → Entfeuchtung wirkt,
 rF-Treppe erlaubt. `≤ Δe_aus` (Vorgabe 0,5 hPa) → **Feuchtevergleich sperrt** die
 rF-Treppe und die Entfeuchtung; Grundstufe bleibt. Fehlercode 7 ohne Alarm, Status-KO.
-Arcus deaktiviert die rF-Führung automatisch, sobald außen feuchter ist — dasselbe.
+Das Vorbild deaktiviert die rF-Führung automatisch, sobald außen feuchter ist — dasselbe.
 
 #### Temperaturführung
 
-Parameter (Arcus §3.10): **Frostschutz [°C]** 5…16 (Vorgabe 8) — Ti darunter →
+Parameter (Vorbild §3.10): **Frostschutz [°C]** 5…16 (Vorgabe 8) — Ti darunter →
 Lüftung aus (Schutz, Rang 2), Rückkehr bei +2 K. **Temperaturabstand [K]** 0…10
 (Vorgabe 3) — erst wenn |Ta − Ti| größer ist, versucht die Führung, Tsoll durch
 Wechsel zwischen WRG- und Sommerzyklus zu erreichen. Ein größerer Abstand vermeidet
@@ -782,7 +782,7 @@ Konflikte mit der Heizungsregelung.
 
 **Hitzeschutz:** Ti > T_hitze (Vorgabe 30 °C) und Ta > Ti → Schutz.
 
-**Sperrausgang Heizung** (Arcus „Master-Verhalten"): optional sendet der Knoten
+**Sperrausgang Heizung** (Vorbild „Master-Verhalten"): optional sendet der Knoten
 „Temperaturführung aktiv" als Ausgang = 1, solange er frei kühlt — damit der
 Heizungsaktor in der Übergangszeit nicht gegenheizt. Parameter Ein-/Ausgang.
 
@@ -801,7 +801,7 @@ Beim e² ist die Wärmerückgewinnung die Pendelbewegung — kein Schalter. Desh
 Block für Richtung, WRG und Gruppe.
 
 **Zyklusregel** — die zentrale Korrektur gegenüber früheren Fassungen: **Sommerbetrieb
-ist kein Einrichtungsbetrieb, sondern ein langer Zyklus.** Arcus stellt die
+ist kein Einrichtungsbetrieb, sondern ein langer Zyklus.** Das Vorbild stellt die
 Reversierzeit im Sommer auf 1 h statt 70 s. Der Regenerator sättigt nach etwa einer
 Minute; bei einer Stunde Zykluszeit läuft der Lüfter praktisch ohne WRG, wechselt
 aber weiter die Richtung — kein dauerhafter Über- oder Unterdruck, beide Räume
@@ -809,13 +809,13 @@ bekommen Frischluft.
 
 | Zyklusregel | Zykluszeit je Richtung | WRG | Verwendung |
 |---|---|---|---|
-| WRG (kurz) | je Stufe parametrierbar, Vorgabe **70 s** (Arcus, LUNOS) | ja | Heizperiode |
+| WRG (kurz) | je Stufe parametrierbar, Vorgabe **70 s** (Vorbild) | ja | Heizperiode |
 | Sommer (lang) | Parameter, Vorgabe **1 h**, Bereich 40 s…2 h | praktisch nein | Sommer, freie Kühlung |
 | über Sommer-KO | KO Sommer (1.001) schaltet zwischen den beiden | | Standard |
 | Zuluft | fest, kein Wechsel | nein | externen Ablüfter unterstützen |
 | Abluft | fest, kein Wechsel | nein | Abluftgerät |
 
-Arcus erlaubt die Zykluszeit **je Stufe** (40 s…2 h) und warnt, dass bei Änderung der
+Das Vorbild erlaubt die Zykluszeit **je Stufe** (40 s…2 h) und warnt, dass bei Änderung der
 Vorgaben die erreichbare Wärmerückgewinnung nicht mehr gewährleistet ist. Beides
 übernehmen — Parameter je Stufe, Warnhinweis in der Kontexthilfe.
 
@@ -823,26 +823,26 @@ Vorgaben die erreichbare Wärmerückgewinnung nicht mehr gewährleistet ist. Bei
 2 = Zuluft, 3 = Abluft. Direkte Vorgabe, Rang 3. Für Zuluftbetrieb einzeln und
 Abluftbetrieb einzeln.
 
-**Abluftanforderung** (1.003, Arcus §3.8) — die Badlüftung: Knoten fährt nach
+**Abluftanforderung** (1.003, Vorbild §3.8) — die Badlüftung: Knoten fährt nach
 **Vorlaufzeit** (0 s…5 min) in Abluft mit „Stufe bei Abluftanforderung" (Vorgabe 4;
 beim ego Stufe 4 = Abluftstoß beider Motoren), nach Wegnahme **Nachlaufzeit**
 (0…60 min, Vorgabe 15) weiter, dann zurück. Optional intermittierend (Aktivzeit /
-Periode, Arcus: 1 min/5 min bis 10 min/30 min).
+Periode, Vorbild: 1 min/5 min bis 10 min/30 min).
 
-**Zuluftanforderung** (Ausgang 1.003, Arcus Obj 22) — **neu, ergibt sich aus dem
+**Zuluftanforderung** (Ausgang 1.003, Vorbild Obj 22) — **neu, ergibt sich aus dem
 Haus:** solange ein Knoten Abluft fährt, sendet er Zuluftanforderung = 1. Partner
 in derselben Gruppe mit Parameter „folgt Zuluftanforderung" schalten für die Dauer
 auf Zuluft, damit nachströmt. Der ego im Bad zieht 45 m³/h ab, die beiden e²60
 liefern nach — sonst pfeift es an den Fenstern.
 
-**Gruppe — Pendelbetrieb** (Vorlage und Arcus Obj 26/27):
+**Gruppe — Pendelbetrieb** (Vorlage und Vorbild Obj 26/27):
 - Master sendet Gruppen-Stufe (5.100), Gruppen-Richtung/Takt (1.012) und
   Lebenszeichen; Slaves folgen mit ihrer **Phase** (0/1) und ihrem **Anteil**.
 - **Anteilsfaktor** je Knoten (Parameter 25…100 %, Vorgabe 100): skaliert die
-  Gruppen-Stufe. Arcus braucht ihn für drei unpaarige e²60 (einer voll, zwei
+  Gruppen-Stufe. Das Vorbild braucht ihn für drei unpaarige e²60 (einer voll, zwei
   halb); hier für Feinabstimmung, wenn zwei Räume verschieden groß sind. Die
   Vorlage hatte ihn, frühere Fassungen dieses Plans hatten ihn verloren.
-- **Balance-Hinweis** (Arcus §5.3) in die Applikationsbeschreibung: Zuluft- und
+- **Balance-Hinweis** (Vorbild §5.3) in die Applikationsbeschreibung: Zuluft- und
   Abluftseite müssen sich die Waage halten, sonst gibt es weder Luftaustausch noch
   WRG.
 - **Rampe** (seit 2026-10-10) je Verbund, Vorgabe 5 s, 0 = Sprung: vor der Totzeit
@@ -934,12 +934,12 @@ definiert und dokumentiert.
      **volumenstromgewichtet** (Σ Stufe-Volumenstrom × Zeit → m³; ein Filter setzt
      sich nach Luftmenge zu, nicht nach Uhr). Vorgabe: volumenstromgewichtet.
    - Parameter „Wechselintervall": 500…8760 h bzw. 10 000…500 000 m³. Vorgabe
-     entspricht LUNOS-Empfehlung ~3 Monate Dauerbetrieb Stufe 2.
-   - KOs (Arcus Obj 28/29): **Filterwechsel fällig** (1.005, Ein-/Ausgang — eine 0
+     entspricht der Herstellerempfehlung ~3 Monate Dauerbetrieb Stufe 2.
+   - KOs (Vorbild Obj 28/29): **Filterwechsel fällig** (1.005, Ein-/Ausgang — eine 0
      vom Bus quittiert kurzfristig, nach 24 h meldet es sich wieder), **Restlaufzeit**
      (5.001 %, sendet bei Änderung um 5 %), **Filterwechsel-Quittung** (1.016,
      setzt den Zähler zurück; auch per Konsole `kwl n1 filter reset`).
-3b. **Bedienzustände persistent** (Arcus §5.4: alle über den Bus geänderten Werte
+3b. **Bedienzustände persistent** (Vorbild §5.4: alle über den Bus geänderten Werte
    bleiben erhalten): Betriebsart (KO 0), Sommer, Nacht und die Zwangsobjekt-
    Zustände mit Restlaufzeit werden im Modulflash gehalten und nach Neustart
    wiederhergestellt. Sonst fiele das Gerät nach jedem Busausfall in die
@@ -997,7 +997,7 @@ der Hardwareauswahl bleibt als Option erhalten, wird aber nicht beschafft.
 
 | Tag | Schritt | Ergebnis |
 |---|---|---|
-| 1 | Repos anlegen, Skelett aus der Vorlage, `Restore-Dependencies.ps1`, `reference/` mit Vorlage und Arcus-PDF, `CLAUDE.md`, `docs/PLAN.md` | Producer läuft, leere Applikation baut |
+| 1 | Repos anlegen, Skelett aus der Vorlage, `Restore-Dependencies.ps1`, `reference/` mit Vorlage, `CLAUDE.md`, `docs/PLAN.md` | Producer läuft, leere Applikation baut |
 | 1 | **Einfrieren:** ApplicationNumber, Präfixe ROOM/FAN, KoOffsets 20/340/640, Blockgrößen 40/24, Hardware-Enum | steht in `Kwl.xml` und im Plan |
 | 2 | `Fan.share.xml` (Hardwareauswahl, Verbund-Parameter ×8) und `Fan.templ.xml` (Lüfter: Typ, Raum, Verbund, Phase, Anteil, Kompensation, Kalibrierung, Status-KOs) | Lüfterseiten in der ETS sichtbar, Sichtbarkeit folgt der Hardwareauswahl |
 | 3 | `Room.share.xml` (Höhe über Meer, Hysterese) und `Room.templ.xml` Teil 1: Sensoren, Führungen mit Grenzwert-Treppen, Feuchtevergleich, Temperaturführung | Raumseiten Sensorik |
@@ -1014,7 +1014,7 @@ Beurteilung der Seiten machst **du** in der ETS — dafür gibt es keinen Test.
 |---|---|---|
 | 6 | Native Tests + Implementierung: `KwlCurve` (20 Tabellenwerte, beide Formate, Klemmung), `CableComp` | grün |
 | 7 | `StageLadder` (alle Übergänge), Magnus/Partialdruck/g/kg (Prüfwerte), Temperaturregelwerk | grün |
-| 8 | `effectiveStage()`: Rangtabelle Zeile für Zeile, beide Arcus-Bedienbeispiele, Laufzeitabläufe, Priorität gleich/hierarchisch | grün — der wichtigste Testtag |
+| 8 | `effectiveStage()`: Rangtabelle Zeile für Zeile, beide Bedienbeispiele des Vorbilds, Laufzeitabläufe, Priorität gleich/hierarchisch | grün — der wichtigste Testtag |
 | 9 | `KwlGroup`: Stufenregel (drei Varianten), Zyklusregel-Konflikt, Takt mit Zykluszeit je Stufe, Totzeit, Phase, Anteil, Nachströmung | grün |
 | 10 | Firmware-Skelett: beide Module, Board-Header Rev 0.1 **und** DevPico, `IDacDrive` mit Mock, Startup-Sequenz, Konsole `kwl st`; `pio run -e develop_DevPico` | kompiliert; ohne `FANDRV_DAC_LEFT_ALIGNED` bricht der Build wie vorgesehen |
 | 11–12 | `test_dac`-Firmware für Phase 1 vorbereiten (Konsole, `raw`, `probe`, `store` mit Rückfrage) — läuft erst an der Platine | Phase 1 startet am Tag der Ankunft ohne Vorlauf |
@@ -1116,7 +1116,7 @@ Gruppenadressen der Anwender.
 
 **Raum-Block (40)**
 
-| # | R | KO | DPT | Arcus |
+| # | R | KO | DPT | Vorbild |
 |---|---|---|---|---|
 | 0 | E | Betriebsart (dauerhaft) | 20.102 | Obj 0 |
 | 1 | E(/A) | Zwangsbetriebsart (Laufzeit); Ausgang nur bei ROOM_NightFeedback | 20.102 | Obj 1 |
@@ -1167,7 +1167,7 @@ Verschiebung – KoOffsets und Blockgrößen bleiben eingefroren.
 
 **Lüfter-Block (24)**
 
-| # | R | KO | DPT | Arcus |
+| # | R | KO | DPT | Vorbild |
 |---|---|---|---|---|
 | 0 | E | Freigabe | 1.003 | — |
 | 1 | E | Suspendieren (Wartung) | 1.001 | — |

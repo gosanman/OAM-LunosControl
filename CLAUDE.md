@@ -6,7 +6,7 @@ Diese Datei gilt in jeder Sitzung. Lies sie, bevor du Code änderst.
 
 OpenKNX-Firmware für eine KNX-Lüftersteuerung. Ein RP2040 steuert über einen
 galvanisch getrennten I²C-Bus zwei GP8413-DACs, die vier 0–10-V-Stellsignale für
-dezentrale LUNOS-Lüfter erzeugen (2 × e²60, 1 × ego mit zwei Motoren). Die Vorlage
+dezentrale Pendellüfter erzeugen (2 × e²60, 1 × ego mit zwei Motoren). Die Vorlage
 liegt in `reference/` (OpenKNX OAM-/OFM-FanControl, Branch cad435/main) und ist
 Lesestoff, keine Kopiervorlage. Der Plan steht in `docs/PLAN.md`, die Hardware ist in
 `docs/Referenzdesign_Rev4_GP8413.md` beschrieben.
@@ -63,7 +63,7 @@ Lesestoff, keine Kopiervorlage. Der Plan steht in `docs/PLAN.md`, die Hardware i
    in genau einer Funktion `effectiveStage()` nach der Rangtabelle in `docs/PLAN.md`
    Phase 4: Sperre → Schutz → Zu-/Abluftanforderung → Gruppe → Handstufe →
    Automatikstufe; darunter die Betriebsart-Ebenen Zwangsobjekt 1…3 → Nacht →
-   Zwangsbetriebsart → Betriebsart → Standard. Rücksetz-Semantik nach Arcus §3.14:
+   Zwangsbetriebsart → Betriebsart → Standard. Rücksetz-Semantik nach dem Vorbild (§3.14, siehe PLAN.md):
    eine Nutzeraktion auf Rang ≥ 5 setzt höhere Ränge bis 5 zurück; Rang 1–4 nie.
    Kein zweiter Codepfad darf eine Stufe an dieser Funktion vorbei ausgeben.
 

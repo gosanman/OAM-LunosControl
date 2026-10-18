@@ -52,7 +52,7 @@ Dokument ist hier nachgezogen, nicht umgekehrt. Die Abweichungen im Einzelnen:
 | I²C nach außen | — | zusätzlich auf J110 (FrontPanel) Pin 7/8 | siehe Prüfliste: die Store-Sequenz belegt Adresse 0x08 |
 | Klemmen | J5 sechspolig für das Bad | **vier Stück XY303V-3,81-3P**, J3…J6 | Platine. Für das Bad zwei Klemmen statt einer — funktional gleich, eine Leitung mehr zu ziehen. |
 | Klemmenbelegung | 1 = ⊕, 2 = ⊖, 3 = S | **1 = 12 V, 2 = S, 3 = GND** | Platine. Reihenfolge merken, sie steht auch im Bestückungsdruck. |
-| Masserückführung | gemeinsames PGND an allen Klemmen | **CH1_PGND … CH4_PGND**, je Kanal eigenes Netz | **besser als der Entwurf.** Entspricht der LUNOS-Vorgabe „sternförmig von der Steuerung aus". |
+| Masserückführung | gemeinsames PGND an allen Klemmen | **CH1_PGND … CH4_PGND**, je Kanal eigenes Netz | **besser als der Entwurf.** Entspricht der Herstellervorgabe „sternförmig von der Steuerung aus". |
 | Reserveleiste J6 | sechspolige Stiftleiste | entfällt, J6 ist jetzt eine Klemme | Platine. |
 | DAC-Typ | GP8413-TC25-EW | **GP8413-TC50-EW** | siehe Prüfliste, Fehlerbudget trägt es |
 | R4 / R5 | DNP | **bestückt** | **Platine hat recht.** Ohne REG1-Base bringt niemand sonst Pull-ups mit. |
@@ -100,7 +100,7 @@ Dokument ist hier nachgezogen, nicht umgekehrt. Die Abweichungen im Einzelnen:
                   ▲
                   │ +12 V SELV, PGND
             ┌─────┴─────────────────────┐
-            │ J2 ← LUNOS 5/NT18 o. ä.   │
+            │ J2 ← Netzteil 12 V SELV   │
             │ F1 PTC 1,5 A · Q1 P-FET   │
             │ D1 TVS · C1 100 µF        │
             └───────────────────────────┘
@@ -370,7 +370,7 @@ verdoppelt jede Ausgangsspannung.
 | 3 | 45 | 5,76 V | 18874 | 0x49BA |
 | 4 | 60 | 8,15 V | 26705 | 0x6851 |
 
-Die Werte sind Nominalwerte aus der LUNOS-Steuerung 5/SC-FT v5.14. Die
+Die Werte sind Nominalwerte aus der Originalsteuerung der Lüfter (Firmware v5.14). Die
 tatsächlich auszugebenden Codes ergeben sich erst nach Addition der
 Kabelkompensation.
 
@@ -583,7 +583,7 @@ Pin **1 = 12 V** (CHn_12V), Pin **2 = S** (CHn_S), Pin **3 = GND**
 
 Die Masse ist je Kanal ein **eigenes Netz** CH1_PGND…CH4_PGND, das erst auf
 der Platine zusammenläuft. Das ist besser als im Entwurf und entspricht der
-LUNOS-Vorgabe, sternförmig von der Steuerung aus zu verkabeln.
+Herstellervorgabe, sternförmig von der Steuerung aus zu verkabeln.
 
 **Der BAT54S ist unbestückt.** Ein *unidirektionaler* 12-V-TVS klemmt über
 seine eigene Durchlassrichtung auch negativ auf etwa −0,7 V — das war die
@@ -1105,7 +1105,7 @@ an derselben Klemme geführt und die Kompensation in der Firmware auf 0 gesetzt.
 5. **Schaltplan neu zeichnen** — nicht Rev 3 ändern. Es entfallen so viele
    Baugruppen, dass Ändern aufwendiger wäre als neu zeichnen.
 6. ESOP10-Footprint anlegen, aus der Maßtabelle in §8 der Datenblätter.
-7. Stückliste als `Stueckliste_LUNOS-KNX_Rev4.xlsx` mit LCSC-Nummern
+7. Stückliste als `Stueckliste_KNXFANDRV_Rev4.xlsx` mit LCSC-Nummern
    vervollständigen.
 
 ### 10.1 KiCAD-Arbeitsregeln (Konnect MCP v0.11.0)
@@ -1128,7 +1128,7 @@ Aus Rev 0 bis Rev 3 mühsam erarbeitet, gilt weiter:
 |---|---|---|
 | GP8403 Datenblatt | GP8403-CN-V1.13 | §1 Pins, §2 Grenzwerte, §3.3.3–3.3.7 Protokoll, §4 Funktion, §5/6 Kenndaten, §7 Bestellcode, §8 Gehäuse |
 | GP8413 Datenblatt | GP8413-CN-V1.13 | ebenso |
-| LUNOS 5/SC-FT | v5.14, SN 055xxx | Sollwerte der Stufentabellen |
+| Originalsteuerung der Lüfter | Firmware v5.14 | Sollwerte der Stufentabellen |
 | Projektübergabe | 09.09.2026 | Bauliche Gegebenheiten, Gerätewahl, Rev 0–3 |
 | TI TLV704 Datenblatt | SBVS148D, Jan 2015 | Pinbelegung DBV (1 GND, 2 IN, 3 OUT, 4+5 NC), V(IN) 2,5…24 V, 150 mA, C(OUT) ≥ 1 µF als Stabilitätsbedingung, Rückstrom über die Body-Diode, R(θJA) 213 K/W, Layouthinweis zur Masse des Ausgangskondensators |
 | **`DFRobot/DFRobot_GP8XXX`** | v1.1.0, 2025-07-04, MIT | GP8413 ausdrücklich unterstützt; `RESOLUTION_15_BIT` = 0x7FFF mit `code << 1` beim Senden (→ O17); Store-Konstanten HEAD 0x02 / ADDR 0x10 / CMD1 0x03 / CMD2 0x00 / Delay 10 ms; Bitbang-Zeiten `I2C_CYCLE_BEFORE` 1 µs, `AFTER` 2 µs, `TOTAL` 5 µs; `begin()` als reine Adressabfrage |

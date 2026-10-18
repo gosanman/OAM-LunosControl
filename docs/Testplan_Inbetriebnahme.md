@@ -204,7 +204,7 @@ selbst ab — für den Test auf 1 min stellen und einmal abwarten.
 
 ## T3 — Betriebsarten und Rücksetzen
 
-**Aufbau A.** **Ziel:** Die beiden Arcus-Beispiele, wörtlich aus dem Plan.
+**Aufbau A.** **Ziel:** Die beiden Bedienbeispiele des Vorbilds, wörtlich aus dem Plan.
 
 **Beispiel 1:** Auto → Nacht → Zwangsobjekt 1 → nach Ablauf wieder Nacht.
 

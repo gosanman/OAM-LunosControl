@@ -11,7 +11,7 @@ Konventionen in diesem Dokument:
 - **Sichtbar**: Bedingung; leer = immer. `Typ` meint den Lüftertyp des Kanals,
   `HW` die Hardwareauswahl, `Betriebsart.X` den Parametersatz X.
 - **Hilfe**: Kurzfassung für die Kontexthilfe; wird in `Baggages/Help_de/` je Parameter
-  eine Datei. Ton wie die Arcus-Applikationsbeschreibung: sachlich, ein Absatz, sagt
+  eine Datei. Ton wie die Applikationsbeschreibung des Vorbilds: sachlich, ein Absatz, sagt
   *wozu*, nicht nur *was*.
 
 ---
@@ -72,7 +72,7 @@ Sichtbar: Verbund n, wenn `FAN_GrpN_Active` = Aktiviert. Die Aktivität steht in
 | `FAN_GrpN_StageRule` | enum | 0 Maximum, begrenzt durch kleinsten Raumdeckel · 1 Minimum · 2 Raum führt | 0 | Role ≠ 2 | Wie aus den Anforderungen mehrerer Räume eine Verbundstufe wird. Vorgabe: der lauteste Raum bestimmt, der leiseste deckelt. |
 | `FAN_GrpN_LeadRoom` | uint8 | 1…8 | 1 | StageRule = 2 | Raum, dessen Anforderung allein gilt. |
 | `FAN_GrpN_CycleRule` | enum | 0 WRG gewinnt (kürzester Zyklus) · 1 Raum führt | 0 | Role ≠ 2 | Wollen Räume unterschiedliche Zyklusregeln, entscheidet diese Einstellung. |
-| `FAN_GrpN_CycleS1` … `_CycleS4` | time | 40 s … 2 h | **70 s** | | Zykluszeit je Richtung in Stufe 1…4 bei Wärmerückgewinnung. Vorgabe entspricht LUNOS. **Änderungen verringern die erreichbare Wärmerückgewinnung.** |
+| `FAN_GrpN_CycleS1` … `_CycleS4` | time | 40 s … 2 h | **70 s** | | Zykluszeit je Richtung in Stufe 1…4 bei Wärmerückgewinnung. Vorgabe ist der übliche Wert der Pendellüfter. **Änderungen verringern die erreichbare Wärmerückgewinnung.** |
 | `FAN_GrpN_CycleSummer` | time | 40 s … 2 h | **1 h** | | Zykluszeit im Sommerbetrieb. Der Regenerator sättigt nach etwa einer Minute; ein langer Zyklus lüftet praktisch ohne Wärmerückgewinnung, wechselt aber weiter die Richtung. |
 | `FAN_GrpN_DeadTime` | uint8 | 1…10 s | 2 | | Aufenthalt bei Stillstand (5,00 V) vor jedem Richtungswechsel. |
 | `FAN_GrpN_Ramp` | uint8 | 0…30 s | **5** | | Rampe beim Richtungswechsel, je Richtung: vor der Totzeit gleichmäßig auf 5,00 V, danach ebenso auf die neue Stufe. 0 = Sprung. Nur Richtungswechsel, Stufenwechsel springen. Offset 3 des Verbundblocks (bis 2026-10-10 Reserve). Darunter das Diagramm `kwlramp.png` (`FAN_GrpN_RampPic`, nur Anzeige). |
@@ -98,7 +98,7 @@ Kanal n sichtbar, wenn `n <= FAN_HardwareChannels`.
 |---|---|---|---|---|---|
 | `FAN_Active` | bool | | Kanal 1–3: ja, sonst nein | | Nicht belegte Kanäle geben dauerhaft Stillstand aus und erzeugen keinen Busverkehr. |
 | `FAN_Name` | text 20 | | „Lüfter %C%" | Active | Anzeigename. |
-| `FAN_Type` | enum | 0 LUNOS e²60 · 1 LUNOS ego (2 Kanäle) · 2 LUNOS RA 15-60 (unipolar) · 3 generisch bipolar · 4 generisch unipolar | 0 | Active | Der ego belegt zwei aufeinanderfolgende Kanäle; der folgende Lüfterkanal ist dann nicht verfügbar. |
+| `FAN_Type` | enum | 0 e²60 · 1 ego (2 Kanäle) · 2 RA 15-60 (unipolar) · 3 generisch bipolar · 4 generisch unipolar | 0 | Active | Der ego belegt zwei aufeinanderfolgende Kanäle; der folgende Lüfterkanal ist dann nicht verfügbar. |
 | `FAN_Channel` | uint8 | 1…12 | **%C%** | Active | DAC-Kanal und damit Klemme, an der dieser Lüfter hängt. Der ego belegt diesen und den folgenden Kanal und muss auf einem ungeraden Kanal beginnen. Kein Kanal doppelt; die Firmware prüft es beim Start (Fehlercode 3). Welche Klemme das ist, zeigt die Seite „Anschluss". |
 | `FAN_Room` | uint8 | 1…8 | 1 | Active | Raum, dessen Sensoren, Betriebsart und Bedienung diesen Lüfter führen. |
 | `FAN_Group` | enum | 1…8 Verbund | **1** | Active | Verbund, mit dem dieser Lüfter taktet. Jeder Lüfter braucht einen aktiven Verbund, auch allein im Raum (dann ein eigener). Inaktiver Verbund: Warnung auf der Lüfterseite, Firmware Fehlercode 3 und 5,00 V. „0 eigenständig“ ist am 2026-10-10 entfallen. |
@@ -135,7 +135,7 @@ Aus 0 → 5000 mV (bipolar) bzw. 0 mV (unipolar), nicht parametrierbar.
 | `FAN_CableComp` | bool | | nein | | Ein: die Firmware hebt die Stellspannung um den Spannungsabfall auf dem Rückleiter an. Nötig ab etwa 5 m bei 0,7 mm² ohne vierte Ader. |
 | `FAN_CableLength` | uint8 | 1…30 m | 10 | CableComp | Einfache Leitungslänge zwischen Steuerung und Lüfter. |
 | `FAN_CableSection` | enum | 0,5 · 0,7 · 1,0 · 1,5 mm² | 0,7 | CableComp | Aderquerschnitt. |
-| `FAN_CableResistance` | uint16 | 0…2000 mΩ | berechnet | Debug | Alternativ direkt: Widerstand eines Leiters (Arcus-Kompatibilität). |
+| `FAN_CableResistance` | uint16 | 0…2000 mΩ | berechnet | Debug | Alternativ direkt: Widerstand eines Leiters (wie beim Vorbild). |
 | `FAN_CalibGain` | uint16 | 9800…10200 (× 0,0001) | 10000 | | Kalibrierfaktor aus Prüfschritt P7. 10000 = 1,0000. |
 
 ### Seite „Überwachung und Wartung"

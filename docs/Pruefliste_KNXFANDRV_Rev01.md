@@ -190,7 +190,7 @@ Nicht alles auf einer Prüfliste muss ein Mangel sein. Drei Dinge sind besser
 als im Entwurf:
 
 **Die Masse ist je Kanal ein eigenes Netz** (CH1_PGND…CH4_PGND) und läuft erst
-auf der Platine zusammen. Das erfüllt die LUNOS-Vorgabe „sternförmig von der
+auf der Platine zusammen. Das erfüllt die Herstellervorgabe „sternförmig von der
 Steuerung aus, Durchschleifen nicht zulässig" auf der Leiterplatte statt erst
 im Kabelkanal.
 

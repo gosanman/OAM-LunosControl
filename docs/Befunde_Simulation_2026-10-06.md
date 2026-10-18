@@ -129,7 +129,7 @@ Telegramme je Stunde“; Wochenlauf Sommer muss unter 2.000/h bleiben.
 - Lesen: `ko.value(DPT_Value_1_Ucount)` statt `DPT_HVACMode` für Objekte 20 und 21.
   Werte über 7 verwerfen (heute: undefiniert).
 - Senden Objekt 27 „Betriebsart Status“ (20.102) im Stil des „erweiterten
-  HVAC-Modus“ der LUNOS/Arcus-Steuerung: 1…4 normgerecht, dazu 5 Stoßlüften,
+  HVAC-Modus“ der Originalsteuerung: 1…4 normgerecht, dazu 5 Stoßlüften,
   6 Absenkung, 7 Ruhe – derselbe Wertebereich wie die Eingänge 20/21.
   *(entschieden 2026-10-06)*
 - Objekt 28 wird umgewidmet zum **HVAC-Status-Bitfeld** nach MDT-Schema
@@ -216,7 +216,7 @@ Masse. Unterschiedlich sein kann, **welche Luftrichtung** ein Lüfter bei „unt
   andersherum eingeschoben, fördert er bei derselben Spannung in die andere
   Richtung.
 - **Fremdgeräte:** Ein „generisch bipolarer“ Lüfter eines anderen Herstellers
-  kann die Hälften genau andersherum belegen als LUNOS.
+  kann die Hälften genau andersherum belegen als e²60 und ego.
 
 Im Pendelbetrieb fällt das nicht auf, denn der Lüfter pendelt trotzdem. Falsch
 werden aber feste Richtungen (Zuluftanforderung, Betriebsweise Zu-/Abluft), die
@@ -299,7 +299,7 @@ Kein `git push`, kein Branch, kein Tag ohne ausdrückliche Aufforderung.
 
 | Punkt | Entscheidung (2026-10-06) |
 |---|---|
-| B, Objekt 27 | LUNOS-Stil: 1…4 normgerecht, 5 Stoßlüften, 6 Absenkung, 7 Ruhe |
+| B, Objekt 27 | erweiterter HVAC-Modus: 1…4 normgerecht, 5 Stoßlüften, 6 Absenkung, 7 Ruhe |
 | B, HVAC-Status | Objekt 28 wird zum HVAC-Status-Bitfeld nach MDT-Schema |
 | C | Totzeit je Kanal, auch nach jedem Start |
 | E | nur der Fehlercode bekommt die Bedingung, Objekt 31 bleibt |
