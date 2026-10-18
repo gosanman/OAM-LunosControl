@@ -378,6 +378,30 @@ def dac_loss_reported(meta):
     core.close()
 
 
+def i2c_refresh(meta):
+    """I2C nur bei Aenderung oder alle 100 ms (2026-10-18): im Beharrungszustand
+    hoechstens ~10 Frames je Sekunde und Luefter statt einem je Durchlauf."""
+    print('19. I2C-Last im Beharrungszustand')
+    img = aufbau_b(meta)
+    core = Core()
+    core.cmd('load ' + img.hex())
+    core.cmd('v12 1')
+    core.cmd('bus 1')
+    core.cmd('ko 20 20.102 1')
+    core.cmd('ko 60 20.102 1')
+    core.cmd('ko 30 1.1 1')                # Sommer: langer Zyklus, kein Wechsel in 10 s
+    core.cmd('ko 70 1.1 1')
+    core.cmd('run 15000')                  # Totzeit und Rampe des Anlaufs abwarten
+    before = core.state()['sim']['module']['i2cFrames']
+    core.cmd('run 10000')
+    st = core.state()['sim']
+    delta = st['module']['i2cFrames'] - before
+    check('hoechstens 400 I2C-Frames in 10 s (2 Luefter)', delta <= 400, delta)
+    check('mindestens 100 Frames: Auffrischung laeuft', delta >= 100, delta)
+    check('Luefter laufen dabei', abs(st['dac'][0]['volt'] - 5.0) > 0.5, st['dac'][0]['volt'])
+    core.close()
+
+
 def dac(core):
     return [round(c['volt'], 2) for c in core.state()['sim']['dac']]
 
@@ -558,6 +582,7 @@ def main():
     config_faults(meta)
     mode_from_room1(meta)
     dac_loss_reported(meta)
+    i2c_refresh(meta)
 
     print('Invariantenwächter:')
     for w in warns:

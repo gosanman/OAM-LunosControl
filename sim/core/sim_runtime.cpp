@@ -169,6 +169,11 @@ KNXValue GroupObject::value(const Dpt& type)
     return v;
 }
 
+bool GroupObject::tryValue(KNXValue& value, const Dpt& type)
+{
+    return KNX_Decode_Value(mData, lengthFor(type), type, value);
+}
+
 bool GroupObject::valueNoSend(const KNXValue& value, const Dpt& type)
 {
     return KNX_Encode_Value(value, mData, lengthFor(type), type);

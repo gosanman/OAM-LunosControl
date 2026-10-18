@@ -46,6 +46,10 @@ class GroupObject
     /// Empfangener oder zuletzt gesendeter Wert, dekodiert mit `type`.
     KNXValue value(const Dpt& type);
 
+    /// Wie im Stack: false, wenn der DPT den Wert als ungueltig kennzeichnet
+    /// (DPT 9: 0x7FFF) oder nicht dekodierbar ist.
+    bool tryValue(KNXValue& value, const Dpt& type);
+
     /// Wert setzen UND senden - wie GroupObject::value() im Stack.
     void value(const KNXValue& value, const Dpt& type);
 
